@@ -82,7 +82,7 @@ fun lengthInMeters(sagenes: Int, arshins: Int, vershoks: Int): Double = (sagenes
  * Пользователь задает угол в градусах, минутах и секундах (например, 36 градусов 14 минут 35 секунд).
  * Вывести значение того же угла в радианах (например, 0.63256).
  */
-fun angleInRadian(deg: Int, min: Int, sec: Int): Double = deg * (PI/180) + min * (PI/180/60) + min * (PI/180/60/60)
+fun angleInRadian(deg: Int, min: Int, sec: Int): Double = deg * (PI/180) + min * (PI/180/60) + sec * (PI/180/60/60)
 
 /**
  * Тривиальная (1 балл)
@@ -90,7 +90,7 @@ fun angleInRadian(deg: Int, min: Int, sec: Int): Double = deg * (PI/180) + min *
  * Найти длину отрезка, соединяющего точки на плоскости с координатами (x1, y1) и (x2, y2).
  * Например, расстояние между (3, 0) и (0, 4) равно 5
  */
-fun trackLength(x1: Double, y1: Double, x2: Double, y2: Double): Double = abs(sqrt(x1-x2) * sqrt(x1-x2)) + sqrt(y1-y2) * sqrt(y1-y2))
+fun trackLength(x1: Double, y1: Double, x2: Double, y2: Double) = sqrt(abs(x1-x2) * abs(x1-x2) + abs(y1-y2) * abs(y1-y2))
 
 /**
  * Простая (2 балла)
@@ -132,4 +132,4 @@ fun accountInThreeYears(initial: Int, percent: Int): Double {
  * Пользователь задает целое трехзначное число (например, 478).
  * Необходимо вывести число, полученное из заданного перестановкой цифр в обратном порядке (например, 874).
  */
-fun numberRevert(number: Int): Int = = number % 10 * 100 + number % 100 / 10 * 10 + number / 100
+fun numberRevert(number: Int): Int = number % 10 * 100 + number % 100 / 10 * 10 + number / 100
