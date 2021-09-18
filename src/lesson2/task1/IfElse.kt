@@ -70,8 +70,6 @@ fun minBiRoot(a: Double, b: Double, c: Double): Double {
  * вернуть строку вида: «21 год», «32 года», «12 лет».
  */
 fun ageDescription(age: Int): String {
-
-
     if (age % 100 >= 10 && age % 100 <= 20) return ("$age лет")
     else if (age % 10 == 0 || age % 10 == 5 || age % 10 == 6 || age % 10 == 7 || age % 10 == 8 || age % 10 == 9) return ("$age лет")
     else if (age % 10 == 1 ) return ("$age год")
@@ -90,7 +88,6 @@ fun timeForHalfWay(
     t2: Double, v2: Double,
     t3: Double, v3: Double
 ): Double {
-
     var time :Double = t1+t2+t3
     var s : Double = (t1 * v1) + (t2 * v2) + (t3 * v3)
 
@@ -100,13 +97,8 @@ fun timeForHalfWay(
             return t1+t2+(s2-((v1*t1) + (v2*t2) ))/v3
         }
         else return t1+(s2-(v1*t1))/v2
-
     }
     else return s2/v1
-
-
-
-
 }
 
 /**
@@ -148,17 +140,13 @@ fun rookOrBishopThreatens(
     var bh:Int = 0
 
     if (kingX == rookX || kingY == rookY) rook = 1
-
     if (abs(kingX-bishopX) == abs(kingY-bishopY)) bh = 1
-
     if (rook == 1){
         if (bh == 1) return 3
         else return 1
     }
     else if (bh == 1) return 2
     else return 0
-
-
 }
 
 /**
@@ -171,7 +159,6 @@ fun rookOrBishopThreatens(
  */
 fun triangleKind(a: Double, b: Double, c: Double): Int {
     if (max(max(a,b),c) >= ((a+b+c) - max(max(a,b),c))) return -1
-
     if (((a+b+c) - max(max(a,b),c) - min(min(a,b),c)) * ((a+b+c) - max(max(a,b),c) - min(min(a,b),c))+min(min(a,b),c)*min(min(a,b),c) == max(max(a,b),c)*max(max(a,b),c)) return 1
     else if (((a+b+c) - max(max(a,b),c) - min(min(a,b),c)) * ((a+b+c) - max(max(a,b),c) - min(min(a,b),c))+min(min(a,b),c)*min(min(a,b),c) < max(max(a,b),c)*max(max(a,b),c)) return 2
     else return 0
