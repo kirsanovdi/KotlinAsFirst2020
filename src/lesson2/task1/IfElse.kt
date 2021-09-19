@@ -4,9 +4,7 @@ package lesson2.task1
 
 import lesson1.task1.discriminant
 import lesson1.task1.numberRevert
-import kotlin.math.abs
-import kotlin.math.max
-import kotlin.math.sqrt
+import kotlin.math.*
 
 // Урок 2: ветвления (здесь), логический тип (см. 2.2).
 // Максимальное количество баллов = 6
@@ -14,7 +12,9 @@ import kotlin.math.sqrt
 // Вместе с предыдущими уроками = 9/12
 fun main() {
     //println("Root product: ${timeForHalfWay(1.0, 5.0, 2.0, 4.0, 3.0, 3.0)}")
+    //println(triangleKind(4.0, 6.0, 8.0))
 }
+
 /**
  * Пример
  *
@@ -90,8 +90,8 @@ fun timeForHalfWay(
     t2: Double, v2: Double,
     t3: Double, v3: Double
 ): Double {
-    var halfWay: Double = (t1 * v1 + t2 * v2 + t3 * v3) / 2.0
-    var firstPiece: Double = t1 * v1
+    val halfWay: Double = (t1 * v1 + t2 * v2 + t3 * v3) / 2.0
+    val firstPiece: Double = t1 * v1
     return when {
         halfWay <= firstPiece -> halfWay / v1
         halfWay <= firstPiece + t2 * v2 -> t1 + (halfWay - firstPiece) / v2
@@ -139,7 +139,15 @@ fun rookOrBishopThreatens(
  * Если такой треугольник не существует, вернуть -1.
  */
 fun triangleKind(a: Double, b: Double, c: Double): Int {
-    //val bigNum: Double = max(a, max(b, c));
+    val maxNum: Double = max(a, max(b, c))
+    val minNum: Double = min(a, min(b, c))
+    val avgNum: Double = a + b + c - maxNum - minNum
+    val angle: Double = acos((avgNum.pow(2.0) + minNum.pow(2.0) - maxNum.pow(2.0)) / (2.0 * avgNum * minNum))
+    return if (maxNum >= minNum + avgNum) -1 else when {
+        angle < PI / 2.0 -> 0
+        abs(angle - PI / 2.0) < 1e-9 -> 1
+        else -> 2
+    }
 }
 
 /**
@@ -150,4 +158,7 @@ fun triangleKind(a: Double, b: Double, c: Double): Int {
  * Найти длину пересечения отрезков AB и CD.
  * Если пересечения нет, вернуть -1.
  */
-fun segmentLength(a: Int, b: Int, c: Int, d: Int): Int = TODO()
+fun segmentLength(a: Int, b: Int, c: Int, d: Int): Int {
+    val deltaLen: Int = abs(a - d) - b + a - c + d
+    return if (deltaLen > 0) deltaLen else -1
+}
