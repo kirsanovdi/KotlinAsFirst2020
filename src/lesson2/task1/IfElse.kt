@@ -191,5 +191,6 @@ fun segmentLength(a: Int, b: Int, c: Int, d: Int): Int {
     if (c<a && b>d) return abs(d-a) //пересечение ad
     else if (a == c && b == d) return abs(b-a)
     if ((a==c && b>d))return abs(d-a)
+    if ((a==c && b<d))return abs(b-a)
     else return 0
 }
