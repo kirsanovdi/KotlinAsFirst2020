@@ -72,7 +72,7 @@ fun digitCountInNumber(n: Int, m: Int): Int =
  *
  * Использовать операции со строками в этой задаче запрещается.
  */
-fun digitNumber(n: Int): Int = if (n != 0) digitNumber(n/ 10) + 1 else 0
+fun digitNumber(n: Int): Int = if (n >= 10) digitNumber(n / 10) + 1 else 1
 
 /**
  * Простая (2 балла)
@@ -80,8 +80,14 @@ fun digitNumber(n: Int): Int = if (n != 0) digitNumber(n/ 10) + 1 else 0
  * Найти число Фибоначчи из ряда 1, 1, 2, 3, 5, 8, 13, 21, ... с номером n.
  * Ряд Фибоначчи определён следующим образом: fib(1) = 1, fib(2) = 1, fib(n+2) = fib(n) + fib(n+1)
  */
-fun fib(n: Int): Int {//not overflow
-    //val n:Int
+fun fib(n: Int): Int {
+    var previousNumber: Int = 1
+    var currentNumber: Int = 1
+    for (i in 3..n) {
+        currentNumber += previousNumber
+        previousNumber = currentNumber - previousNumber
+    }
+    return currentNumber
 }
 
 /**
@@ -89,14 +95,27 @@ fun fib(n: Int): Int {//not overflow
  *
  * Для заданного числа n > 1 найти минимальный делитель, превышающий 1
  */
-fun minDivisor(n: Int): Int = TODO()
+fun minDivisor(n: Int): Int {
+    if (n % 2 == 0) return 2
+    for (i in 3..sqrt(n.toDouble()).toInt() step 2) {
+        if (n % i == 0) return i
+    }
+    return n
+}
 
 /**
  * Простая (2 балла)
  *
  * Для заданного числа n > 1 найти максимальный делитель, меньший n
  */
-fun maxDivisor(n: Int): Int = TODO()
+fun maxDivisor(n: Int): Int {
+    if (n % 2 == 0) return n / 2
+    val sqrtNumber = sqrt(n.toDouble()).toInt()
+    for (i in (sqrtNumber + if (sqrtNumber % 2 == 0) 1 else 0) downTo 3 step 2) {
+        if (n % i == 0) return i
+    }
+    return 1
+}
 
 /**
  * Простая (2 балла)
