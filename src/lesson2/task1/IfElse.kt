@@ -184,11 +184,12 @@ fun triangleKind(a: Double, b: Double, c: Double): Int {
 fun segmentLength(a: Int, b: Int, c: Int, d: Int): Int {
     if (c > b && c > a) return -1 //отрезки друг за другом
     else if (c == b && c > a ) return 0 // пересекаются в точке с, в
-    if (a <c && d< b) return (d-c) //cd вложен
-    else if (c < b && c > a) return (b-c) // отрезок от в до с
+    if (a <c && d< b) return abs(d-c) //cd вложен
+    else if (c < b && c > a) return abs(b-c) // отрезок от в до с
     if (a>c && a>d) return -1 // cd до ав
-    if (c<a && b<d) return (b-a) //пересечение ab
-    if (c<a && b>d) return (d-a) //пересечение ad
-    else if (a == c && b == d) return (b-a)
+    if (c<a && b<d) return abs(b-a) //пересечение ab
+    if (c<a && b>d) return abs(d-a) //пересечение ad
+    else if (a == c && b == d) return abs(b-a)
+    if ((a==c && b>d))return abs(d-a)
     else return 0
 }
