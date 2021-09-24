@@ -8,10 +8,6 @@ import kotlin.math.*
 // Максимальное количество баллов = 9
 // Рекомендуемое количество баллов = 7
 // Вместе с предыдущими уроками = 16/21
-fun main() {
-    println(Double.MAX_VALUE)
-    println(sin(kotlin.math.PI/2, 1e-15))
-}
 
 /**
  * Пример
@@ -288,7 +284,20 @@ fun cos(x: Double, eps: Double): Double {
  *
  * Использовать операции со строками в этой задаче запрещается.
  */
-fun squareSequenceDigit(n: Int): Int = TODO()
+fun squareSequenceDigit(n: Int): Int {
+    var rowN: Int = 0
+    var numberIteration: Int = 1
+    var currentN: Int = 1
+    while (true) {
+        rowN = revert(currentN * currentN * 10 + 1)
+        while (rowN >= 10) {
+            if (numberIteration == n) return rowN % 10
+            rowN /= 10
+            numberIteration++
+        }
+        currentN++
+    }
+}
 
 /**
  * Сложная (5 баллов)
@@ -299,4 +308,17 @@ fun squareSequenceDigit(n: Int): Int = TODO()
  *
  * Использовать операции со строками в этой задаче запрещается.
  */
-fun fibSequenceDigit(n: Int): Int = TODO()
+fun fibSequenceDigit(n: Int): Int {
+    var rowN: Int = 0
+    var numberIteration: Int = 1
+    var currentN: Int = 1
+    while (true) {
+        rowN = revert(fib(currentN) * 10 + 1)
+        while (rowN >= 10) {
+            if (numberIteration == n) return rowN % 10
+            rowN /= 10
+            numberIteration++
+        }
+        currentN++
+    }
+}
