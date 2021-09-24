@@ -2,12 +2,16 @@
 
 package lesson3.task1
 
-import kotlin.math.sqrt
+import kotlin.math.*
 
 // Урок 3: циклы
 // Максимальное количество баллов = 9
 // Рекомендуемое количество баллов = 7
 // Вместе с предыдущими уроками = 16/21
+fun main() {
+    println(Double.MAX_VALUE)
+    println(sin(kotlin.math.PI/2, 1e-15))
+}
 
 /**
  * Пример
@@ -110,9 +114,8 @@ fun minDivisor(n: Int): Int {
  */
 fun maxDivisor(n: Int): Int {
     if (n % 2 == 0) return n / 2
-    val sqrtNumber = sqrt(n.toDouble()).toInt()
-    for (i in (sqrtNumber + if (sqrtNumber % 2 == 0) 1 else 0) downTo 3 step 2) {
-        if (n % i == 0) return i
+    for (i in 3..sqrt(n.toDouble()).toInt() step 2) {
+        if (n % i == 0) return n / i
     }
     return 1
 }
@@ -133,7 +136,27 @@ fun maxDivisor(n: Int): Int {
  * Написать функцию, которая находит, сколько шагов требуется для
  * этого для какого-либо начального X > 0.
  */
-fun collatzSteps(x: Int): Int = TODO()
+fun collatzSteps(x: Int): Int {
+    var nextX: Int = x
+    var answer: Int = 0
+    while (nextX != 1) {
+        nextX = if (nextX % 2 == 0) nextX / 2 else nextX * 3 + 1
+        answer++
+    }
+    return answer
+}
+
+fun gcd(m: Int, n: Int): Int {
+    var maxNumber: Int = max(m, n)
+    var minNumber: Int = min(m, n)
+    var tempNumber: Int = 0
+    while (maxNumber % minNumber != 0) {
+        tempNumber = minNumber
+        minNumber = maxNumber % minNumber
+        maxNumber = tempNumber
+    }
+    return minNumber
+}
 
 /**
  * Средняя (3 балла)
@@ -141,7 +164,7 @@ fun collatzSteps(x: Int): Int = TODO()
  * Для заданных чисел m и n найти наименьшее общее кратное, то есть,
  * минимальное число k, которое делится и на m и на n без остатка
  */
-fun lcm(m: Int, n: Int): Int = TODO()
+fun lcm(m: Int, n: Int): Int = m * n / gcd(m, n)
 
 /**
  * Средняя (3 балла)
@@ -150,7 +173,7 @@ fun lcm(m: Int, n: Int): Int = TODO()
  * Взаимно простые числа не имеют общих делителей, кроме 1.
  * Например, 25 и 49 взаимно простые, а 6 и 8 -- нет.
  */
-fun isCoPrime(m: Int, n: Int): Boolean = TODO()
+fun isCoPrime(m: Int, n: Int): Boolean = gcd(m, n) == 1
 
 /**
  * Средняя (3 балла)
@@ -159,7 +182,16 @@ fun isCoPrime(m: Int, n: Int): Boolean = TODO()
  *
  * Использовать операции со строками в этой задаче запрещается.
  */
-fun revert(n: Int): Int = TODO()
+fun revert(n: Int): Int {
+    var straightNumber: Int = n
+    var reverseNumber: Int = 0
+    while (straightNumber != 0) {
+        reverseNumber *= 10
+        reverseNumber += straightNumber % 10
+        straightNumber /= 10
+    }
+    return reverseNumber
+}
 
 /**
  * Средняя (3 балла)
@@ -170,7 +202,16 @@ fun revert(n: Int): Int = TODO()
  *
  * Использовать операции со строками в этой задаче запрещается.
  */
-fun isPalindrome(n: Int): Boolean = TODO()
+fun isPalindrome(n: Int): Boolean {
+    var straightNumber: Int = n
+    var reverseNumber: Int = 0
+    while (straightNumber != 0) {
+        reverseNumber *= 10
+        reverseNumber += straightNumber % 10
+        straightNumber /= 10
+    }
+    return reverseNumber == n
+}
 
 /**
  * Средняя (3 балла)
@@ -180,7 +221,19 @@ fun isPalindrome(n: Int): Boolean = TODO()
  *
  * Использовать операции со строками в этой задаче запрещается.
  */
-fun hasDifferentDigits(n: Int): Boolean = TODO()
+fun hasDifferentDigits(n: Int): Boolean {
+    val lastDigit: Int = n % 10
+    var answer: Boolean = false
+    var number: Int = n
+    while (number != 0) {
+        if (number % 10 != lastDigit) {
+            answer = true
+            break
+        }
+        number /= 10
+    }
+    return answer
+}
 
 /**
  * Средняя (4 балла)
@@ -191,7 +244,18 @@ fun hasDifferentDigits(n: Int): Boolean = TODO()
  * Подумайте, как добиться более быстрой сходимости ряда при больших значениях x.
  * Использовать kotlin.math.sin и другие стандартные реализации функции синуса в этой задаче запрещается.
  */
-fun sin(x: Double, eps: Double): Double = TODO()
+fun sin(x: Double, eps: Double): Double {
+    val angle: Double = x % (2 * PI)
+    val squareX: Double = angle * angle
+    var delta: Double = angle
+    var answer: Double = 0.0
+    var iterationNumber: Double = 2.0
+    while (abs(delta) > eps) {
+        answer += delta
+        delta *= -squareX / (iterationNumber++ * iterationNumber++)
+    }
+    return answer
+}
 
 /**
  * Средняя (4 балла)
@@ -202,7 +266,18 @@ fun sin(x: Double, eps: Double): Double = TODO()
  * Подумайте, как добиться более быстрой сходимости ряда при больших значениях x.
  * Использовать kotlin.math.cos и другие стандартные реализации функции косинуса в этой задаче запрещается.
  */
-fun cos(x: Double, eps: Double): Double = TODO()
+fun cos(x: Double, eps: Double): Double {
+    val angle: Double = x % (2 * PI)
+    val squareX: Double = angle * angle
+    var delta: Double = 1.0
+    var answer: Double = 0.0
+    var iterationNumber: Double = 1.0
+    while (abs(delta) > eps) {
+        answer += delta
+        delta *= -squareX / (iterationNumber++ * iterationNumber++)
+    }
+    return answer
+}
 
 /**
  * Сложная (4 балла)
