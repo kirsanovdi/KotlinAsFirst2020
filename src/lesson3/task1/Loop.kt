@@ -81,8 +81,8 @@ fun digitNumber(n: Int): Int = if (n >= 10) digitNumber(n / 10) + 1 else 1
  * Ряд Фибоначчи определён следующим образом: fib(1) = 1, fib(2) = 1, fib(n+2) = fib(n) + fib(n+1)
  */
 fun fib(n: Int): Int {
-    var previousNumber: Int = 1
-    var currentNumber: Int = 1
+    var previousNumber = 1
+    var currentNumber = 1
     for (i in 3..n) {
         currentNumber += previousNumber
         previousNumber = currentNumber - previousNumber
@@ -134,7 +134,7 @@ fun maxDivisor(n: Int): Int {
  */
 fun collatzSteps(x: Int): Int {
     var nextX: Int = x
-    var answer: Int = 0
+    var answer = 0
     while (nextX != 1) {
         nextX = if (nextX % 2 == 0) nextX / 2 else nextX * 3 + 1
         answer++
@@ -145,7 +145,7 @@ fun collatzSteps(x: Int): Int {
 fun gcd(m: Int, n: Int): Int {
     var maxNumber: Int = max(m, n)
     var minNumber: Int = min(m, n)
-    var tempNumber: Int = 0
+    var tempNumber: Int
     while (maxNumber % minNumber != 0) {
         tempNumber = minNumber
         minNumber = maxNumber % minNumber
@@ -180,7 +180,7 @@ fun isCoPrime(m: Int, n: Int): Boolean = gcd(m, n) == 1
  */
 fun revert(n: Int): Int {
     var straightNumber: Int = n
-    var reverseNumber: Int = 0
+    var reverseNumber = 0
     while (straightNumber != 0) {
         reverseNumber *= 10
         reverseNumber += straightNumber % 10
@@ -200,7 +200,7 @@ fun revert(n: Int): Int {
  */
 fun isPalindrome(n: Int): Boolean {
     var straightNumber: Int = n
-    var reverseNumber: Int = 0
+    var reverseNumber = 0
     while (straightNumber != 0) {
         reverseNumber *= 10
         reverseNumber += straightNumber % 10
@@ -219,7 +219,7 @@ fun isPalindrome(n: Int): Boolean {
  */
 fun hasDifferentDigits(n: Int): Boolean {
     val lastDigit: Int = n % 10
-    var answer: Boolean = false
+    var answer = false
     var number: Int = n
     while (number != 0) {
         if (number % 10 != lastDigit) {
@@ -244,8 +244,8 @@ fun sin(x: Double, eps: Double): Double {
     val angle: Double = x % (2 * PI)
     val squareX: Double = angle * angle
     var delta: Double = angle
-    var answer: Double = 0.0
-    var iterationNumber: Double = 2.0
+    var answer = 0.0
+    var iterationNumber = 2.0
     while (abs(delta) > eps) {
         answer += delta
         delta *= -squareX / (iterationNumber++ * iterationNumber++)
@@ -265,9 +265,9 @@ fun sin(x: Double, eps: Double): Double {
 fun cos(x: Double, eps: Double): Double {
     val angle: Double = x % (2 * PI)
     val squareX: Double = angle * angle
-    var delta: Double = 1.0
-    var answer: Double = 0.0
-    var iterationNumber: Double = 1.0
+    var delta = 1.0
+    var answer = 0.0
+    var iterationNumber = 1.0
     while (abs(delta) > eps) {
         answer += delta
         delta *= -squareX / (iterationNumber++ * iterationNumber++)
@@ -285,9 +285,9 @@ fun cos(x: Double, eps: Double): Double {
  * Использовать операции со строками в этой задаче запрещается.
  */
 fun squareSequenceDigit(n: Int): Int {
-    var rowN: Int = 0
-    var numberIteration: Int = 1
-    var currentN: Int = 1
+    var rowN: Int
+    var numberIteration = 1
+    var currentN = 1
     while (true) {
         rowN = revert(currentN * currentN * 10 + 1)
         while (rowN >= 10) {
@@ -309,16 +309,18 @@ fun squareSequenceDigit(n: Int): Int {
  * Использовать операции со строками в этой задаче запрещается.
  */
 fun fibSequenceDigit(n: Int): Int {
-    var rowN: Int = 0
-    var numberIteration: Int = 1
-    var currentN: Int = 1
+    var rowN: Int
+    var numberIteration = 1
+    var previousNumber = 0
+    var currentNumber = 1
     while (true) {
-        rowN = revert(fib(currentN) * 10 + 1)
+        rowN = revert(currentNumber * 10 + 1)
         while (rowN >= 10) {
             if (numberIteration == n) return rowN % 10
             rowN /= 10
             numberIteration++
         }
-        currentN++
+        currentNumber += previousNumber
+        previousNumber = currentNumber - previousNumber
     }
 }
