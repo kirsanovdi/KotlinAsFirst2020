@@ -90,7 +90,7 @@ fun angleInRadian(deg: Int, min: Int, sec: Int): Double = deg * (PI/180) + min *
  * Найти длину отрезка, соединяющего точки на плоскости с координатами (x1, y1) и (x2, y2).
  * Например, расстояние между (3, 0) и (0, 4) равно 5
  */
-fun trackLength(x1: Double, y1: Double, x2: Double, y2: Double) = sqrt(abs(x1-x2) * abs(x1-x2) + abs(y1-y2) * abs(y1-y2))
+fun trackLength(x1: Double, y1: Double, x2: Double, y2: Double) = sqrt(sqr(x1-x2) + sqr(y1-y2) )
 
 /**
  * Простая (2 балла)
@@ -116,11 +116,10 @@ fun travelMinutes(hoursDepart: Int, minutesDepart: Int, hoursArrive: Int, minute
  * Например, 100 рублей под 10% годовых превратятся в 133.1 рубля
  */
 fun accountInThreeYears(initial: Int, percent: Int): Double {
-    var sum : Double = 0.0
-    sum += initial
-    for ( n in 1..3)
-    {
-        sum +=(sum * percent/ 100)
+    var sum = 0.0
+        // sum += initial // сразу присвоить значение переменной не получится, разные типы данных
+    for ( n in 1..3) {
+        sum +=sum * percent / 100
     }
 
     return sum
