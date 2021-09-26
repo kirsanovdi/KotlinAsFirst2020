@@ -40,6 +40,12 @@ fun queenThreatens(x1: Int, y1: Int, x2: Int, y2: Int): Boolean {
     else if (abs(x2 - x1) == abs(y2 - y1)) return true
     else return false
 
+    /*
+    return x1 == x2 || y2 == y1
+    return abs(x2 - x1) == abs(y2 - y1)
+    return false
+    ?
+     */
 }
 
 
