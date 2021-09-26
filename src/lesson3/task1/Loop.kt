@@ -264,28 +264,30 @@ fun chlen(x: Double, n: Int): Double {
     print("||  ${StDouble(x, n)}  ||      ")
     print("|| ${factorial(n)}  ||     ")
     print("||  ${StDouble(x, n) / factorial(n)}  ||     ")
-  //  println(" ")
+    //  println(" ")
     return (StDouble(x, n) / factorial(n))
 }
 
 fun sin(x: Double, eps: Double): Double {
     var result: Double = x
-
+    if (x > 20 * PI) return 0.0 //после этого числа не хватает типа дабл для того, чтобы последний член в формуле стало меньше eps
     var tp: Int = 3
 
     var minus: Double = -1.0
-    var chl: Double = 0.0
+    var cl: Double = 0.0
 
     do {
-        result += minus * chlen(x, tp)
+        cl = chlen(x, tp)
+        result += minus * cl
         minus *= -1.0
         tp += 2
-    } while (abs(chlen(x, tp)) >= eps)
+    } while (abs(cl) >= eps)
+
     return result
 }
 
-fun main() {
-    var x: Double =100 * PI
+/*fun main() {
+    var x: Double = 21 * PI
     var eps: Double = 1e-5
     var result: Double = x
 
@@ -294,17 +296,19 @@ fun main() {
     var minus: Double = -1.0
     var chl: Double = 0.0
 
-    var cl:Double
+    var cl: Double
     do {
         cl = chlen(x, tp)
         result += minus * cl
 
-        println("$eps           $result   $tp")
+        println(" ||||||||$eps           $result   $tp")
         minus *= -1.0
         tp += 2
     } while (abs(cl) >= eps)
-    println("$eps       ")
-}
+    println("$eps       $result")
+    println(result)
+    if (result < 0.0 || result > 1.0) println("tent")
+}*/
 
 /**
  * Средняя (4 балла)
@@ -315,7 +319,24 @@ fun main() {
  * Подумайте, как добиться более быстрой сходимости ряда при больших значениях x.
  * Использовать kotlin.math.cos и другие стандартные реализации функции косинуса в этой задаче запрещается.
  */
-fun cos(x: Double, eps: Double): Double = TODO()
+
+fun cos(x: Double, eps: Double): Double {
+    var result: Double = 1.0
+    if (x > 20 * PI) return 1.0 //после этого числа не хватает типа дабл для того, чтобы последний член в формуле стало меньше eps
+    var tp: Int = 2
+
+    var minus: Double = -1.0
+    var cl: Double = 0.0
+
+    do {
+        cl = chlen(x, tp)
+        result += minus * cl
+        minus *= -1.0
+        tp += 2
+    } while (abs(cl) >= eps)
+
+    return result
+}
 
 /**
  * Сложная (4 балла)
@@ -326,7 +347,88 @@ fun cos(x: Double, eps: Double): Double = TODO()
  *
  * Использовать операции со строками в этой задаче запрещается.
  */
-fun squareSequenceDigit(n: Int): Int = TODO()
+
+fun quantityCounter(n: Int): Int {
+    var temp: Int = n
+    var counter: Int = 0
+    do {
+        temp /= 10
+        counter++
+    } while (temp > 0)
+    return counter
+}
+
+fun squareSequenceDigit(n: Int): Int {
+    var counter: Int = 0
+
+    var k: Int = 1
+    var last: Int = 0
+    var reserv: Int = 0
+
+    do {
+        counter += quantityCounter(step(k, 2))
+        last = step(k, 2)
+        k++
+    } while (counter < n)
+    if (n<2)return last
+    if(counter == n)return last%10
+    if (counter - n <= quantityCounter(last)) {
+        reserv = counter - n
+
+
+        for (i in 1..reserv) {
+
+            last /= 10
+        }
+
+        return last%10
+    }
+    else return 0
+
+}
+
+/*fun main(){
+    var n :Int = 17
+    var counter: Int = 0
+    var Value: Int = 0
+    var k: Int = 1
+    var last: Int = 0
+    var reserv: Int = 0
+
+    do {
+        counter += quantityCounter(step(k, 2))
+        last = step(k, 2)
+        k++
+    } while (counter < n)
+    println("$counter      $n     $last")
+    if (n<2) {
+        println(last)
+        println("----------------------")
+    }
+    else if(counter == n) {
+        println(last%10)
+        println("----------------------")
+    }
+   else if (counter - n <= quantityCounter(last)) {
+        reserv = counter - n
+        //last = revert(last)
+        var LastNumber: Int = 0
+        for (i in 1..reserv) {
+            LastNumber = last % 10
+            print("___$LastNumber ___")
+            last /= 10
+            print("---$last ---     ")
+        }
+        //println(LastNumber)
+        println(last%10)
+        println("----------------------")
+    }
+
+
+
+}
+*/
+
 
 /**
  * Сложная (5 баллов)
@@ -337,4 +439,30 @@ fun squareSequenceDigit(n: Int): Int = TODO()
  *
  * Использовать операции со строками в этой задаче запрещается.
  */
-fun fibSequenceDigit(n: Int): Int = TODO()
+fun fibSequenceDigit(n: Int): Int {
+    var counter: Int = 0
+
+    var k: Int = 1
+    var last: Int = 0
+    var reserv: Int = 0
+
+    do {
+        counter += quantityCounter(fib(k))
+        last = fib(k)
+        k++
+    } while (counter < n)
+    if (n<2)return last
+    if(counter == n)return last%10
+    if (counter - n <= quantityCounter(last)) {
+        reserv = counter - n
+
+
+        for (i in 1..reserv) {
+
+            last /= 10
+        }
+
+        return last%10
+    }
+    else return 0
+}
