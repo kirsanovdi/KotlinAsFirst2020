@@ -117,7 +117,7 @@ fun travelMinutes(hoursDepart: Int, minutesDepart: Int, hoursArrive: Int, minute
  */
 fun accountInThreeYears(initial: Int, percent: Int): Double {
     var sum = 0.0
-        // sum += initial // сразу присвоить значение переменной не получится, разные типы данных
+         sum += initial // сразу присвоить значение переменной не получится, разные типы данных
     for ( n in 1..3) {
         sum +=sum * percent / 100
     }
