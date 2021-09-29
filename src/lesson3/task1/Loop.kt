@@ -151,7 +151,7 @@ fun collatzSteps(x: Int): Int {
  * минимальное число k, которое делится и на m и на n без остатка
  */
 fun lcm(m: Int, n: Int): Int {
-    for (i in min(m, n)..max(n, m) * min(m, n)) {
+    for (i in min(m, n)..m * n) {
         if (i % m == 0 && i % n == 0) return i
     }
     return 0
@@ -286,29 +286,6 @@ fun sin(x: Double, eps: Double): Double {
     return result
 }
 
-/*fun main() {
-    var x: Double = 21 * PI
-    var eps: Double = 1e-5
-    var result: Double = x
-
-    var tp: Int = 3
-
-    var minus: Double = -1.0
-    var chl: Double = 0.0
-
-    var cl: Double
-    do {
-        cl = chlen(x, tp)
-        result += minus * cl
-
-        println(" ||||||||$eps           $result   $tp")
-        minus *= -1.0
-        tp += 2
-    } while (abs(cl) >= eps)
-    println("$eps       $result")
-    println(result)
-    if (result < 0.0 || result > 1.0) println("tent")
-}*/
 
 /**
  * Средняя (4 балла)
@@ -366,8 +343,9 @@ fun squareSequenceDigit(n: Int): Int {
     var reserv: Int = 0
 
     do {
-        counter += quantityCounter(step(k, 2))
         last = step(k, 2)
+        counter += quantityCounter(last)
+
         k++
     } while (counter < n)
     if (n<2)return last
@@ -387,47 +365,6 @@ fun squareSequenceDigit(n: Int): Int {
 
 }
 
-/*fun main(){
-    var n :Int = 17
-    var counter: Int = 0
-    var Value: Int = 0
-    var k: Int = 1
-    var last: Int = 0
-    var reserv: Int = 0
-
-    do {
-        counter += quantityCounter(step(k, 2))
-        last = step(k, 2)
-        k++
-    } while (counter < n)
-    println("$counter      $n     $last")
-    if (n<2) {
-        println(last)
-        println("----------------------")
-    }
-    else if(counter == n) {
-        println(last%10)
-        println("----------------------")
-    }
-   else if (counter - n <= quantityCounter(last)) {
-        reserv = counter - n
-        //last = revert(last)
-        var LastNumber: Int = 0
-        for (i in 1..reserv) {
-            LastNumber = last % 10
-            print("___$LastNumber ___")
-            last /= 10
-            print("---$last ---     ")
-        }
-        //println(LastNumber)
-        println(last%10)
-        println("----------------------")
-    }
-
-
-
-}
-*/
 
 
 /**
@@ -447,8 +384,9 @@ fun fibSequenceDigit(n: Int): Int {
     var reserv: Int = 0
 
     do {
-        counter += quantityCounter(fib(k))
         last = fib(k)
+        counter += quantityCounter(last)
+
         k++
     } while (counter < n)
     if (n<2)return last
