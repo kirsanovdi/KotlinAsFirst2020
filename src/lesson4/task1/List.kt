@@ -127,7 +127,7 @@ fun abs(v: List<Double>): Double = sqrt(v.sumOf { it * it })
  *
  * Рассчитать среднее арифметическое элементов списка list. Вернуть 0.0, если список пуст
  */
-fun mean(list: List<Double>): Double = 0.0//if (list.isNotEmpty()) list.average() else 0.0
+fun mean(list: List<Double>): Double = if (list.isNotEmpty()) list.average() else 0.0
 
 /**
  * Средняя (3 балла)
@@ -151,7 +151,9 @@ fun center(list: MutableList<Double>): MutableList<Double> {
  * представленные в виде списков a и b. Скалярное произведение считать по формуле:
  * C = a1b1 + a2b2 + ... + aNbN. Произведение пустых векторов считать равным 0.
  */
-fun times(a: List<Int>, b: List<Int>): Int = TODO()
+
+fun times(a: List<Int>, b: List<Int>): Int = if (a.isEmpty()) 0 else
+    a.indices.fold(0) { prevNumber, currNumber -> prevNumber + a[currNumber] * b[currNumber] }
 
 /**
  * Средняя (3 балла)
@@ -161,7 +163,8 @@ fun times(a: List<Int>, b: List<Int>): Int = TODO()
  * Коэффициенты многочлена заданы списком p: (p0, p1, p2, p3, ..., pN).
  * Значение пустого многочлена равно 0 при любом x.
  */
-fun polynom(p: List<Int>, x: Int): Int = TODO()
+fun polynom(p: List<Int>, x: Int): Int = if (p.isEmpty()) 0 else
+    (p.size - 1 downTo 0).fold(0) { prevNumber, currNumber -> prevNumber * x + p[currNumber] }
 
 /**
  * Средняя (3 балла)
@@ -173,7 +176,15 @@ fun polynom(p: List<Int>, x: Int): Int = TODO()
  *
  * Обратите внимание, что данная функция должна изменять содержание списка list, а не его копии.
  */
-fun accumulate(list: MutableList<Int>): MutableList<Int> = TODO()
+fun accumulate(list: MutableList<Int>): MutableList<Int> {
+    if (list.size == 0) return list
+    var delta = 0
+    for (i in list.indices) {
+        list[i] += delta
+        delta += list[i] - delta
+    }
+    return list
+}
 
 /**
  * Средняя (3 балла)
