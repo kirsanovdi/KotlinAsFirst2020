@@ -17,7 +17,7 @@ import kotlin.math.*
 fun factorial(n: Int): Double {
     var result = 1.0
     for (i in 1..n) {
-        result = result * i // Please do not fix in master
+        result *= i // Please do not fix in master
     }
     return result
 }
@@ -73,8 +73,8 @@ fun digitCountInNumber(n: Int, m: Int): Int =
  * Использовать операции со строками в этой задаче запрещается.
  */
 fun digitNumber(n: Int): Int {
-    var sum: Int = 0
-    var temp: Int = n
+    var sum = 0
+    var temp = n
     do {
         temp /= 10
         sum++
@@ -99,7 +99,7 @@ fun fib(n: Int): Int {
  * Для заданного числа n > 1 найти минимальный делитель, превышающий 1
  */
 fun minDivisor(n: Int): Int {
-    for (i in 2..n) {
+    for (i in 2..n / 2) {
         if (n % i == 0) return i
     }
     return n
@@ -134,8 +134,8 @@ fun maxDivisor(n: Int): Int {
  * этого для какого-либо начального X > 0.
  */
 fun collatzSteps(x: Int): Int {
-    var n: Int = x
-    var sum: Int = 0
+    var n = x
+    var sum = 0
     while (n != 1) {
         if (n % 2 == 0) n /= 2
         else n = n * 3 + 1
@@ -233,7 +233,7 @@ fun isPalindrome(n: Int): Boolean {
 fun hasDifferentDigits(n: Int): Boolean {
     if (n < 10) return false
     var temp: Int = n
-    var r: Int = 0
+    var r = 0
     r = temp % 10
     temp /= 10
     while (temp > 0) {
@@ -274,7 +274,7 @@ fun sin(x: Double, eps: Double): Double {
     var tp: Int = 3
 
     var minus: Double = -1.0
-    var cl: Double = 0.0
+    var cl = 0.0
 
     do {
         cl = chlen(x, tp)
@@ -339,8 +339,8 @@ fun squareSequenceDigit(n: Int): Int {
     var counter: Int = 0
 
     var k: Int = 1
-    var last: Int = 0
-    var reserv: Int = 0
+    var last = 0
+    var reserv = 0
 
     do {
         last = step(k, 2)
@@ -348,8 +348,8 @@ fun squareSequenceDigit(n: Int): Int {
 
         k++
     } while (counter < n)
-    if (n<2)return last
-    if(counter == n)return last%10
+    if (n < 2) return last
+    if (counter == n) return last % 10
     if (counter - n <= quantityCounter(last)) {
         reserv = counter - n
 
@@ -359,12 +359,10 @@ fun squareSequenceDigit(n: Int): Int {
             last /= 10
         }
 
-        return last%10
-    }
-    else return 0
+        return last % 10
+    } else return 0
 
 }
-
 
 
 /**
@@ -377,11 +375,37 @@ fun squareSequenceDigit(n: Int): Int {
  * Использовать операции со строками в этой задаче запрещается.
  */
 fun fibSequenceDigit(n: Int): Int {
+
+    var counter = 1
+    var f1 = 0
+    var f2 = 1
+    var x: Int
+    if (n == 1 || n == 2) return 1
+    for (i in 2..n) {
+        x = f1 + f2
+        f1 = f2
+        f2 = x
+
+        while (x > 0) {
+            x /= 10
+            counter++
+        }
+        if (counter >= n) break
+
+
+    }
+    var last: Int = f2
+    for (i in n..counter) {
+        last = f2 % 10
+        f2 /= 10
+    }
+    return last
+/*
     var counter: Int = 0
 
     var k: Int = 1
-    var last: Int = 0
-    var reserv: Int = 0
+    var last = 0
+    var reserv = 0
 
     do {
         last = fib(k)
@@ -389,8 +413,8 @@ fun fibSequenceDigit(n: Int): Int {
 
         k++
     } while (counter < n)
-    if (n<2)return last
-    if(counter == n)return last%10
+    if (n < 2) return last
+    if (counter == n) return last % 10
     if (counter - n <= quantityCounter(last)) {
         reserv = counter - n
 
@@ -400,7 +424,44 @@ fun fibSequenceDigit(n: Int): Int {
             last /= 10
         }
 
-        return last%10
+        return last % 10
+    } else return 0
+
+*/
+}
+
+fun main() {
+    var n = 4
+    var counter = 1
+    var f1 = 0
+    var f2 = 1
+    var x = 0
+    if (n == 1 || n == 2) {
+        println(1)
     }
-    else return 0
+    for (i in 1..n) {
+
+        x = f1 + f2
+        f1 = f2
+        f2 = x
+        print("$f1   $f2  $x")
+        //   print("  $f1    $f2  ")
+        while (x > 0) {
+            x /= 10
+            counter++
+            println("   $counter")
+        }
+        if (counter >= n) break
+
+
+    }
+    var last: Int = f2
+    for (i in n..counter) {
+        last = f2 % 10
+        println("$last")
+        f2 /= 10
+    }
+    println("$last")
+
+
 }
