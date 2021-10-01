@@ -36,16 +36,7 @@ fun isNumberHappy(number: Int): Boolean {
  */
 fun queenThreatens(x1: Int, y1: Int, x2: Int, y2: Int): Boolean {
 
-    if (x1 == x2 || y2 == y1) return true
-    else if (abs(x2 - x1) == abs(y2 - y1)) return true
-    else return false
-
-    /*
-    return x1 == x2 || y2 == y1
-    return abs(x2 - x1) == abs(y2 - y1)
-    return false
-    ?
-     */
+    return (x1 == x2 || y2 == y1) || (abs(x2 - x1) == abs(y2 - y1))
 }
 
 
@@ -56,23 +47,27 @@ fun queenThreatens(x1: Int, y1: Int, x2: Int, y2: Int): Boolean {
  * Вернуть число дней в этом месяце этого года по григорианскому календарю.
  */
 fun daysInMonth(month: Int, year: Int): Int {
-    if (month == 2){
-        if (year % 4 == 0){
-            if (year% 100 == 0){
+    /*
+    if (month == 2) {
+        if (year % 4 == 0) {
+            if (year % 100 == 0) {
                 if (year % 400 == 0) return 29
                 else return 28
-            }
-            else return 29
-        }
-        else return 28
-    }
-     else return when (month) {
+            } else return 29
+        } else return 28
+    } else return when (month) {
         1, 3, 5, 7, 8, 10, 12 -> 31
         4, 6, 9, 11 -> 30
-            else -> 0
+        else -> 0
     }
-
-
+*/
+    if (month == 2 && year % 4 == 0 && ((year % 100 == 0 && year % 400 == 0) || year % 100 != 0)) return 29
+    else if (month == 2) return 28
+    else return when (month) {
+        1, 3, 5, 7, 8, 10, 12 -> 31
+        4, 6, 9, 11 -> 30
+        else -> 0
+    }
 }
 
 /**
