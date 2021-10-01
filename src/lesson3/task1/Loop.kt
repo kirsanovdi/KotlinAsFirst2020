@@ -90,7 +90,16 @@ fun digitNumber(n: Int): Int {
  */
 fun fib(n: Int): Int {
     if (n == 1 || n == 2) return 1
-    else return fib(n - 1) + fib(n - 2)
+    // else return fib(n - 1) + fib(n - 2)
+    var f1 = 0
+    var f2 = 1
+    var f = f1 + f2
+    for (i in 2..n) {
+        f = f1 + f2
+        f1 = f2
+        f2 = f
+    }
+    return f2
 }
 
 /**
@@ -350,7 +359,7 @@ fun squareSequenceDigit(n: Int): Int {
     } while (counter < n)
     if (n < 2) return last
     if (counter == n) return last % 10
-    if (counter - n <= quantityCounter(last)) {
+    return if (counter - n <= quantityCounter(last)) {
         reserv = counter - n
 
 
@@ -359,8 +368,8 @@ fun squareSequenceDigit(n: Int): Int {
             last /= 10
         }
 
-        return last % 10
-    } else return 0
+        last % 10
+    } else 0
 
 }
 
@@ -400,68 +409,5 @@ fun fibSequenceDigit(n: Int): Int {
         f2 /= 10
     }
     return last
-/*
-    var counter: Int = 0
-
-    var k: Int = 1
-    var last = 0
-    var reserv = 0
-
-    do {
-        last = fib(k)
-        counter += quantityCounter(last)
-
-        k++
-    } while (counter < n)
-    if (n < 2) return last
-    if (counter == n) return last % 10
-    if (counter - n <= quantityCounter(last)) {
-        reserv = counter - n
-
-
-        for (i in 1..reserv) {
-
-            last /= 10
-        }
-
-        return last % 10
-    } else return 0
-
-*/
-}
-
-fun main() {
-    var n = 4
-    var counter = 1
-    var f1 = 0
-    var f2 = 1
-    var x = 0
-    if (n == 1 || n == 2) {
-        println(1)
-    }
-    for (i in 1..n) {
-
-        x = f1 + f2
-        f1 = f2
-        f2 = x
-        print("$f1   $f2  $x")
-        //   print("  $f1    $f2  ")
-        while (x > 0) {
-            x /= 10
-            counter++
-            println("   $counter")
-        }
-        if (counter >= n) break
-
-
-    }
-    var last: Int = f2
-    for (i in n..counter) {
-        last = f2 % 10
-        println("$last")
-        f2 /= 10
-    }
-    println("$last")
-
 
 }
