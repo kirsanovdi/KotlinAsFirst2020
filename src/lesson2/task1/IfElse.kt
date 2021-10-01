@@ -7,6 +7,7 @@ import kotlin.math.max
 import kotlin.math.sqrt
 import kotlin.math.min
 import kotlin.math.abs
+
 /**
  * Пример
  *
@@ -66,8 +67,8 @@ fun minBiRoot(a: Double, b: Double, c: Double): Double {
  */
 fun ageDescription(age: Int): String {
 
-    if (age % 100 >= 10 && age % 100 <= 20) return ("$age лет")
-    return when (age % 10 ) {
+    if (age % 100 >= 10 && age % 100 <= 20) return "$age лет"
+    return when (age % 10) {
         1 -> "$age год"
         2, 3, 4 -> "$age года"
         5, 6, 7, 8, 9, 0 -> "$age лет"
@@ -87,17 +88,16 @@ fun timeForHalfWay(
     t2: Double, v2: Double,
     t3: Double, v3: Double
 ): Double {
-    var time = t1+t2+t3
+    // var time = t1+t2+t3
     var s = t1 * v1 + t2 * v2 + t3 * v3
 
-    var s2:Double = (v1*t1 + v2*t2 + v3*t3)/2
-    if (t1*v1 < s2){
-        if ((t1*v1+t2*v2) < s2){
-            return t1+t2+(s2-(v1*t1 + v2*t2))/v3
-        }
-        else return t1+(s2-v1*t1)/v2
-    }
-    else return s2/v1
+    var s2 = (v1 * t1 + v2 * t2 + v3 * t3) / 2
+
+    if (t1 * v1 < s2) {
+        if ((t1 * v1 + t2 * v2) < s2) {
+            return t1 + t2 + (s2 - (v1 * t1 + v2 * t2)) / v3
+        } else return t1 + (s2 - v1 * t1) / v2
+    } else return s2 / v1
 }
 
 /**
@@ -114,12 +114,15 @@ fun whichRookThreatens(
     rookX1: Int, rookY1: Int,
     rookX2: Int, rookY2: Int
 ): Int {
+    return when {
+        (kingX == rookX1 || kingY == rookY1) && (kingX == rookX2 || kingY == rookY2) -> 3
+        kingX == rookX1 || kingY == rookY1 -> 1
+        kingX == rookX2 || kingY == rookY2 -> 2
+        else -> 0
+    }
 
-    if ((kingX == rookX1 || kingY == rookY1)&&(kingX == rookX2 || kingY == rookY2)) return 3
-    else if (kingX == rookX1 || kingY == rookY1) return 1
-    else if (kingX == rookX2 || kingY == rookY2) return 2
-    else return 0
 }
+
 /**
  * Простая (2 балла)
  *
@@ -135,16 +138,15 @@ fun rookOrBishopThreatens(
     rookX: Int, rookY: Int,
     bishopX: Int, bishopY: Int
 ): Int {
-    var rook:Int = 0
-    var bh:Int = 0
+    var rook: Int = 0
+    var bh: Int = 0
 
     if (kingX == rookX || kingY == rookY) rook = 1
-    if (abs(kingX-bishopX) == abs(kingY-bishopY)) bh = 1
-    if (rook == 1){
+    if (abs(kingX - bishopX) == abs(kingY - bishopY)) bh = 1
+    if (rook == 1) {
         if (bh == 1) return 3
         else return 1
-    }
-    else if (bh == 1) return 2
+    } else if (bh == 1) return 2
     else return 0
 }
 
@@ -157,9 +159,14 @@ fun rookOrBishopThreatens(
  * Если такой треугольник не существует, вернуть -1.
  */
 fun triangleKind(a: Double, b: Double, c: Double): Int {
-    if (max(max(a,b),c) >= ((a+b+c) - max(max(a,b),c))) return -1
-    if (((a+b+c) - max(max(a,b),c) - min(min(a,b),c)) * ((a+b+c) - max(max(a,b),c) - min(min(a,b),c))+min(min(a,b),c)*min(min(a,b),c) == max(max(a,b),c)*max(max(a,b),c)) return 1
-    else if (((a+b+c) - max(max(a,b),c) - min(min(a,b),c)) * ((a+b+c) - max(max(a,b),c) - min(min(a,b),c))+min(min(a,b),c)*min(min(a,b),c) < max(max(a,b),c)*max(max(a,b),c)) return 2
+    var mx = max(max(a, b), c)
+    var mn = min(min(a, b), c)
+    var md = (a + b + c) - mx - mn
+
+    if (mx >= ((a + b + c) - mx)) return -1
+    if (md * (md) + mn * mn == mx * mx) return 1
+    else if (md * md + mn * mn < mx * mx
+    ) return 2
     else return 0
 }
 
@@ -172,16 +179,14 @@ fun triangleKind(a: Double, b: Double, c: Double): Int {
  * Если пересечения нет, вернуть -1.
  */
 fun segmentLength(a: Int, b: Int, c: Int, d: Int): Int {
-    if (c > b && c > a) return -1
-    else if (c == b && c > a ) return 0
-    if (a <c && d< b) return abs(d-c)
-    else if (c < b && c > a) return abs(b-c)
-    if (a>c && a>d) return -1
-    if (c<a && b<d) return abs(b-a)
-    if (c<a && b>d) return abs(d-a)
-    else if (a == c && b == d) return abs(b-a)
-    if ((a==c && b>d))return abs(d-a)
-    if ((a==c && b<d))return abs(b-a)
-    if (a>c && b==d) return abs(d-a)
-    else return 0
+    return when {
+        (c > b && c > a) || (a > c && a > d) -> -1
+        c == b && c > a -> 0
+        a < c && d < b -> abs(d - c)
+        c < b && c > a -> abs(b - c)
+        (c < a && b < d) || (a == c && b == d) || (a == c && b < d) -> abs(b - a)
+        c < a && b > d -> abs(d - a)
+        (a == c && b > d) || (a > c && b == d) -> abs(d - a)
+        else -> 0
+    }
 }
