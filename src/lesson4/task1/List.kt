@@ -11,13 +11,16 @@ import kotlin.math.sqrt
 // Рекомендуемое количество баллов = 8
 // Вместе с предыдущими уроками = 24/33
 fun main() {
-    var prev = 1
+    /*var prev = 1
     for (i in 1..100) {
         if (listOf(2, 3, 5).all { i % it != 0 }) {
             print(i - prev)
             prev = i
         }
-    }
+    }*/
+    //println(roman(1234))
+    //println(roman(2567))
+    //println(roman(3890))
 }
 
 /**
@@ -278,7 +281,8 @@ fun decimal(digits: List<Int>, base: Int): Int = digits.fold(0) { prev, curr -> 
  * Использовать функции стандартной библиотеки, напрямую и полностью решающие данную задачу
  * (например, str.toInt(base)), запрещается.
  */
-fun decimalFromString(str: String, base: Int): Int = str.fold(0) { prev, curr -> prev * base + curr.code }
+fun decimalFromString(str: String, base: Int): Int =
+    str.fold(0) { prev, curr -> prev * base + curr.code - if (curr.code >= 'a'.code) 'a'.code - 10 else '0'.code }
 
 /**
  * Сложная (5 баллов)
@@ -288,7 +292,25 @@ fun decimalFromString(str: String, base: Int): Int = str.fold(0) { prev, curr ->
  * 90 = XC, 100 = C, 400 = CD, 500 = D, 900 = CM, 1000 = M.
  * Например: 23 = XXIII, 44 = XLIV, 100 = C
  */
-fun roman(n: Int): String = TODO()
+fun subSymbol(count: Int, str: String): String = if (count != 0) subSymbol(count - 1, str) + str else ""
+fun roman(n: Int): String {
+    val listSymbol = listOf("I", "V", "X", "L", "C", "D", "M")
+    var result = ""
+    var number = n
+    var i = 0
+    while (number != 0) {
+        val x = number % 10
+        result = when {
+            x == 9 -> listSymbol[i - i % 2] + listSymbol[i + 2]
+            x >= 5 -> listSymbol[i + 1] + subSymbol(x - 5, listSymbol[i])
+            x == 4 -> listSymbol[i - i % 2] + listSymbol[i + 1]
+            else -> subSymbol(x, listSymbol[i])
+        } + result
+        number /= 10
+        i += 2
+    }
+    return result
+}
 
 /**
  * Очень сложная (7 баллов)
