@@ -254,7 +254,8 @@ fun convert(n: Int, base: Int): List<Int> = (if (n > base) convert(n / base, bas
  * Использовать функции стандартной библиотеки, напрямую и полностью решающие данную задачу
  * (например, n.toString(base) и подобные), запрещается.
  */
-fun convertToString(n: Int, base: Int): String = TODO()
+fun convertToString(n: Int, base: Int): String =
+    convert(n, base).joinToString("") { it -> if (it < 10) "$it" else ('a' + (it - 10)).toString() }
 
 /**
  * Средняя (3 балла)
@@ -263,7 +264,7 @@ fun convertToString(n: Int, base: Int): String = TODO()
  * из системы счисления с основанием base в десятичную.
  * Например: digits = (1, 3, 12), base = 14 -> 250
  */
-fun decimal(digits: List<Int>, base: Int): Int = TODO()
+fun decimal(digits: List<Int>, base: Int): Int = digits.fold(0) { prev, curr -> prev * base + curr }
 
 /**
  * Сложная (4 балла)
@@ -277,7 +278,7 @@ fun decimal(digits: List<Int>, base: Int): Int = TODO()
  * Использовать функции стандартной библиотеки, напрямую и полностью решающие данную задачу
  * (например, str.toInt(base)), запрещается.
  */
-fun decimalFromString(str: String, base: Int): Int = TODO()
+fun decimalFromString(str: String, base: Int): Int = str.fold(0) { prev, curr -> prev * base + curr.code }
 
 /**
  * Сложная (5 баллов)
