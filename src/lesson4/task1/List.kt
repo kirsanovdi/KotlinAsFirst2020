@@ -2,6 +2,7 @@
 
 package lesson4.task1
 
+//import jdk.internal.net.http.common.Pair.pair
 import lesson1.task1.discriminant
 import kotlin.math.sqrt
 
@@ -9,6 +10,15 @@ import kotlin.math.sqrt
 // Максимальное количество баллов = 12
 // Рекомендуемое количество баллов = 8
 // Вместе с предыдущими уроками = 24/33
+fun main() {
+    var prev = 1
+    for (i in 1..100) {
+        if (listOf(2, 3, 5).all { i % it != 0 }) {
+            print(i - prev)
+            prev = i
+        }
+    }
+}
 
 /**
  * Пример
@@ -193,15 +203,24 @@ fun accumulate(list: MutableList<Int>): MutableList<Int> {
  * Результат разложения вернуть в виде списка множителей, например 75 -> (3, 5, 5).
  * Множители в списке должны располагаться по возрастанию.
  */
-fun factorize(n: Int): List<Int> {
+fun numberCheck(currNumber: Int, delta: Int, list: MutableList<Int>): Int {
+    var number = currNumber
+    while (number % delta == 0) {
+        list.add(delta)
+        number /= delta
+    }
+    return number
+}
+
+fun factorize(n: Int): List<Int> {//3.9 sec instead 11 in factorizeToString
     var number = n
-    var delta = 2
+    var delta = 5// 1 2 3 4 '5' 6 '7' 8 9 10 '11' 12 13 14 15
     val list = mutableListOf<Int>()
+    number = listOf(2, 3).fold(number) { prev, curr -> numberCheck(prev, curr, list) }
     while (number != 1) {
-        if (number % delta == 0) {
-            list.add(delta)
-            number /= delta
-        } else delta++
+        number = numberCheck(number, delta, list)
+        number = numberCheck(number, delta + 2, list)
+        delta += 6
     }
     return list
 }
@@ -213,7 +232,7 @@ fun factorize(n: Int): List<Int> {
  * Результат разложения вернуть в виде строки, например 75 -> 3*5*5
  * Множители в результирующей строке должны располагаться по возрастанию.
  */
-fun factorizeToString(n: Int): String = TODO()
+fun factorizeToString(n: Int): String = factorize(n).joinToString("*")
 
 /**
  * Средняя (3 балла)
@@ -222,7 +241,7 @@ fun factorizeToString(n: Int): String = TODO()
  * Результат перевода вернуть в виде списка цифр в base-ичной системе от старшей к младшей,
  * например: n = 100, base = 4 -> (1, 2, 1, 0) или n = 250, base = 14 -> (1, 3, 12)
  */
-fun convert(n: Int, base: Int): List<Int> = TODO()
+fun convert(n: Int, base: Int): List<Int> = (if (n > base) convert(n / base, base) else listOf()) + n % base
 
 /**
  * Сложная (4 балла)
