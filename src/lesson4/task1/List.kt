@@ -319,4 +319,23 @@ fun roman(n: Int): String {
  * Например, 375 = "триста семьдесят пять",
  * 23964 = "двадцать три тысячи девятьсот шестьдесят четыре"
  */
-fun russian(n: Int): String = TODO()
+
+fun russian(n: Int): String {
+    var firstRow =
+        listOf("", "сто", "двести", "триста", "четыреста", "пятьсот", "шестьсот", "семьсот", "восемьсот", "девятьсот")
+    var secondDecRow =
+        listOf(
+            "", "одиннадцать", "двенадцать", "тринадцать", "четырнадцать", "пятнадцать",
+            "шестнадцать", "семнадцать", "восемнадцать", "девятнадцать"
+        )
+    var secondRow =
+        listOf("", "двадцать", "тридцать", "сорок", "пятьдесят", "шестьдесят", "семьдесят", "восемьдесят", "девяносто")
+    var thirdRow = listOf("", "один", "два", "три", "четыре", "пять", "шесть", "семь", "восемь", "девять")
+    val nThousands = n / 1000
+    var result =
+        if (nThousands != 0) firstRow[nThousands / 100] + " " +
+                if (n / 100 % 10 == 1) secondDecRow[nThousands % 10]
+                else (secondRow[n / 100 % 10] + " " + thirdRow[n % 10])
+        else ""
+    return result//incorrect
+}
