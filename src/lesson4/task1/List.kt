@@ -166,7 +166,7 @@ fun center(list: MutableList<Double>): MutableList<Double> {
  */
 
 fun times(a: List<Int>, b: List<Int>): Int = if (a.isEmpty()) 0 else
-    a.indices.fold(0) { prevNumber, currNumber -> prevNumber + a[currNumber] * b[currNumber] }
+    a.zip(b).sumOf { it.first * it.second }
 
 /**
  * Средняя (3 балла)
@@ -176,8 +176,7 @@ fun times(a: List<Int>, b: List<Int>): Int = if (a.isEmpty()) 0 else
  * Коэффициенты многочлена заданы списком p: (p0, p1, p2, p3, ..., pN).
  * Значение пустого многочлена равно 0 при любом x.
  */
-fun polynom(p: List<Int>, x: Int): Int = if (p.isEmpty()) 0 else
-    (p.size - 1 downTo 0).fold(0) { prevNumber, currNumber -> prevNumber * x + p[currNumber] }
+fun polynom(p: List<Int>, x: Int): Int = p.foldRight(0) { curr, prev -> prev * x + curr }//acc - второй аргумент
 
 /**
  * Средняя (3 балла)
@@ -322,20 +321,59 @@ fun roman(n: Int): String {
 
 fun russian(n: Int): String {
     var firstRow =
-        listOf("", "сто", "двести", "триста", "четыреста", "пятьсот", "шестьсот", "семьсот", "восемьсот", "девятьсот")
+        listOf(
+            "",
+            "сто ",
+            "двести ",
+            "триста ",
+            "четыреста ",
+            "пятьсот ",
+            "шестьсот ",
+            "семьсот ",
+            "восемьсот ",
+            "девятьсот "
+        )
     var secondDecRow =
         listOf(
-            "", "одиннадцать", "двенадцать", "тринадцать", "четырнадцать", "пятнадцать",
-            "шестнадцать", "семнадцать", "восемнадцать", "девятнадцать"
+            "", "одиннадцать ", "двенадцать ", "тринадцать ", "четырнадцать ", "пятнадцать ",
+            "шестнадцать ", "семнадцать ", "восемнадцать ", "девятнадцать "
         )
     var secondRow =
-        listOf("", "двадцать", "тридцать", "сорок", "пятьдесят", "шестьдесят", "семьдесят", "восемьдесят", "девяносто")
-    var thirdRow = listOf("", "один", "два", "три", "четыре", "пять", "шесть", "семь", "восемь", "девять")
+        listOf(
+            "",
+            "",
+            "двадцать ",
+            "тридцать ",
+            "сорок ",
+            "пятьдесят ",
+            "шестьдесят ",
+            "семьдесят ",
+            "восемьдесят ",
+            "девяносто "
+        )
+    var thirdRow = listOf("", "один ", "два ", "три ", "четыре ", "пять ", "шесть ", "семь ", "восемь ", "девять ")
     val nThousands = n / 1000
-    var result =
-        if (nThousands != 0) firstRow[nThousands / 100] + " " +
-                if (n / 100 % 10 == 1) secondDecRow[nThousands % 10]
-                else (secondRow[n / 100 % 10] + " " + thirdRow[n % 10])
-        else ""
-    return result//incorrect
+    val nHundreds = n % 1000
+    var result = firstRow[nThousands / 100]
+    result += if (nThousands % 100 / 10 == 1) secondDecRow[nThousands % 10]
+    else (secondRow[nThousands % 100 / 10] + when (nThousands % 10) {
+        0 -> ""
+        1 -> "одна "
+        2 -> "две "
+        3, 4 -> thirdRow[nThousands % 10]
+        else -> thirdRow[nThousands % 10]
+    }
+            )
+
+    result += if (nThousands != 0) if (nThousands % 100 in 10..19) "тысяч " else when (nThousands % 10) {
+        1 -> "тысяча "
+        in 2..4 -> "тысячи "
+        else -> "тысяч "
+    } else ""
+
+    result += firstRow[nHundreds / 100] + if (nHundreds % 100 / 10 == 1) secondDecRow[nHundreds % 10]
+    else (secondRow[nHundreds % 100 / 10] + thirdRow[nHundreds % 10])
+    result = result.trim()
+
+    return result
 }
