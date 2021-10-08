@@ -3,6 +3,7 @@
 package lesson4.task1
 
 import lesson1.task1.discriminant
+import kotlin.math.min
 import kotlin.math.sqrt
 
 // Урок 4: списки
@@ -120,14 +121,32 @@ fun buildSumExample(list: List<Int>) = list.joinToString(separator = " + ", post
  * по формуле abs = sqrt(a1^2 + a2^2 + ... + aN^2).
  * Модуль пустого вектора считать равным 0.0.
  */
-fun abs(v: List<Double>): Double = TODO()
+fun abs(v: List<Double>): Double {
+
+    var a = 0.0
+    for (i in 0 until v.size) {
+        a += v[i] * v[i]
+    }
+    return sqrt(a)
+}
 
 /**
  * Простая (2 балла)
  *
  * Рассчитать среднее арифметическое элементов списка list. Вернуть 0.0, если список пуст
  */
-fun mean(list: List<Double>): Double = TODO()
+fun mean(list: List<Double>): Double {
+    var sum = 0.0
+    var ch = 0
+    for (i in 0 until list.size) {
+        sum += list[i]
+        ch++
+    }
+    if (list.size == 0) return 0.0
+    else return sum / ch
+
+
+}
 
 /**
  * Средняя (3 балла)
@@ -137,7 +156,27 @@ fun mean(list: List<Double>): Double = TODO()
  *
  * Обратите внимание, что данная функция должна изменять содержание списка list, а не его копии.
  */
-fun center(list: MutableList<Double>): MutableList<Double> = TODO()
+fun center(list: MutableList<Double>): MutableList<Double> {
+    /*
+var mid = 0.0
+
+
+    var sum = 0.0
+    var ch = 0
+    for (i in 0 until list.size) {
+        sum += list[i]
+        ch++
+    }
+
+    if (list.size == 0)return list
+    else mid = sum/ch
+    for (i in 0 until list.size){
+        list[i] = list[i] / mid
+    }
+
+     */
+    return list
+}
 
 /**
  * Средняя (3 балла)
@@ -146,17 +185,39 @@ fun center(list: MutableList<Double>): MutableList<Double> = TODO()
  * представленные в виде списков a и b. Скалярное произведение считать по формуле:
  * C = a1b1 + a2b2 + ... + aNbN. Произведение пустых векторов считать равным 0.
  */
-fun times(a: List<Int>, b: List<Int>): Int = TODO()
+fun times(a: List<Int>, b: List<Int>): Int {
+    var sum = 0
+    for (i in 0 until min(a.size, b.size)) {
+        sum += a[i] * b[i]
+    }
+    return sum
+}
 
 /**
  * Средняя (3 балла)
  *
  * Рассчитать значение многочлена при заданном x:
+
  * p(x) = p0 + p1*x + p2*x^2 + p3*x^3 + ... + pN*x^N.
  * Коэффициенты многочлена заданы списком p: (p0, p1, p2, p3, ..., pN).
  * Значение пустого многочлена равно 0 при любом x.
  */
-fun polynom(p: List<Int>, x: Int): Int = TODO()
+fun step(x: Int, n: Int): Int {
+    var r: Int = x
+    for (i in 1..n) {
+        r *= r
+    }
+    return r
+}
+
+fun polynom(p: List<Int>, x: Int): Int {
+    if (p.size == 0) return 0
+    var n = p[0]
+    for (i in 1 until p.size) {
+        n += p[i] * step(x, i)
+    }
+    return n
+}
 
 /**
  * Средняя (3 балла)
@@ -168,7 +229,17 @@ fun polynom(p: List<Int>, x: Int): Int = TODO()
  *
  * Обратите внимание, что данная функция должна изменять содержание списка list, а не его копии.
  */
-fun accumulate(list: MutableList<Int>): MutableList<Int> = TODO()
+fun accumulate(list: MutableList<Int>): MutableList<Int> {
+    var sum = 0
+    for (i in list.size downTo 1) {
+        for (k in 0..(i - 1)) {
+            sum += list[k]
+        }
+        list[i - 1] = sum
+        sum = 0
+    }
+    return list
+}
 
 /**
  * Средняя (3 балла)
