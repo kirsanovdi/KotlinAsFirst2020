@@ -269,22 +269,34 @@ fun cos(x: Double, eps: Double): Double {
  *
  * Использовать операции со строками в этой задаче запрещается.
  */
+fun digitLongNumber(n: Long): Int = if (abs(n) >= 10) digitLongNumber(n / 10) + 1 else 1
+fun revertLong(n: Long): Long {
+    var straightNumber: Long = n
+    var reverseNumber = 0L
+    while (straightNumber != 0L) {
+        reverseNumber *= 10L
+        reverseNumber += straightNumber % 10L
+        straightNumber /= 10L
+    }
+    return reverseNumber
+}
+
 fun squareSequenceDigit(n: Int): Int {
-    var rowN: Int
+    var rowN: Long
     var rowNLength: Int
     var numberIteration = 1
-    var currentN = 1
+    var currentN= 1L
     while (true) {
-        rowN = revert(currentN * currentN)
-        rowNLength = digitNumber(currentN * currentN)
-        while (rowNLength > digitNumber(rowN)) {
+        rowN = revertLong(currentN * currentN)
+        rowNLength = digitLongNumber(currentN * currentN)
+        while (rowNLength > digitLongNumber(rowN)) {
             if (numberIteration == n) return 0
             rowNLength--
             numberIteration++
         }
-        while (rowN != 0) {
-            if (numberIteration == n) return rowN % 10
-            rowN /= 10
+        while (rowN != 0L) {
+            if (numberIteration == n) return (rowN % 10).toInt()
+            rowN /= 10L
             numberIteration++
         }
         currentN++
@@ -301,22 +313,22 @@ fun squareSequenceDigit(n: Int): Int {
  * Использовать операции со строками в этой задаче запрещается.
  */
 fun fibSequenceDigit(n: Int): Int {
-    var rowN: Int
+    var rowN: Long
     var rowNLength: Int
     var numberIteration = 1
-    var previousNumber = 0
-    var currentNumber = 1
+    var previousNumber = 0L
+    var currentNumber= 1L
     while (true) {
-        rowN = revert(currentNumber)
-        rowNLength = digitNumber(currentNumber)
-        while (rowNLength > digitNumber(rowN)) {
+        rowN = revertLong(currentNumber)
+        rowNLength = digitLongNumber(currentNumber)
+        while (rowNLength > digitLongNumber(rowN)) {
             if (numberIteration == n) return 0
             rowNLength--
             numberIteration++
         }
-        while (rowN != 0) {
-            if (numberIteration == n) return rowN % 10
-            rowN /= 10
+        while (rowN != 0L) {
+            if (numberIteration == n) return (rowN % 10L).toInt()
+            rowN /= 10L
             numberIteration++
         }
         currentNumber += previousNumber
