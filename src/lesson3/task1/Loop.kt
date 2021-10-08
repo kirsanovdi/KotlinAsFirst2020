@@ -282,25 +282,23 @@ fun revertLong(n: Long): Long {
 }
 
 fun squareSequenceDigit(n: Int): Int {
-    var rowN: Long
-    var rowNLength: Int
-    var numberIteration = 1
-    var currentN= 1L
-    while (true) {
-        rowN = revertLong(currentN * currentN)
-        rowNLength = digitLongNumber(currentN * currentN)
-        while (rowNLength > digitLongNumber(rowN)) {
-            if (numberIteration == n) return 0
-            rowNLength--
-            numberIteration++
-        }
-        while (rowN != 0L) {
-            if (numberIteration == n) return (rowN % 10).toInt()
-            rowN /= 10L
-            numberIteration++
-        }
-        currentN++
+    var numberIteration = 0
+    var pseudoCurrentNumber = 1
+    var currentNumber = pseudoCurrentNumber * pseudoCurrentNumber
+    var currentLength = digitNumber(currentNumber)
+
+    while (numberIteration + currentLength < n) {
+        numberIteration += currentLength
+        pseudoCurrentNumber++
+        currentNumber = pseudoCurrentNumber * pseudoCurrentNumber
+        currentLength = digitNumber(currentNumber)
     }
+    var greaterLength = numberIteration + currentLength
+    while (greaterLength != n) {
+        currentNumber /= 10
+        greaterLength--
+    }
+    return currentNumber % 10
 }
 
 /**
@@ -313,25 +311,21 @@ fun squareSequenceDigit(n: Int): Int {
  * Использовать операции со строками в этой задаче запрещается.
  */
 fun fibSequenceDigit(n: Int): Int {
-    var rowN: Long
-    var rowNLength: Int
-    var numberIteration = 1
-    var previousNumber = 0L
-    var currentNumber= 1L
-    while (true) {
-        rowN = revertLong(currentNumber)
-        rowNLength = digitLongNumber(currentNumber)
-        while (rowNLength > digitLongNumber(rowN)) {
-            if (numberIteration == n) return 0
-            rowNLength--
-            numberIteration++
-        }
-        while (rowN != 0L) {
-            if (numberIteration == n) return (rowN % 10L).toInt()
-            rowN /= 10L
-            numberIteration++
-        }
+    var numberIteration = 0
+    var previousNumber = 0
+    var currentNumber = 1
+    var currentLength = digitNumber(currentNumber)
+
+    while (numberIteration + currentLength < n) {
+        numberIteration += currentLength
         currentNumber += previousNumber
         previousNumber = currentNumber - previousNumber
+        currentLength = digitNumber(currentNumber)
     }
+    var greaterLength = numberIteration + currentLength
+    while (greaterLength != n) {
+        currentNumber /= 10
+        greaterLength--
+    }
+    return currentNumber % 10
 }
