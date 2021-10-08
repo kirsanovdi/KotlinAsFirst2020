@@ -320,7 +320,7 @@ fun roman(n: Int): String {
  */
 
 fun russian(n: Int): String {
-    var firstRow =
+    val firstRow =
         listOf(
             "",
             "сто ",
@@ -333,12 +333,12 @@ fun russian(n: Int): String {
             "восемьсот ",
             "девятьсот "
         )
-    var secondDecRow =
+    val secondDecRow =
         listOf(
             "", "одиннадцать ", "двенадцать ", "тринадцать ", "четырнадцать ", "пятнадцать ",
             "шестнадцать ", "семнадцать ", "восемнадцать ", "девятнадцать "
         )
-    var secondRow =
+    val secondRow =
         listOf(
             "",
             "",
@@ -351,29 +351,22 @@ fun russian(n: Int): String {
             "восемьдесят ",
             "девяносто "
         )
-    var thirdRow = listOf("", "один ", "два ", "три ", "четыре ", "пять ", "шесть ", "семь ", "восемь ", "девять ")
+    val thirdRow = listOf("", "один ", "два ", "три ", "четыре ", "пять ", "шесть ", "семь ", "восемь ", "девять ")
     val nThousands = n / 1000
     val nHundreds = n % 1000
-    var result = firstRow[nThousands / 100]
-    result += if (nThousands % 100 / 10 == 1) secondDecRow[nThousands % 10]
+    val result = firstRow[nThousands / 100] + (if (nThousands % 100 / 10 == 1) secondDecRow[nThousands % 10]
     else (secondRow[nThousands % 100 / 10] + when (nThousands % 10) {
         0 -> ""
         1 -> "одна "
         2 -> "две "
         3, 4 -> thirdRow[nThousands % 10]
         else -> thirdRow[nThousands % 10]
-    }
-            )
-
-    result += if (nThousands != 0) if (nThousands % 100 in 10..19) "тысяч " else when (nThousands % 10) {
-        1 -> "тысяча "
-        in 2..4 -> "тысячи "
-        else -> "тысяч "
-    } else ""
-
-    result += firstRow[nHundreds / 100] + if (nHundreds % 100 / 10 == 1) secondDecRow[nHundreds % 10]
-    else (secondRow[nHundreds % 100 / 10] + thirdRow[nHundreds % 10])
-    result = result.trim()
-
-    return result
+    })) +
+            (if (nThousands != 0) if (nThousands % 100 in 10..19) "тысяч " else when (nThousands % 10) {
+                1 -> "тысяча "
+                in 2..4 -> "тысячи "
+                else -> "тысяч "
+            } else "") + (firstRow[nHundreds / 100] + if (nHundreds % 100 / 10 == 1) secondDecRow[nHundreds % 10]
+    else (secondRow[nHundreds % 100 / 10] + thirdRow[nHundreds % 10]))
+    return result.trim()
 }

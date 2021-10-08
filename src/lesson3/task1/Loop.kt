@@ -108,13 +108,7 @@ fun minDivisor(n: Int): Int {
  *
  * Для заданного числа n > 1 найти максимальный делитель, меньший n
  */
-fun maxDivisor(n: Int): Int {
-    if (n % 2 == 0) return n / 2
-    for (i in 3..sqrt(n.toDouble()).toInt() step 2) {
-        if (n % i == 0) return n / i
-    }
-    return 1
-}
+fun maxDivisor(n: Int): Int = n / minDivisor(n)
 
 /**
  * Простая (2 балла)
@@ -133,7 +127,7 @@ fun maxDivisor(n: Int): Int {
  * этого для какого-либо начального X > 0.
  */
 fun collatzSteps(x: Int): Int {
-    var nextX: Int = x
+    var nextX = x
     var answer = 0
     while (nextX != 1) {
         nextX = if (nextX % 2 == 0) nextX / 2 else nextX * 3 + 1
@@ -143,8 +137,8 @@ fun collatzSteps(x: Int): Int {
 }
 
 fun gcd(m: Int, n: Int): Int {
-    var maxNumber: Int = max(m, n)
-    var minNumber: Int = min(m, n)
+    var maxNumber = max(m, n)
+    var minNumber = min(m, n)
     var tempNumber: Int
     while (maxNumber % minNumber != 0) {
         tempNumber = minNumber
@@ -179,7 +173,7 @@ fun isCoPrime(m: Int, n: Int): Boolean = gcd(m, n) == 1
  * Использовать операции со строками в этой задаче запрещается.
  */
 fun revert(n: Int): Int {
-    var straightNumber: Int = n
+    var straightNumber = n
     var reverseNumber = 0
     while (straightNumber != 0) {
         reverseNumber *= 10
@@ -198,16 +192,7 @@ fun revert(n: Int): Int {
  *
  * Использовать операции со строками в этой задаче запрещается.
  */
-fun isPalindrome(n: Int): Boolean {
-    var straightNumber: Int = n
-    var reverseNumber = 0
-    while (straightNumber != 0) {
-        reverseNumber *= 10
-        reverseNumber += straightNumber % 10
-        straightNumber /= 10
-    }
-    return reverseNumber == n
-}
+fun isPalindrome(n: Int): Boolean = n == revert(n)
 
 /**
  * Средняя (3 балла)
@@ -218,9 +203,9 @@ fun isPalindrome(n: Int): Boolean {
  * Использовать операции со строками в этой задаче запрещается.
  */
 fun hasDifferentDigits(n: Int): Boolean {
-    val lastDigit: Int = n % 10
+    val lastDigit = n % 10
     var answer = false
-    var number: Int = n
+    var number = n
     while (number != 0) {
         if (number % 10 != lastDigit) {
             answer = true
@@ -241,9 +226,9 @@ fun hasDifferentDigits(n: Int): Boolean {
  * Использовать kotlin.math.sin и другие стандартные реализации функции синуса в этой задаче запрещается.
  */
 fun sin(x: Double, eps: Double): Double {
-    val angle: Double = x % (2 * PI)
-    val squareX: Double = angle * angle
-    var delta: Double = angle
+    val angle = x % (2 * PI)
+    val squareX = angle * angle
+    var delta = angle
     var answer = 0.0
     var iterationNumber = 2.0
     while (abs(delta) > eps) {
@@ -263,8 +248,8 @@ fun sin(x: Double, eps: Double): Double {
  * Использовать kotlin.math.cos и другие стандартные реализации функции косинуса в этой задаче запрещается.
  */
 fun cos(x: Double, eps: Double): Double {
-    val angle: Double = x % (2 * PI)
-    val squareX: Double = angle * angle
+    val angle = x % (2 * PI)
+    val squareX = angle * angle
     var delta = 1.0
     var answer = 0.0
     var iterationNumber = 1.0
