@@ -90,8 +90,8 @@ fun timeForHalfWay(
     t2: Double, v2: Double,
     t3: Double, v3: Double
 ): Double {
-    val halfWay: Double = (t1 * v1 + t2 * v2 + t3 * v3) / 2.0
-    val firstPiece: Double = t1 * v1
+    val halfWay = (t1 * v1 + t2 * v2 + t3 * v3) / 2.0
+    val firstPiece = t1 * v1
     return when {
         halfWay <= firstPiece -> halfWay / v1
         halfWay <= firstPiece + t2 * v2 -> t1 + (halfWay - firstPiece) / v2
@@ -139,10 +139,10 @@ fun rookOrBishopThreatens(
  * Если такой треугольник не существует, вернуть -1.
  */
 fun triangleKind(a: Double, b: Double, c: Double): Int {
-    val maxNum: Double = max(a, max(b, c))
-    val minNum: Double = min(a, min(b, c))
-    val avgNum: Double = a + b + c - maxNum - minNum
-    val angle: Double = acos((avgNum.pow(2.0) + minNum.pow(2.0) - maxNum.pow(2.0)) / (2.0 * avgNum * minNum))
+    val maxNum = maxOf(a, b, c)
+    val minNum = minOf(a, b, c)
+    val avgNum = a + b + c - maxNum - minNum
+    val angle = acos((avgNum.pow(2.0) + minNum.pow(2.0) - maxNum.pow(2.0)) / (2.0 * avgNum * minNum))
     return if (maxNum >= minNum + avgNum) -1 else when {
         angle < PI / 2.0 -> 0
         abs(angle - PI / 2.0) < 1e-9 -> 1
@@ -159,6 +159,6 @@ fun triangleKind(a: Double, b: Double, c: Double): Int {
  * Если пересечения нет, вернуть -1.
  */
 fun segmentLength(a: Int, b: Int, c: Int, d: Int): Int {
-    val deltaLen: Int = min(d, b) - max(a, c)
+    val deltaLen = min(d, b) - max(a, c)
     return if (deltaLen >= 0) deltaLen else -1
 }
