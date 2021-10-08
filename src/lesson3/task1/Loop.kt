@@ -72,7 +72,7 @@ fun digitCountInNumber(n: Int, m: Int): Int =
  *
  * Использовать операции со строками в этой задаче запрещается.
  */
-fun digitNumber(n: Int): Int = if (n >= 10) digitNumber(n / 10) + 1 else 1
+fun digitNumber(n: Int): Int = if (abs(n) >= 10) digitNumber(n / 10) + 1 else 1
 
 /**
  * Простая (2 балла)
@@ -271,11 +271,18 @@ fun cos(x: Double, eps: Double): Double {
  */
 fun squareSequenceDigit(n: Int): Int {
     var rowN: Int
+    var rowNLength: Int
     var numberIteration = 1
     var currentN = 1
     while (true) {
-        rowN = revert(currentN * currentN * 10 + 1)
-        while (rowN >= 10) {
+        rowN = revert(currentN * currentN)
+        rowNLength = digitNumber(currentN * currentN)
+        while (rowNLength > digitNumber(rowN)) {
+            if (numberIteration == n) return 0
+            rowNLength--
+            numberIteration++
+        }
+        while (rowN != 0) {
             if (numberIteration == n) return rowN % 10
             rowN /= 10
             numberIteration++
@@ -295,12 +302,19 @@ fun squareSequenceDigit(n: Int): Int {
  */
 fun fibSequenceDigit(n: Int): Int {
     var rowN: Int
+    var rowNLength: Int
     var numberIteration = 1
     var previousNumber = 0
     var currentNumber = 1
     while (true) {
-        rowN = revert(currentNumber * 10 + 1)
-        while (rowN >= 10) {
+        rowN = revert(currentNumber)
+        rowNLength = digitNumber(currentNumber)
+        while (rowNLength > digitNumber(rowN)) {
+            if (numberIteration == n) return 0
+            rowNLength--
+            numberIteration++
+        }
+        while (rowN != 0) {
             if (numberIteration == n) return rowN % 10
             rowN /= 10
             numberIteration++

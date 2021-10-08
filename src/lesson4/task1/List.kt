@@ -21,6 +21,8 @@ fun main() {
     //println(roman(1234))
     //println(roman(2567))
     //println(roman(3890))
+    println(convert(42302, 2))
+    println(russian(210614))
 }
 
 /**
@@ -243,7 +245,7 @@ fun factorizeToString(n: Int): String = factorize(n).joinToString("*")
  * Результат перевода вернуть в виде списка цифр в base-ичной системе от старшей к младшей,
  * например: n = 100, base = 4 -> (1, 2, 1, 0) или n = 250, base = 14 -> (1, 3, 12)
  */
-fun convert(n: Int, base: Int): List<Int> = (if (n > base) convert(n / base, base) else listOf()) + n % base
+fun convert(n: Int, base: Int): List<Int> = if (n == 0) listOf() else (convert(n / base, base) + n % base)
 
 /**
  * Сложная (4 балла)
@@ -335,7 +337,7 @@ fun russian(n: Int): String {
         )
     val secondDecRow =
         listOf(
-            "", "одиннадцать ", "двенадцать ", "тринадцать ", "четырнадцать ", "пятнадцать ",
+            "десять ", "одиннадцать ", "двенадцать ", "тринадцать ", "четырнадцать ", "пятнадцать ",
             "шестнадцать ", "семнадцать ", "восемнадцать ", "девятнадцать "
         )
     val secondRow =
