@@ -10,20 +10,6 @@ import kotlin.math.sqrt
 // Максимальное количество баллов = 12
 // Рекомендуемое количество баллов = 8
 // Вместе с предыдущими уроками = 24/33
-fun main() {
-    /*var prev = 1
-    for (i in 1..100) {
-        if (listOf(2, 3, 5).all { i % it != 0 }) {
-            print(i - prev)
-            prev = i
-        }
-    }*/
-    //println(roman(1234))
-    //println(roman(2567))
-    //println(roman(3890))
-    println(convert(42302, 2))
-    println(russian(210614))
-}
 
 /**
  * Пример

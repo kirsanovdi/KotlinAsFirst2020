@@ -269,17 +269,6 @@ fun cos(x: Double, eps: Double): Double {
  *
  * Использовать операции со строками в этой задаче запрещается.
  */
-fun digitLongNumber(n: Long): Int = if (abs(n) >= 10) digitLongNumber(n / 10) + 1 else 1
-fun revertLong(n: Long): Long {
-    var straightNumber: Long = n
-    var reverseNumber = 0L
-    while (straightNumber != 0L) {
-        reverseNumber *= 10L
-        reverseNumber += straightNumber % 10L
-        straightNumber /= 10L
-    }
-    return reverseNumber
-}
 
 fun squareSequenceDigit(n: Int): Int {
     var numberIteration = 0
