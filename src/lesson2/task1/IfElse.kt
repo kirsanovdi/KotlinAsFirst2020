@@ -88,15 +88,17 @@ fun timeForHalfWay(
     t2: Double, v2: Double,
     t3: Double, v3: Double
 ): Double {
-    // var time = t1+t2+t3
-    var s = t1 * v1 + t2 * v2 + t3 * v3
+    var t1v1 = t1 * v1
+    var t2v2 = t2 * v2
+    var t3v3 = t3 * v3
+    var s = t1v1 + t2v2 + t3v3
 
-    var s2 = (v1 * t1 + v2 * t2 + v3 * t3) / 2
+    var s2 = (t1v1 + t2v2 + t3v3) / 2
 
-    if (t1 * v1 < s2) {
-        if ((t1 * v1 + t2 * v2) < s2) {
-            return t1 + t2 + (s2 - (v1 * t1 + v2 * t2)) / v3
-        } else return t1 + (s2 - v1 * t1) / v2
+    if (t1v1 < s2) {
+        if ((t1v1 + t2v2) < s2) {
+            return t1 + t2 + (s2 - (t1v1 + t2v2)) / v3
+        } else return t1 + (s2 - t1v1) / v2
     } else return s2 / v1
 }
 
@@ -113,15 +115,13 @@ fun whichRookThreatens(
     kingX: Int, kingY: Int,
     rookX1: Int, rookY1: Int,
     rookX2: Int, rookY2: Int
-): Int {
-    return when {
-        (kingX == rookX1 || kingY == rookY1) && (kingX == rookX2 || kingY == rookY2) -> 3
-        kingX == rookX1 || kingY == rookY1 -> 1
-        kingX == rookX2 || kingY == rookY2 -> 2
-        else -> 0
-    }
-
+): Int = when {
+    (kingX == rookX1 || kingY == rookY1) && (kingX == rookX2 || kingY == rookY2) -> 3
+    kingX == rookX1 || kingY == rookY1 -> 1
+    kingX == rookX2 || kingY == rookY2 -> 2
+    else -> 0
 }
+
 
 /**
  * Простая (2 балла)
@@ -138,15 +138,15 @@ fun rookOrBishopThreatens(
     rookX: Int, rookY: Int,
     bishopX: Int, bishopY: Int
 ): Int {
-    var rook: Int = 0
-    var bh: Int = 0
+    var rook = false
+    var bh = false
 
-    if (kingX == rookX || kingY == rookY) rook = 1
-    if (abs(kingX - bishopX) == abs(kingY - bishopY)) bh = 1
-    if (rook == 1) {
-        if (bh == 1) return 3
+    if (kingX == rookX || kingY == rookY) rook = true
+    if (abs(kingX - bishopX) == abs(kingY - bishopY)) bh = true
+    if (rook == true) {
+        if (bh == true) return 3
         else return 1
-    } else if (bh == 1) return 2
+    } else if (bh == true) return 2
     else return 0
 }
 
@@ -159,15 +159,17 @@ fun rookOrBishopThreatens(
  * Если такой треугольник не существует, вернуть -1.
  */
 fun triangleKind(a: Double, b: Double, c: Double): Int {
-    var mx = max(max(a, b), c)
-    var mn = min(min(a, b), c)
-    var md = (a + b + c) - mx - mn
+    val mx = maxOf(a, b, c)
+    val mn = minOf(a, b, c)
+    val md = (a + b + c) - mx - mn
 
-    if (mx >= ((a + b + c) - mx)) return -1
-    if (md * (md) + mn * mn == mx * mx) return 1
-    else if (md * md + mn * mn < mx * mx
-    ) return 2
-    else return 0
+    return when {
+        mx >= a + b + c - mx -> -1
+        md * md + mn * mn == mx * mx -> 1
+        md * md + mn * mn < mx * mx -> 2
+        else -> 0
+    }
+
 }
 
 /**
@@ -179,10 +181,10 @@ fun triangleKind(a: Double, b: Double, c: Double): Int {
  * Если пересечения нет, вернуть -1.
  */
 fun segmentLength(a: Int, b: Int, c: Int, d: Int): Int {
-    var mx = max(a, c)
-    var mn = min(d, b)
-    if ((mn - mx) >= 0) return mn - mx
-    else return -1
+    val mx = max(a, c)
+    val mn = min(d, b)
+    return if (mn - mx >= 0) mn - mx
+    else -1
 
 
 }
