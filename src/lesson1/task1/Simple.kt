@@ -2,6 +2,7 @@
 
 package lesson1.task1
 
+//import jdk.nashorn.internal.runtime.JSType.toDouble
 import kotlin.math.*
 
 // Урок 1: простые функции
@@ -74,9 +75,9 @@ fun seconds(hours: Int, minutes: Int, seconds: Int): Int = hours * 3600 + minute
  * Определить длину того же отрезка в метрах (в данном случае 18.98).
  * 1 сажень = 3 аршина = 48 вершков, 1 вершок = 4.445 см.
  */
-fun lengthInMeters(sagenes: Int, arshins: Int, vershoks: Int): Double {
-    return (sagenes * 48 + arshins * 48 / 3 + vershoks) * 4.445 / 100
-}
+fun lengthInMeters(sagenes: Int, arshins: Int, vershoks: Int): Double =
+    (sagenes * 48 + arshins * 48 / 3 + vershoks) * 4.445 / 100
+
 
 /**
  * Тривиальная (1 балл)
@@ -122,8 +123,7 @@ fun travelMinutes(hoursDepart: Int, minutesDepart: Int, hoursArrive: Int, minute
  * Например, 100 рублей под 10% годовых превратятся в 133.1 рубля
  */
 fun accountInThreeYears(initial: Int, percent: Int): Double {
-    var sum = 0.0
-    sum += initial
+    var sum = 0.0 + initial
     for (n in 1..3) {
         sum += sum * percent / 100
     }
