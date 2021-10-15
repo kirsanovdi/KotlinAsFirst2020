@@ -93,9 +93,8 @@ fun fib(n: Int): Int {
     // else return fib(n - 1) + fib(n - 2)
     var f1 = 0
     var f2 = 1
-    var f = f1 + f2
     for (i in 2..n) {
-        f = f1 + f2
+        val f = f1 + f2
         f1 = f2
         f2 = f
     }
@@ -153,12 +152,19 @@ fun collatzSteps(x: Int): Int {
     return sum
 }
 
+
+//наибольший общий делитель
+fun gcd(m: Int, n: Int) {
+
+}
+
 /**
  * Средняя (3 балла)
  *
  * Для заданных чисел m и n найти наименьшее общее кратное, то есть,
  * минимальное число k, которое делится и на m и на n без остатка
  */
+
 fun lcm(m: Int, n: Int): Int {
     for (i in min(m, n)..m * n) {
         if (i % m == 0 && i % n == 0) return i
@@ -188,8 +194,8 @@ fun isCoPrime(m: Int, n: Int): Boolean {
  * Использовать операции со строками в этой задаче запрещается.
  */
 fun revert(n: Int): Int {
-    var r: Int = n
-    var temp: Int = 0
+    var r = n
+    var temp = 0
     while (r > 0) {
         temp *= 10
         temp += (r % 10)
@@ -241,9 +247,8 @@ fun isPalindrome(n: Int): Boolean {
  */
 fun hasDifferentDigits(n: Int): Boolean {
     if (n < 10) return false
-    var temp: Int = n
-    var r = 0
-    r = temp % 10
+    var temp = n
+    var r = 0 + (temp % 10)
     temp /= 10
     while (temp > 0) {
         if (temp % 10 != r) return true
@@ -262,37 +267,34 @@ fun hasDifferentDigits(n: Int): Boolean {
  * Использовать kotlin.math.sin и другие стандартные реализации функции синуса в этой задаче запрещается.
  */
 fun StDouble(n: Double, t: Int): Double {
-    var r: Double = n
+    var r = n
     for (i in 2..t) {
         r *= n
     }
     return r
 }
 
-fun chlen(x: Double, n: Int): Double {
-    print("||  ${StDouble(x, n)}  ||      ")
-    print("|| ${factorial(n)}  ||     ")
-    print("||  ${StDouble(x, n) / factorial(n)}  ||     ")
-    //  println(" ")
-    return (StDouble(x, n) / factorial(n))
-}
+fun chlen(x: Double, n: Int): Double = StDouble(x, n) / factorial(n)
 
 fun sin(x: Double, eps: Double): Double {
-    var result: Double = x
+
+    var result: Double = x % (2 * PI)
     if (x > 20 * PI) return 0.0 //после этого числа не хватает типа дабл для того, чтобы последний член в формуле стало меньше eps
-    var tp: Int = 3
+    var tp = 3
+    if (result != 0.0) {
+        var minus: Double = -1.0
+        var cl = 0.0
 
-    var minus: Double = -1.0
-    var cl = 0.0
+        do {
+            cl = chlen(x, tp)
+            result += minus * cl
+            minus *= -1.0
+            tp += 2
+        } while (abs(cl) >= eps)
 
-    do {
-        cl = chlen(x, tp)
-        result += minus * cl
-        minus *= -1.0
-        tp += 2
-    } while (abs(cl) >= eps)
-
-    return result
+        return result
+    }
+    return 0.0
 }
 
 
@@ -308,6 +310,7 @@ fun sin(x: Double, eps: Double): Double {
 
 fun cos(x: Double, eps: Double): Double {
     var result: Double = 1.0
+    var temp = x % (2 * PI)
     if (x > 20 * PI) return 1.0 //после этого числа не хватает типа дабл для того, чтобы последний член в формуле стало меньше eps
     var tp: Int = 2
 
@@ -315,7 +318,7 @@ fun cos(x: Double, eps: Double): Double {
     var cl: Double = 0.0
 
     do {
-        cl = chlen(x, tp)
+        cl = chlen(temp, tp)
         result += minus * cl
         minus *= -1.0
         tp += 2
@@ -334,16 +337,6 @@ fun cos(x: Double, eps: Double): Double {
  * Использовать операции со строками в этой задаче запрещается.
  */
 
-fun quantityCounter(n: Int): Int {
-    var temp: Int = n
-    var counter: Int = 0
-    do {
-        temp /= 10
-        counter++
-    } while (temp > 0)
-    return counter
-}
-
 fun squareSequenceDigit(n: Int): Int {
     var counter: Int = 0
 
@@ -353,13 +346,13 @@ fun squareSequenceDigit(n: Int): Int {
 
     do {
         last = step(k, 2)
-        counter += quantityCounter(last)
+        counter += digitNumber(last)
 
         k++
     } while (counter < n)
     if (n < 2) return last
     if (counter == n) return last % 10
-    return if (counter - n <= quantityCounter(last)) {
+    return if (counter - n <= digitNumber(last)) {
         reserv = counter - n
 
 
