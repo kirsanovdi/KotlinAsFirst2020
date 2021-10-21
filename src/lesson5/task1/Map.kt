@@ -132,9 +132,9 @@ fun containsIn(a: Map<String, String>, b: Map<String, String>): Boolean = a.all 
  *     -> a changes to mutableMapOf() aka becomes empty
  */
 fun subtractOf(a: MutableMap<String, String>, b: Map<String, String>) {
-    for (item in b) {
-        if (item.value == a[item.key]) {
-            a.remove(item.key)
+    for ((key, value) in b) {
+        if (value == a[key]) {
+            a.remove(key)
         }
     }
 }
@@ -166,7 +166,12 @@ fun whoAreInBoth(a: List<String>, b: List<String>): List<String> = a - (a - b)//
  *   ) -> mapOf("Emergency" to "112, 911", "Police" to "02")
  */
 fun mergePhoneBooks(mapA: Map<String, String>, mapB: Map<String, String>): Map<String, String> =
-    (mapB + mapA).map { Pair(it.key, it.value + if (it.key in mapB && it.key !in mapA) ("," + mapB[it.key]) else "") }.toMap()
+    (mapB + mapA).map {
+        Pair(
+            it.key,
+            it.value + if (it.key in mapB && mapB[it.key] != it.value) ", " + mapB[it.key] else ""
+        )
+    }.toMap()
 
 /**
  * Средняя (4 балла)
@@ -178,7 +183,16 @@ fun mergePhoneBooks(mapA: Map<String, String>, mapB: Map<String, String>): Map<S
  *   averageStockPrice(listOf("MSFT" to 100.0, "MSFT" to 200.0, "NFLX" to 40.0))
  *     -> mapOf("MSFT" to 150.0, "NFLX" to 40.0)
  */
-fun averageStockPrice(stockPrices: List<Pair<String, Double>>): Map<String, Double> = TODO()
+fun main() {
+    println(listOf(1, 123, 5, 4, 4, 566).filter { it < 10 }.sum())
+}
+
+fun averageStockPrice(stockPrices: List<Pair<String, Double>>): Map<String, Double> =//associateWith?
+    stockPrices.map { it.first }.toSet().associateWith { name: String ->
+        val sum = stockPrices.filter { it.first == name }.sumOf { it.second }
+        val count = stockPrices.count { it.first == name }
+        sum / count
+    }
 
 /**
  * Средняя (4 балла)
