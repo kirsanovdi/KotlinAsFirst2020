@@ -204,16 +204,14 @@ fun isPalindrome(n: Int): Boolean = n == revert(n)
  */
 fun hasDifferentDigits(n: Int): Boolean {
     val lastDigit = n % 10
-    var answer = false
     var number = n
     while (number != 0) {
         if (number % 10 != lastDigit) {
-            answer = true
-            break
+            return true
         }
         number /= 10
     }
-    return answer
+    return false
 }
 
 /**
