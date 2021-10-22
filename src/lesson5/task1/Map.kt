@@ -2,6 +2,9 @@
 
 package lesson5.task1
 
+import lesson1.task1.seconds
+import ru.spbstu.wheels.anyIndexed
+
 // Урок 5: ассоциативные массивы и множества
 // Максимальное количество баллов = 14
 // Рекомендуемое количество баллов = 9
@@ -221,7 +224,8 @@ fun findCheapestStuff(stuff: Map<String, Pair<String, Double>>, kind: String): S
  * Например:
  *   canBuildFrom(listOf('a', 'b', 'o'), "baobab") -> true
  */
-fun canBuildFrom(chars: List<Char>, word: String): Boolean = TODO()
+fun canBuildFrom(chars: List<Char>, word: String): Boolean =
+    chars.toSet().let { set -> word.all { it in set } }//word.all { it in chars }
 
 /**
  * Средняя (4 балла)
@@ -235,7 +239,8 @@ fun canBuildFrom(chars: List<Char>, word: String): Boolean = TODO()
  * Например:
  *   extractRepeats(listOf("a", "b", "a")) -> mapOf("a" to 2)
  */
-fun extractRepeats(list: List<String>): Map<String, Int> = TODO()
+fun extractRepeats(list: List<String>): Map<String, Int> =
+    list.toSet().associateWith { iSet -> list.count { it == iSet } }.filter { it.value > 1 }
 
 /**
  * Средняя (3 балла)
@@ -249,7 +254,15 @@ fun extractRepeats(list: List<String>): Map<String, Int> = TODO()
  * Например:
  *   hasAnagrams(listOf("тор", "свет", "рот")) -> true
  */
-fun hasAnagrams(words: List<String>): Boolean = TODO()
+fun hasAnagrams(words: List<String>): Boolean =
+    words.toSet().anyIndexed { idFirst, first ->
+        words.anyIndexed { idSecond, second ->
+            if (idSecond != idFirst && first.length == second.length) canBuildFrom(
+                second.toList(),
+                first
+            ) else false
+        }
+    }
 
 /**
  * Сложная (5 баллов)
