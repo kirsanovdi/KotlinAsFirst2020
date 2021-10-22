@@ -188,7 +188,8 @@ fun mergePhoneBooks(mapA: Map<String, String>, mapB: Map<String, String>): Map<S
  *     -> mapOf("MSFT" to 150.0, "NFLX" to 40.0)
  */
 fun main() {
-    println(listOf(1, 123, 5, 4, 4, 566).filter { it < 10 }.sum())
+    //println(listOf(1, 123, 5, 4, 4, 566).filter { it < 10 }.sum())
+    println(listOf(1, 2, 3).toSet().indexOf(1))
 }
 
 fun averageStockPrice(stockPrices: List<Pair<String, Double>>): Map<String, Double> =//associateWith?
@@ -326,7 +327,13 @@ fun propagateHandshakes(friends: Map<String, Set<String>>): Map<String, Set<Stri
  *   findSumOfTwo(listOf(1, 2, 3), 4) -> Pair(0, 2)
  *   findSumOfTwo(listOf(1, 2, 3), 6) -> Pair(-1, -1)
  */
-fun findSumOfTwo(list: List<Int>, number: Int): Pair<Int, Int> = TODO()
+fun findSumOfTwo(list: List<Int>, number: Int): Pair<Int, Int> = list.toSet().let {
+    for ((index, item) in it.withIndex()) {
+        val index2 = it.indexOf(number - item)
+        if (index2 != -1 && index != index2) return@let Pair<Int, Int>(index, index2).sorted()
+    }
+    Pair(-1, -1)
+}
 
 /**
  * Очень сложная (8 баллов)
@@ -349,4 +356,17 @@ fun findSumOfTwo(list: List<Int>, number: Int): Pair<Int, Int> = TODO()
  *     450
  *   ) -> emptySet()
  */
-fun bagPacking(treasures: Map<String, Pair<Int, Int>>, capacity: Int): Set<String> = TODO()
+fun bagPacking(treasures: Map<String, Pair<Int, Int>>, capacity: Int): Set<String> {
+    // add <- 0 -> no add
+    val possibleTreasures: MutableMap<Int, Set<String>> = mutableMapOf(0 to setOf())
+    for ((name, params) in treasures) {
+        val packsToAdd: MutableMap<Int, Set<String>> = mutableMapOf()
+        for ((weight, names) in possibleTreasures) {
+            if (weight + params.first <= capacity) {
+                packsToAdd[weight + params.first] = names + name
+            }
+        }
+        possibleTreasures.putAll(packsToAdd)
+    }
+    return possibleTreasures.maxByOrNull { it.key }?.value ?: setOf()
+}
