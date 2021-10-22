@@ -4,6 +4,7 @@ package lesson5.task1
 
 import lesson1.task1.seconds
 import ru.spbstu.wheels.anyIndexed
+import ru.spbstu.wheels.sorted
 
 // Урок 5: ассоциативные массивы и множества
 // Максимальное количество баллов = 14
@@ -298,7 +299,15 @@ fun hasAnagrams(words: List<String>): Boolean =
  *          "GoodGnome" to setOf()
  *        )
  */
-fun propagateHandshakes(friends: Map<String, Set<String>>): Map<String, Set<String>> = TODO()
+fun propagateHandshakes(friends: Map<String, Set<String>>): Map<String, Set<String>> =
+    (friends.values.fold(setOf<String>()) { prev, curr -> prev + curr } + friends.keys).associateWith { lKeys ->
+        if (friends[lKeys] == null)
+            setOf() else
+            friends[lKeys]!! + friends[lKeys]!!.map { if (friends[it] == null) setOf() else friends[it]!! }
+                .fold(
+                    setOf()
+                ) { prev, curr -> prev + curr } - lKeys
+    }
 
 /**
  * Сложная (6 баллов)
