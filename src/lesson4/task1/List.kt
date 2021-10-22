@@ -257,7 +257,20 @@ fun factorize(n: Int): List<Int> = TODO()
  * Результат разложения вернуть в виде строки, например 75 -> 3*5*5
  * Множители в результирующей строке должны располагаться по возрастанию.
  */
-fun factorizeToString(n: Int): String = TODO()
+fun factorizeToString(n: Int): String {
+    val result = mutableListOf<String>()
+    var temp = n
+    var counter = 2
+    while (temp > 1) {
+        if (temp % counter == 0) {
+            result.add("$counter")
+            temp /= counter
+        } else
+            counter++
+    }
+    return result.joinToString(separator = "*")
+}
+
 
 /**
  * Средняя (3 балла)
@@ -312,7 +325,39 @@ fun decimalFromString(str: String, base: Int): Int = TODO()
  * 90 = XC, 100 = C, 400 = CD, 500 = D, 900 = CM, 1000 = M.
  * Например: 23 = XXIII, 44 = XLIV, 100 = C
  */
-fun roman(n: Int): String = TODO()
+fun roman(n: Int): String {
+    var t = n
+    var l = mutableListOf<String>()
+    var const = listOf<String>()
+    val r = mapOf<Int, String>(
+        1000 to "M",
+        900 to "CM",
+        500 to "D",
+        400 to "CD",
+        100 to "C",
+        90 to "XC",
+        50 to "L",
+        40 to "XL",
+        10 to "X",
+        9 to "IX",
+        8 to "VIII",
+        7 to "VII",
+        6 to "VI",
+        5 to "V",
+        4 to "IV",
+        3 to "III",
+        2 to "II",
+        1 to "I"
+    )
+    while (t > 0) {
+        for ((key, value) in r.filter { it.key <= t }) {
+            t -= key
+            l.add(value)
+            break
+        }
+    }
+    return l.joinToString(separator = "")
+}
 
 /**
  * Очень сложная (7 баллов)
@@ -321,4 +366,64 @@ fun roman(n: Int): String = TODO()
  * Например, 375 = "триста семьдесят пять",
  * 23964 = "двадцать три тысячи девятьсот шестьдесят четыре"
  */
-fun russian(n: Int): String = TODO()
+fun russian(n: Int): String {
+    val v = mapOf<Int, String>(
+        1 to "один",
+        2 to "два",
+        3 to "три",
+        4 to "четыре",
+        5 to "пять",
+        6 to "шесть",
+        7 to "семь",
+        8 to "восемь",
+        9 to "девять",
+        10 to "десять",
+        11 to "одиннадцать",
+        12 to "двеннадцать",
+        13 to "триннадцать",
+        14 to "четырнадцать",
+        15 to "пятнадцать",
+        16 to "шестнадцать",
+        17 to "семнадцать",
+        18 to "восемнадцать",
+        19 to "девятнадцать",
+        20 to "двадцать",
+        30 to "тридцать",
+        40 to "сорок",
+        50 to "пятдесят",
+        60 to "семдесят",
+        70 to "восемдесят",
+        80 to "девяносто",
+        90 to "сто",
+        100 to "сто",
+        200 to "двести",
+        300 to "триста",
+        400 to "четыреста",
+        500 to "пятьсот",
+        600 to "шестьсот",
+        700 to "семьсот",
+        800 to "восемьсот",
+        900 to "девятьсот",
+        1000 to "одна тысяча",
+        2000 to "две тысячи",
+        3000 to "тысячи",
+        5000 to "тысяч"
+    )
+
+    if (n in 1..2000)
+        for ((key, value) in v.filter { it.key <= n }) {
+            if (n == key) return value
+        }
+    if (n in 20..99) {
+        var b = ""
+        for ((key, value) in v.filter { it.key <= n }) {
+            if (n / 10 == key) b += "$value "
+        }
+        for ((key, value) in v.filter { it.key <= n }) {
+            if (n % 10 == key) b += value
+        }
+        return b
+    }
+
+
+}
