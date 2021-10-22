@@ -5,6 +5,7 @@ package lesson5.task1
 import lesson1.task1.seconds
 import ru.spbstu.wheels.anyIndexed
 import ru.spbstu.wheels.sorted
+import kotlin.math.max
 
 // Урок 5: ассоциативные массивы и множества
 // Максимальное количество баллов = 14
@@ -327,13 +328,14 @@ fun propagateHandshakes(friends: Map<String, Set<String>>): Map<String, Set<Stri
  *   findSumOfTwo(listOf(1, 2, 3), 4) -> Pair(0, 2)
  *   findSumOfTwo(listOf(1, 2, 3), 6) -> Pair(-1, -1)
  */
-fun findSumOfTwo(list: List<Int>, number: Int): Pair<Int, Int> = list.toSet().let {
-    for ((index, item) in it.withIndex()) {
-        val index2 = it.indexOf(number - item)
-        if (index2 != -1 && index != index2) return@let Pair<Int, Int>(index, index2).sorted()
-    }
-    Pair(-1, -1)
-}
+fun findSumOfTwo(list: List<Int>, number: Int): Pair<Int, Int> = if (list.count { it * 2 == number } < 2)
+    list.toSet().let {
+        for ((index, item) in it.withIndex()) {
+            val index2 = it.indexOf(number - item)
+            if (index2 != -1 && index != index2) return@let Pair<Int, Int>(index, index2).sorted()
+        }
+        Pair(-1, -1)
+    } else Pair(list.indexOf(number / 2), list.lastIndexOf(number / 2))
 
 /**
  * Очень сложная (8 баллов)
@@ -358,15 +360,23 @@ fun findSumOfTwo(list: List<Int>, number: Int): Pair<Int, Int> = list.toSet().le
  */
 fun bagPacking(treasures: Map<String, Pair<Int, Int>>, capacity: Int): Set<String> {
     // add <- 0 -> no add
-    val possibleTreasures: MutableMap<Int, Set<String>> = mutableMapOf(0 to setOf())
+    val possibleTreasures: MutableMap<Int, Pair<Set<String>, Int>> = mutableMapOf(0 to Pair(setOf(), 0))
     for ((name, params) in treasures) {
-        val packsToAdd: MutableMap<Int, Set<String>> = mutableMapOf()
-        for ((weight, names) in possibleTreasures) {
-            if (weight + params.first <= capacity) {
-                packsToAdd[weight + params.first] = names + name
+        val packsToAdd: MutableMap<Int, Pair<Set<String>, Int>> = mutableMapOf()
+        for ((weight, values) in possibleTreasures) {
+            val sumWeight = weight + params.first
+            val sumCost = values.second + params.second//
+            val packsMaxCost = max(
+                packsToAdd[weight + params.first]?.second ?: -1,
+                possibleTreasures[weight + params.first]?.second ?: -1
+            )
+            if (sumWeight <= capacity && sumCost > packsMaxCost
+            ) {
+                packsToAdd[sumWeight] = Pair(values.first + name, sumCost)
             }
         }
         possibleTreasures.putAll(packsToAdd)
     }
-    return possibleTreasures.maxByOrNull { it.key }?.value ?: setOf()
+    //println(possibleTreasures)
+    return possibleTreasures.maxByOrNull { it.value.second }?.value?.first ?: setOf()
 }
