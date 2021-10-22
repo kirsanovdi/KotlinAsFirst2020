@@ -95,11 +95,12 @@ fun timeForHalfWay(
 
     var s2 = (t1v1 + t2v2 + t3v3) / 2
 
-    if (t1v1 < s2) {
-        if ((t1v1 + t2v2) < s2) {
-            return t1 + t2 + (s2 - (t1v1 + t2v2)) / v3
-        } else return t1 + (s2 - t1v1) / v2
-    } else return s2 / v1
+    return when{
+        t1v1 < s2 && (t1v1 + t2v2) < s2 -> t1 + t2 + (s2 - (t1v1 + t2v2)) / v3
+        t1v1 < s2-> t1 + (s2 - t1v1) / v2
+        else -> s2 / v1
+    }
+
 }
 
 /**
