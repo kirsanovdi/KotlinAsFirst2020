@@ -189,8 +189,8 @@ fun main() {
 
 fun averageStockPrice(stockPrices: List<Pair<String, Double>>): Map<String, Double> =//associateWith?
     stockPrices.map { it.first }.toSet().associateWith { name: String ->
-        val sum = stockPrices.filter { it.first == name }.sumOf { it.second }
-        val count = stockPrices.count { it.first == name }
+        val sum = stockPrices.filter { it.first == name }.sumOf { it.second }//entries
+        val count = stockPrices.count { it.first == name }//.let
         sum / count
     }
 
@@ -209,7 +209,8 @@ fun averageStockPrice(stockPrices: List<Pair<String, Double>>): Map<String, Doub
  *     "печенье"
  *   ) -> "Мария"
  */
-fun findCheapestStuff(stuff: Map<String, Pair<String, Double>>, kind: String): String? = TODO()
+fun findCheapestStuff(stuff: Map<String, Pair<String, Double>>, kind: String): String? =
+    stuff.filter { it.value.first == kind }.minByOrNull { it.value.second }?.key
 
 /**
  * Средняя (3 балла)
