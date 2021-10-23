@@ -154,7 +154,28 @@ fun dateDigitToStr(digital: String): String = digital.split(".").let { date ->
  *
  * PS: Дополнительные примеры работы функции можно посмотреть в соответствующих тестах.
  */
-fun flattenPhoneNumber(phone: String): String = TODO()
+fun flattenPhoneNumber(phone: String): String {
+    val goodChars = "0123456789 +-()"
+    val digits = "0123456789"
+    var open = false
+    var close = false
+    var contain = false
+    var result = ""
+    for (char in phone) {
+        when (char) {
+            !in goodChars -> return ""
+            '(' -> if (open) return "" else open = true
+            ')' -> if (close) return "" else close = true
+            in digits -> {
+                if (open && !close) contain = true
+                result += char
+            }
+            '+' -> result += '+'
+        }
+    }
+    if (open != close || open && close && !contain || result.lastIndexOf('+') !in listOf(-1, 0)) return ""
+    return result
+}
 
 /**
  * Средняя (5 баллов)
@@ -166,7 +187,11 @@ fun flattenPhoneNumber(phone: String): String = TODO()
  * Прочитать строку и вернуть максимальное присутствующее в ней число (717 в примере).
  * При нарушении формата входной строки или при отсутствии в ней чисел, вернуть -1.
  */
-fun bestLongJump(jumps: String): Int = TODO()
+fun bestLongJump(jumps: String): Int = try {
+    jumps.split(" ").filter { it !in setOf("-", "%") }.map { it.toInt() }.maxOf { it }
+} catch (e: Exception) {
+    -1
+}
 
 /**
  * Сложная (6 баллов)
