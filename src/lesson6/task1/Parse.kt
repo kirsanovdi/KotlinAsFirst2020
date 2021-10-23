@@ -226,15 +226,17 @@ fun bestHighJump(jumps: String): Int = try {
  */
 fun plusMinus(expression: String): Int = try {
     val data = expression.split(" ")
-    if (data[0].contains('+') || data[0].contains('-')) throw IllegalArgumentException()
+    if (data[0].contains('+') || data[0].contains('-')
+        || data.size % 2 == 0
+    ) throw IllegalArgumentException()
     var sum = data[0].toInt()
     for (i in 1 until data.size step 2) {
         if (data[i + 1].contains('+') || data[i + 1].contains('-')) throw IllegalArgumentException()
         if (data[i] == "+") sum += data[i + 1].toInt() else sum -= data[i + 1].toInt()
     }
     sum
-} catch (e: IllegalArgumentException) {
-    throw e
+} catch (e: Exception) {
+    throw IllegalArgumentException()
 }
 
 /**
@@ -266,8 +268,8 @@ fun firstDuplicateIndex(str: String): Int = str.split(" ").map { it.lowercase() 
  * Все цены должны быть больше нуля либо равны нулю.
  */
 fun mostExpensive(description: String): String = try {
-    description.split("; ").map{ it.split(" ") }.maxByOrNull { it[1].toDouble() }!![0]
-} catch (e: Exception){
+    description.split("; ").map { it.split(" ") }.maxByOrNull { it[1].toDouble() }!![0]
+} catch (e: Exception) {
     ""
 }
 
