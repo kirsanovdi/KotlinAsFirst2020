@@ -5,6 +5,7 @@ package lesson5.task1
 import lesson1.task1.seconds
 import ru.spbstu.wheels.anyIndexed
 import ru.spbstu.wheels.sorted
+import ru.spbstu.wheels.stack
 import kotlin.math.max
 
 // Урок 5: ассоциативные массивы и множества
@@ -301,15 +302,27 @@ fun hasAnagrams(words: List<String>): Boolean =
  *          "GoodGnome" to setOf()
  *        )
  */
-fun propagateHandshakes(friends: Map<String, Set<String>>): Map<String, Set<String>> =
-    (friends.values.fold(setOf<String>()) { prev, curr -> prev + curr } + friends.keys).associateWith { lKeys ->
-        if (friends[lKeys] == null)
-            setOf() else
-            friends[lKeys]!! + friends[lKeys]!!.map { if (friends[it] == null) setOf() else friends[it]!! }
-                .fold(
-                    setOf()
-                ) { prev, curr -> prev + curr } - lKeys
+fun callPersonFriends(
+    person: String,
+    personFriends: Set<String>,
+    result: MutableMap<String, Set<String>>,
+    friends: Map<String, Set<String>>
+) {
+    for (personFriend in personFriends){
+        if(personFriend in result) {
+            //result
+        }
     }
+}
+
+fun propagateHandshakes(friends: Map<String, Set<String>>): Map<String, Set<String>> {
+    val people = friends.values.fold(setOf<String>()) { prev, curr -> prev + curr } + friends.keys
+    val result: MutableMap<String, Set<String>> = mutableMapOf()
+    for (person in people) {
+        callPersonFriends(person, friends[person]!!, result, friends)
+    }
+    return result
+}
 
 /**
  * Сложная (6 баллов)
