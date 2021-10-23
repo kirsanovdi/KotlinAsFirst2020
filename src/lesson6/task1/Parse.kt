@@ -160,20 +160,31 @@ fun flattenPhoneNumber(phone: String): String {
     var open = false
     var close = false
     var contain = false
+    var notBefore = false
     var result = ""
     for (char in phone) {
         when (char) {
             !in goodChars -> return ""
-            '(' -> if (open) return "" else open = true
+            '(' -> if (open) return "" else {
+                open = true
+                if (notBefore) return ""
+            }
             ')' -> if (close) return "" else close = true
             in digits -> {
                 if (open && !close) contain = true
                 result += char
+                notBefore = false
             }
-            '+' -> result += '+'
+            '+' -> {
+                result += '+'
+                notBefore = true
+            }
         }
     }
-    if (open != close || open && close && !contain || result.lastIndexOf('+') !in listOf(-1, 0)) return ""
+    if (open != close || open && close && !contain
+        || result.lastIndexOf('+') !in listOf(-1, 0)
+        || result == "+"
+    ) return ""
     return result
 }
 
