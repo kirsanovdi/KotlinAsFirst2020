@@ -302,34 +302,21 @@ fun hasAnagrams(words: List<String>): Boolean =
  *          "GoodGnome" to setOf()
  *        )
  */
-fun callPersonFriends(
-    person: String,
-    personFriends: Set<String>,
-    personNextFriends: MutableSet<String>,
-    result: MutableMap<String, Set<String>>,
-    friends: Map<String, Set<String>>
-) {
-    //val addFriends = mutableSetOf<String>()
-    for (personFriend in personFriends) {
-        personNextFriends += friends[personFriend] ?: mutableSetOf()
-    }
-    if (personNextFriends == personFriends) result[person] = personFriends else callPersonFriends(
-        person,
-        personNextFriends,
-        personNextFriends,
-        result,
-        friends
-    )
-}
-
 fun propagateHandshakes(friends: Map<String, Set<String>>): Map<String, Set<String>> {
     val people = friends.values.fold(setOf<String>()) { prev, curr -> prev + curr } + friends.keys
     val result: MutableMap<String, Set<String>> = mutableMapOf()
     for (person in people) {
-        val nextFriends = mutableSetOf<String>()
-        nextFriends.addAll(friends[person] ?: mutableSetOf())
-        callPersonFriends(person, friends[person] ?: mutableSetOf(), nextFriends, result, friends)
-        result[person] = result[person]!! - person
+        val personNextFriends: MutableSet<String> = friends[person]?.toMutableSet() ?: mutableSetOf()
+        val personFriends = mutableSetOf<String>()
+        do {
+            personFriends.clear()
+            personFriends.addAll(personNextFriends)
+            for (personFriend in personFriends) {
+                personNextFriends += friends[personFriend] ?: mutableSetOf()
+            }
+            //if (personNextFriends == personFriends) result[person] = personFriends
+        } while (personNextFriends != personFriends)
+        result[person] = personFriends - person
     }
     return result
 }
@@ -351,14 +338,15 @@ fun propagateHandshakes(friends: Map<String, Set<String>>): Map<String, Set<Stri
  *   findSumOfTwo(listOf(1, 2, 3), 4) -> Pair(0, 2)
  *   findSumOfTwo(listOf(1, 2, 3), 6) -> Pair(-1, -1)
  */
-fun findSumOfTwo(list: List<Int>, number: Int): Pair<Int, Int> = if (list.count { it * 2 == number } < 2)
-    list.toSet().let {
-        for ((index, item) in it.withIndex()) {
-            val index2 = it.indexOf(number - item)
-            if (index2 != -1 && index != index2) return@let Pair<Int, Int>(index, index2).sorted()
-        }
-        Pair(-1, -1)
-    } else Pair(list.indexOf(number / 2), list.lastIndexOf(number / 2))
+fun findSumOfTwo(list: List<Int>, number: Int): Pair<Int, Int> {
+    if (list.count { it * 2 == number } > 1) return Pair(list.indexOf(number / 2), list.lastIndexOf(number / 2))
+    val map = list.mapIndexed { index, value -> Pair(value, index) }.toMap()
+    for ((key, value) in map) {
+        val value2 = map[number - key] ?: -1
+        if (value2 != -1 && value != value2) return Pair(value, value2).sorted()
+    }
+    return Pair(-1, -1)
+}
 
 /**
  * Очень сложная (8 баллов)
