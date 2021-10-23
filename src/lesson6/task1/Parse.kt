@@ -204,7 +204,16 @@ fun bestLongJump(jumps: String): Int = try {
  * При нарушении формата входной строки, а также в случае отсутствия удачных попыток,
  * вернуть -1.
  */
-fun bestHighJump(jumps: String): Int = TODO()
+fun bestHighJump(jumps: String): Int = try {
+    val data = jumps.split(" ")
+    var max = -1
+    for (i in data.indices step 2) {
+        if (data[i + 1].contains('+') && data[i].toInt() > max) max = data[i].toInt()
+    }
+    max
+} catch (e: Exception) {
+    -1
+}
 
 /**
  * Сложная (6 баллов)
@@ -215,7 +224,18 @@ fun bestHighJump(jumps: String): Int = TODO()
  * Вернуть значение выражения (6 для примера).
  * Про нарушении формата входной строки бросить исключение IllegalArgumentException
  */
-fun plusMinus(expression: String): Int = TODO()
+fun plusMinus(expression: String): Int = try {
+    val data = expression.split(" ")
+    if (data[0].contains('+') || data[0].contains('-')) throw IllegalArgumentException()
+    var sum = data[0].toInt()
+    for (i in 1 until data.size step 2) {
+        if (data[i + 1].contains('+') || data[i + 1].contains('-')) throw IllegalArgumentException()
+        if (data[i] == "+") sum += data[i + 1].toInt() else sum -= data[i + 1].toInt()
+    }
+    sum
+} catch (e: IllegalArgumentException) {
+    throw e
+}
 
 /**
  * Сложная (6 баллов)
