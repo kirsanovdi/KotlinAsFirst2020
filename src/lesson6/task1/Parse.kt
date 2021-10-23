@@ -2,6 +2,8 @@
 
 package lesson6.task1
 
+import java.lang.Exception
+
 // Урок 6: разбор строк, исключения
 // Максимальное количество баллов = 13
 // Рекомендуемое количество баллов = 11
@@ -74,7 +76,32 @@ fun main() {
  * Обратите внимание: некорректная с точки зрения календаря дата (например, 30.02.2009) считается неверными
  * входными данными.
  */
-fun dateStrToDigit(str: String): String = TODO()
+fun dateStrToDigit(str: String): String = str.split(" ").let { date ->
+    val months = setOf(
+        "января",
+        "февраля",
+        "марта",
+        "апреля",
+        "мая",
+        "июня",
+        "июля",
+        "августа",
+        "сентября",
+        "октября",
+        "ноября",
+        "декабря"
+    )
+    if (date.size != 3 || date[1] !in months) return@let ""
+    try {
+        val day = date[0].toInt()
+        val month = 1 + months.indexOf(date[1])
+        val year = date[2].toInt()
+        if (day > lesson2.task2.daysInMonth(month, year)) return@let ""
+        String.format("%02d.%02d.%d", day, month, year)
+    } catch (e: Exception) {
+        return@let ""
+    }
+}
 
 /**
  * Средняя (4 балла)
@@ -86,7 +113,32 @@ fun dateStrToDigit(str: String): String = TODO()
  * Обратите внимание: некорректная с точки зрения календаря дата (например, 30 февраля 2009) считается неверными
  * входными данными.
  */
-fun dateDigitToStr(digital: String): String = TODO()
+fun dateDigitToStr(digital: String): String = digital.split(".").let { date ->
+    val months = listOf(
+        "января",
+        "февраля",
+        "марта",
+        "апреля",
+        "мая",
+        "июня",
+        "июля",
+        "августа",
+        "сентября",
+        "октября",
+        "ноября",
+        "декабря"
+    )
+    if (date.size != 3) return@let ""
+    try {
+        val day = date[0].toInt()
+        val month = date[1].toInt()
+        val year = date[2].toInt()
+        if (date[0].toInt() > lesson2.task2.daysInMonth(month, year)) return@let ""
+        "$day " + months[month - 1] + " $year"
+    } catch (e: Exception) {
+        return@let ""
+    }
+}
 
 /**
  * Средняя (4 балла)
