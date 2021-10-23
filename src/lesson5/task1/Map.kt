@@ -305,21 +305,31 @@ fun hasAnagrams(words: List<String>): Boolean =
 fun callPersonFriends(
     person: String,
     personFriends: Set<String>,
+    personNextFriends: MutableSet<String>,
     result: MutableMap<String, Set<String>>,
     friends: Map<String, Set<String>>
 ) {
-    for (personFriend in personFriends){
-        if(personFriend in result) {
-            //result
-        }
+    //val addFriends = mutableSetOf<String>()
+    for (personFriend in personFriends) {
+        personNextFriends += friends[personFriend] ?: mutableSetOf()
     }
+    if (personNextFriends == personFriends) result[person] = personFriends else callPersonFriends(
+        person,
+        personNextFriends,
+        personNextFriends,
+        result,
+        friends
+    )
 }
 
 fun propagateHandshakes(friends: Map<String, Set<String>>): Map<String, Set<String>> {
     val people = friends.values.fold(setOf<String>()) { prev, curr -> prev + curr } + friends.keys
     val result: MutableMap<String, Set<String>> = mutableMapOf()
     for (person in people) {
-        callPersonFriends(person, friends[person]!!, result, friends)
+        val nextFriends = mutableSetOf<String>()
+        nextFriends.addAll(friends[person] ?: mutableSetOf())
+        callPersonFriends(person, friends[person] ?: mutableSetOf(), nextFriends, result, friends)
+        result[person] = result[person]!! - person
     }
     return result
 }
