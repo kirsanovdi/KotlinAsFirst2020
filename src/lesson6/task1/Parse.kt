@@ -350,7 +350,6 @@ fun fromRoman(roman: String): Int {//1678 MDCLXXVIII
  */
 fun computeDeviceCells(cells: Int, commands: String, limit: Int): List<Int> {
     val commandsCheck = commands.filter { it != ' ' }
-    if (commandsCheck.contains("[]")) throw IllegalArgumentException()
     var loopPair = 0
     val goodChars = setOf('+', '-', '>', '<', '[', ']')
     for (char in commandsCheck) when (char) {
