@@ -3,6 +3,7 @@
 package lesson6.task1
 
 import java.lang.Exception
+import java.util.*
 
 // Урок 6: разбор строк, исключения
 // Максимальное количество баллов = 13
@@ -347,4 +348,36 @@ fun fromRoman(roman: String): Int {//1678 MDCLXXVIII
  * IllegalArgumentException должен бросаться даже если ошибочная команда не была достигнута в ходе выполнения.
  *
  */
-fun computeDeviceCells(cells: Int, commands: String, limit: Int): List<Int> = TODO()
+fun computeDeviceCells(cells: Int, commands: String, limit: Int): List<Int> {
+    val commandsCheck = commands.filter { it != ' ' }
+    if (commandsCheck.contains("[]")) throw IllegalArgumentException()
+    var loopPair = 0
+    val goodChars = setOf('+', '-', '>', '<', '[', ']')
+    for (char in commandsCheck) when (char) {
+        !in goodChars -> throw IllegalArgumentException()
+        '[' -> loopPair++
+        ']' -> loopPair--
+    }
+    if (loopPair != 0) throw IllegalArgumentException()
+    val result = Array<Int>(cells) { 0 }
+    var commandCount = 1
+    val commandLimit = commands.length
+    var carriage = cells / 2
+    var command = 0
+    val getBack = Stack<Int>()
+    while (commandCount <= limit && command < commandLimit) {
+        when (commands[command]) {
+            '[' -> if (result[carriage] == 0) command += commands.substring(command).indexOf(']')
+            else getBack.push(command)
+            ']' -> if (result[carriage] != 0) command = getBack.peek() else getBack.pop()
+            '+' -> result[carriage]++
+            '-' -> result[carriage]--
+            '>' -> carriage++
+            '<' -> carriage--
+        }
+        command++
+        commandCount++
+        if (carriage !in 0 until cells) throw IllegalStateException()
+    }
+    return result.toList()
+}
