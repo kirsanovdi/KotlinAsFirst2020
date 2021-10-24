@@ -295,7 +295,20 @@ fun mostExpensive(description: String): String = try {
  *
  * Вернуть -1, если roman не является корректным римским числом
  */
-fun fromRoman(roman: String): Int = TODO()
+fun fromRoman(roman: String): Int {//1678 MDCLXXVIII
+    val listSymbol = setOf('I', 'V', 'X', 'L', 'C', 'D', 'M')
+    val listValue = listOf(1, 5, 10, 50, 100, 500, 1000)
+    for (char in roman) if (char !in listSymbol) return -1
+    var max = 0
+    var sum = 0
+    for (i in roman.length - 1 downTo 0) {
+        val idValue = listSymbol.indexOf(roman[i])
+        if (idValue < max) sum -= listValue[idValue] else sum += listValue[idValue]
+        if (idValue > max) max = idValue
+    }
+    if (lesson4.task1.roman(sum) != roman) return -1
+    return sum
+}
 
 /**
  * Очень сложная (7 баллов)
