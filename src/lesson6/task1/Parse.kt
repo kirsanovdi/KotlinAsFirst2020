@@ -348,6 +348,17 @@ fun fromRoman(roman: String): Int {//1678 MDCLXXVIII
  * IllegalArgumentException должен бросаться даже если ошибочная команда не была достигнута в ходе выполнения.
  *
  */
+fun getPair(str: String): Int {
+    var insidePower = -1
+    for (i in str.indices) {
+        when (str[i]) {
+            '[' -> insidePower++
+            ']' -> if (insidePower == 0) return i else insidePower--
+        }
+    }
+    return 0//невозможный случай, т.к. проверка на loopPair
+}
+
 fun computeDeviceCells(cells: Int, commands: String, limit: Int): List<Int> {
     val commandsCheck = commands.filter { it != ' ' }
     var loopPair = 0
@@ -366,7 +377,7 @@ fun computeDeviceCells(cells: Int, commands: String, limit: Int): List<Int> {
     val getBack = Stack<Int>()
     while (commandCount <= limit && command < commandLimit) {
         when (commands[command]) {
-            '[' -> if (result[carriage] == 0) command += commands.substring(command).indexOf(']')
+            '[' -> if (result[carriage] == 0) command += getPair(commands.substring(command))
             else getBack.push(command)
             ']' -> if (result[carriage] != 0) command = getBack.peek() else getBack.pop()
             '+' -> result[carriage]++
