@@ -153,8 +153,7 @@ fun center(list: MutableList<Double>): MutableList<Double> {
  * C = a1b1 + a2b2 + ... + aNbN. Произведение пустых векторов считать равным 0.
  */
 
-fun times(a: List<Int>, b: List<Int>): Int = if (a.isEmpty()) 0 else
-    a.zip(b).sumOf { it.first * it.second }
+fun times(a: List<Int>, b: List<Int>): Int = a.zip(b).sumOf { it.first * it.second }
 
 /**
  * Средняя (3 балла)
@@ -177,7 +176,6 @@ fun polynom(p: List<Int>, x: Int): Int = p.foldRight(0) { curr, prev -> prev * x
  * Обратите внимание, что данная функция должна изменять содержание списка list, а не его копии.
  */
 fun accumulate(list: MutableList<Int>): MutableList<Int> {
-    if (list.size == 0) return list
     var delta = 0
     for (i in list.indices) {
         list[i] += delta
@@ -288,7 +286,6 @@ fun decimalFromString(str: String, base: Int): Int =
  * 90 = XC, 100 = C, 400 = CD, 500 = D, 900 = CM, 1000 = M.
  * Например: 23 = XXIII, 44 = XLIV, 100 = C
  */
-fun subSymbol(count: Int, str: String): String = if (count != 0) subSymbol(count - 1, str) + str else ""
 fun roman(n: Int): String {
     val listSymbol = listOf("I", "V", "X", "L", "C", "D", "M")
     var result = ""
@@ -298,9 +295,9 @@ fun roman(n: Int): String {
         val x = number % 10
         result = when {
             x == 9 -> listSymbol[i - i % 2] + listSymbol[i + 2]
-            x >= 5 -> listSymbol[i + 1] + subSymbol(x - 5, listSymbol[i])
+            x >= 5 -> listSymbol[i + 1] + listSymbol[i].repeat(x - 5)
             x == 4 -> listSymbol[i - i % 2] + listSymbol[i + 1]
-            else -> subSymbol(x, listSymbol[i])
+            else -> listSymbol[i].repeat(x)
         } + result
         number /= 10
         i += 2

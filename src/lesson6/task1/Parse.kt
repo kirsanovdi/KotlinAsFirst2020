@@ -4,11 +4,27 @@ package lesson6.task1
 
 import java.lang.Exception
 import java.util.*
+import lesson2.task2.daysInMonth
+import lesson4.task1.roman
 
 // Урок 6: разбор строк, исключения
 // Максимальное количество баллов = 13
 // Рекомендуемое количество баллов = 11
 // Вместе с предыдущими уроками (пять лучших, 2-6) = 40/54
+val months = listOf(
+    "января",
+    "февраля",
+    "марта",
+    "апреля",
+    "мая",
+    "июня",
+    "июля",
+    "августа",
+    "сентября",
+    "октября",
+    "ноября",
+    "декабря"
+)
 
 /**
  * Пример
@@ -78,26 +94,12 @@ fun main() {
  * входными данными.
  */
 fun dateStrToDigit(str: String): String = str.split(" ").let { date ->
-    val months = setOf(
-        "января",
-        "февраля",
-        "марта",
-        "апреля",
-        "мая",
-        "июня",
-        "июля",
-        "августа",
-        "сентября",
-        "октября",
-        "ноября",
-        "декабря"
-    )
     if (date.size != 3 || date[1] !in months) return@let ""
     try {
         val day = date[0].toInt()
         val month = 1 + months.indexOf(date[1])
         val year = date[2].toInt()
-        if (day > lesson2.task2.daysInMonth(month, year)) return@let ""
+        if (day > daysInMonth(month, year)) return@let ""
         String.format("%02d.%02d.%d", day, month, year)
     } catch (e: Exception) {
         return@let ""
@@ -115,26 +117,12 @@ fun dateStrToDigit(str: String): String = str.split(" ").let { date ->
  * входными данными.
  */
 fun dateDigitToStr(digital: String): String = digital.split(".").let { date ->
-    val months = listOf(
-        "января",
-        "февраля",
-        "марта",
-        "апреля",
-        "мая",
-        "июня",
-        "июля",
-        "августа",
-        "сентября",
-        "октября",
-        "ноября",
-        "декабря"
-    )
     if (date.size != 3) return@let ""
     try {
         val day = date[0].toInt()
         val month = date[1].toInt()
         val year = date[2].toInt()
-        if (date[0].toInt() > lesson2.task2.daysInMonth(month, year)) return@let ""
+        if (date[0].toInt() > daysInMonth(month, year)) return@let ""
         "$day " + months[month - 1] + " $year"
     } catch (e: Exception) {
         return@let ""
@@ -156,37 +144,15 @@ fun dateDigitToStr(digital: String): String = digital.split(".").let { date ->
  * PS: Дополнительные примеры работы функции можно посмотреть в соответствующих тестах.
  */
 fun flattenPhoneNumber(phone: String): String {
-    val goodChars = "0123456789 +-()"
-    val digits = "0123456789"
-    var open = false
-    var close = false
-    var contain = false
-    var notBefore = false
-    var result = ""
-    for (char in phone) {
-        when (char) {
-            !in goodChars -> return ""
-            '(' -> if (open) return "" else {
-                open = true
-                if (notBefore) return ""
-            }
-            ')' -> if (close) return "" else close = true
-            in digits -> {
-                if (open && !close) contain = true
-                result += char
-                notBefore = false
-            }
-            '+' -> {
-                result += '+'
-                notBefore = true
-            }
-        }
-    }
-    if (open != close || open && close && !contain
-        || result.lastIndexOf('+') !in listOf(-1, 0)
-        || result == "+"
+    val answer = Regex("""[^0-9+]""").replace(phone, "")
+    if (Regex("""[()]""").containsMatchIn(phone) &&
+        (Regex("""\).*\(""").containsMatchIn(phone)
+                || !Regex("""\(.*\)""").containsMatchIn(phone))
     ) return ""
-    return result
+    if (Regex("""[^0-9+\- ()]""").containsMatchIn(phone)
+        || Regex("""\+.*\+""").containsMatchIn(phone)
+    ) return ""
+    return answer
 }
 
 /**
@@ -308,7 +274,7 @@ fun fromRoman(roman: String): Int {//1678 MDCLXXVIII
         if (idValue < max) sum -= listValue[idValue] else sum += listValue[idValue]
         if (idValue > max) max = idValue
     }
-    if (lesson4.task1.roman(sum) != roman) return -1
+    if (roman(sum) != roman) return -1
     return sum
 }
 

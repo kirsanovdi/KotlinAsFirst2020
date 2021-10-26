@@ -6,6 +6,7 @@ import lesson1.task1.seconds
 import ru.spbstu.wheels.anyIndexed
 import ru.spbstu.wheels.sorted
 import ru.spbstu.wheels.stack
+import java.util.*
 import kotlin.math.max
 
 // Урок 5: ассоциативные массивы и множества
@@ -103,13 +104,10 @@ fun buildWordSet(text: List<String>): MutableSet<String> {
  *     -> mapOf(5 to listOf("Семён", "Михаил"), 3 to listOf("Марат"))
  */
 fun buildGrades(grades: Map<String, Int>): Map<Int, List<String>> =
-    grades.map { Pair(it.value, listOf(it.key)) }
-        .fold(mapOf()) { prev, curr ->
-            prev + if (curr.first in prev) Pair(
-                curr.first,
-                prev[curr.first]!! + curr.second
-            ) else curr
-        }
+    grades.toList().fold(mutableMapOf<Int, MutableList<String>>()) { prev, (person, mark) ->
+        if (prev[mark] == null) prev[mark] = mutableListOf(person) else prev[mark]!! += person
+        prev
+    }
 
 /**
  * Простая (2 балла)
@@ -195,11 +193,11 @@ fun main() {
 }
 
 fun averageStockPrice(stockPrices: List<Pair<String, Double>>): Map<String, Double> =//associateWith?
-    stockPrices.map { it.first }.toSet().associateWith { name: String ->
-        val sum = stockPrices.filter { it.first == name }.sumOf { it.second }//entries
-        val count = stockPrices.count { it.first == name }//.let
-        sum / count
-    }
+    stockPrices.fold(mutableMapOf<String, Pair<Double, Int>>()) { prev, (name, value) ->
+        if (prev[name] == null) prev[name] = Pair(value, 1) else
+            prev[name] = Pair(value + prev[name]!!.first, 1 + prev[name]!!.second)
+        prev
+    }.let { stockInfo -> stockInfo.keys.associateWith { key -> stockInfo[key]!!.let { it.first / it.second } } }
 
 /**
  * Средняя (4 балла)
@@ -243,8 +241,10 @@ fun canBuildFrom(chars: List<Char>, word: String): Boolean =//word.all { it in c
  * Например:
  *   extractRepeats(listOf("a", "b", "a")) -> mapOf("a" to 2)
  */
-fun extractRepeats(list: List<String>): Map<String, Int> =
-    list.toSet().associateWith { iSet -> list.count { it == iSet } }.filter { it.value > 1 }
+fun extractRepeats(list: List<String>): Map<String, Int> = list.fold(mutableMapOf<String, Int>()) { prev, curr ->
+    prev[curr] = 1 + (prev[curr] ?: 0)
+    prev
+}.filter { it.value > 1 }
 
 /**
  * Средняя (3 балла)
@@ -258,15 +258,13 @@ fun extractRepeats(list: List<String>): Map<String, Int> =
  * Например:
  *   hasAnagrams(listOf("тор", "свет", "рот")) -> true
  */
-fun hasAnagrams(words: List<String>): Boolean =
-    words.toSet().anyIndexed { idFirst, first ->
-        words.anyIndexed { idSecond, second ->
-            if (idSecond != idFirst && first.length == second.length) canBuildFrom(
-                second.toList(),
-                first
-            ) else false
-        }
+fun hasAnagrams(words: List<String>): Boolean = words.map { it.toSortedSet() }.let { wChars ->
+    val chars = mutableSetOf<SortedSet<Char>>()
+    for (iChars in wChars) {
+        if (iChars in chars) return@let true else chars.add(iChars)
     }
+    false
+}
 
 /**
  * Сложная (5 баллов)
@@ -304,7 +302,7 @@ fun hasAnagrams(words: List<String>): Boolean =
  */
 fun propagateHandshakes(friends: Map<String, Set<String>>): Map<String, Set<String>> {
     val people = friends.values.fold(setOf<String>()) { prev, curr -> prev + curr } + friends.keys
-    val result: MutableMap<String, Set<String>> = mutableMapOf()
+    val result = mutableMapOf<String, Set<String>>()
     for (person in people) {
         val personNextFriends: MutableSet<String> = friends[person]?.toMutableSet() ?: mutableSetOf()
         val personFriends = mutableSetOf<String>()
