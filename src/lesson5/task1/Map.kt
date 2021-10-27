@@ -258,8 +258,8 @@ fun extractRepeats(list: List<String>): Map<String, Int> = list.fold(mutableMapO
  * Например:
  *   hasAnagrams(listOf("тор", "свет", "рот")) -> true
  */
-fun hasAnagrams(words: List<String>): Boolean = words.map { it.toSortedSet() }.let { wChars ->
-    val chars = mutableSetOf<SortedSet<Char>>()
+fun hasAnagrams(words: List<String>): Boolean = words.map { it.toList().sorted() }.let { wChars ->
+    val chars = mutableSetOf<List<Char>>()
     for (iChars in wChars) {
         if (iChars in chars) return@let true else chars.add(iChars)
     }
