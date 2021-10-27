@@ -144,15 +144,14 @@ fun dateDigitToStr(digital: String): String = digital.split(".").let { date ->
  * PS: Дополнительные примеры работы функции можно посмотреть в соответствующих тестах.
  */
 fun flattenPhoneNumber(phone: String): String {
-    val answer = Regex("""[^0-9+]""").replace(phone, "")
-    if (Regex("""[()]""").containsMatchIn(phone) &&
-        (Regex("""\).*\(""").containsMatchIn(phone)
-                || !Regex("""\(.*\)""").containsMatchIn(phone))
-    ) return ""
-    if (Regex("""[^0-9+\- ()]""").containsMatchIn(phone)
+    if (Regex("""[^0-9+\-() ]""").containsMatchIn(phone)
         || Regex("""\+.*\+""").containsMatchIn(phone)
     ) return ""
-    return answer
+    val brackets = Regex("""[()]""")
+    val answer = Regex("""[^0-9+()]""").replace(phone, "")
+    val count = brackets.findAll(answer).count()
+    if (count != 0 && (count != 2 || !Regex("""\(\d+\)""").containsMatchIn(answer))) return ""
+    return brackets.replace(answer, "")
 }
 
 /**
