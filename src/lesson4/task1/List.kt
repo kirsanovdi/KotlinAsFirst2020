@@ -288,21 +288,21 @@ fun decimalFromString(str: String, base: Int): Int =
  */
 fun roman(n: Int): String {
     val listSymbol = listOf("I", "V", "X", "L", "C", "D", "M")
-    var result = ""
     var number = n
     var i = 0
+    val sb = StringBuilder("")
     while (number != 0) {
         val x = number % 10
-        result = when {
-            x == 9 -> listSymbol[i - i % 2] + listSymbol[i + 2]
-            x >= 5 -> listSymbol[i + 1] + listSymbol[i].repeat(x - 5)
-            x == 4 -> listSymbol[i - i % 2] + listSymbol[i + 1]
-            else -> listSymbol[i].repeat(x)
-        } + result
+        when {
+            x == 9 -> sb.insert(0, listSymbol[i + 2]).insert(0, listSymbol[i - i % 2])
+            x >= 5 -> sb.insert(0, listSymbol[i].repeat(x - 5)).insert(0, listSymbol[i + 1])
+            x == 4 -> sb.insert(0, listSymbol[i + 1]).insert(0, listSymbol[i - i % 2])
+            else -> sb.insert(0, listSymbol[i].repeat(x))
+        }
         number /= 10
         i += 2
     }
-    return result
+    return sb.toString()
 }
 
 /**
