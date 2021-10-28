@@ -304,7 +304,7 @@ fun propagateHandshakes(friends: Map<String, Set<String>>): Map<String, Set<Stri
     val people = friends.values.fold(setOf<String>()) { prev, curr -> prev + curr } + friends.keys
     val result = mutableMapOf<String, Set<String>>()
     for (person in people) {
-        val personNextFriends: MutableSet<String> = friends[person]?.toMutableSet() ?: mutableSetOf()
+        val personNextFriends = friends[person]?.toMutableSet() ?: mutableSetOf()
         val personFriends = mutableSetOf<String>()
         do {
             personFriends.clear()
@@ -369,9 +369,9 @@ fun findSumOfTwo(list: List<Int>, number: Int): Pair<Int, Int> {
  */
 fun bagPacking(treasures: Map<String, Pair<Int, Int>>, capacity: Int): Set<String> {
     // add <- 0 -> no add
-    val possibleTreasures: MutableMap<Int, Pair<Set<String>, Int>> = mutableMapOf(0 to Pair(setOf(), 0))
+    val possibleTreasures = mutableMapOf(0 to Pair(setOf<String>(), 0))
     for ((name, params) in treasures) {
-        val packsToAdd: MutableMap<Int, Pair<Set<String>, Int>> = mutableMapOf()
+        val packsToAdd = mutableMapOf<Int, Pair<Set<String>, Int>>()
         for ((weight, values) in possibleTreasures) {
             val sumWeight = weight + params.first
             val sumCost = values.second + params.second//
