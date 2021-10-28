@@ -331,10 +331,13 @@ fun computeDeviceCells(cells: Int, commands: String, limit: Int): List<Int> {
     for (char in commandsCheck) when (char) {
         !in goodChars -> throw IllegalArgumentException()
         '[' -> loopPair++
-        ']' -> loopPair--
+        ']' -> {
+            loopPair--
+            if (loopPair < 0) break
+        }
     }
     if (loopPair != 0) throw IllegalArgumentException()
-    val result = Array<Int>(cells) { 0 }
+    val result = Array(cells) { 0 }
     var commandCount = 1
     val commandLimit = commands.length
     var carriage = cells / 2
