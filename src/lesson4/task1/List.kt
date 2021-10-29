@@ -124,7 +124,7 @@ fun buildSumExample(list: List<Int>) = list.joinToString(separator = " + ", post
 fun abs(v: List<Double>): Double {
 
     var a = 0.0
-    for (i in 0 until v.size) {
+    for (i in v.indices) {
         a += v[i] * v[i]
     }
     return sqrt(a)
@@ -138,11 +138,11 @@ fun abs(v: List<Double>): Double {
 fun mean(list: List<Double>): Double {
     var sum = 0.0
     var ch = 0
-    for (i in 0 until list.size) {
-        sum += list[i]
+    for (element in list) {
+        sum += element
         ch++
     }
-    if (list.size == 0) return 0.0
+    if (list.isEmpty()) return 0.0
     else return sum / ch
 
 
@@ -156,8 +156,7 @@ fun mean(list: List<Double>): Double {
  *
  * Обратите внимание, что данная функция должна изменять содержание списка list, а не его копии.
  */
-fun center(list: MutableList<Double>): MutableList<Double> {
-    /*
+fun center(list: MutableList<Double>): MutableList<Double> = /*
 var mid = 0.0
 
 
@@ -175,8 +174,7 @@ var mid = 0.0
     }
 
      */
-    return list
-}
+    list
 
 /**
  * Средняя (3 балла)
@@ -203,15 +201,15 @@ fun times(a: List<Int>, b: List<Int>): Int {
  * Значение пустого многочлена равно 0 при любом x.
  */
 fun step(x: Int, n: Int): Int {
-    var r: Int = x
+    var r: Int = 1
     for (i in 1..n) {
-        r *= r
+        r *= x
     }
     return r
 }
 
 fun polynom(p: List<Int>, x: Int): Int {
-    if (p.size == 0) return 0
+    if (p.isEmpty()) return 0
     var n = p[0]
     for (i in 1 until p.size) {
         n += p[i] * step(x, i)
@@ -232,7 +230,7 @@ fun polynom(p: List<Int>, x: Int): Int {
 fun accumulate(list: MutableList<Int>): MutableList<Int> {
     var sum = 0
     for (i in list.size downTo 1) {
-        for (k in 0..(i - 1)) {
+        for (k in 0 until i) {
             sum += list[k]
         }
         list[i - 1] = sum
@@ -315,7 +313,25 @@ fun decimal(digits: List<Int>, base: Int): Int = TODO()
  * Использовать функции стандартной библиотеки, напрямую и полностью решающие данную задачу
  * (например, str.toInt(base)), запрещается.
  */
-fun decimalFromString(str: String, base: Int): Int = TODO()
+
+
+fun decimalFromString(str: String, base: Int): Int {
+    val lst = str.toMutableList()
+    var res = 0
+    var last: Char
+    var pointer = 0
+    while (lst != listOf<String>()) {
+        last = lst.last()
+        res += if (last.code > 90) {
+            (last.code - 87) * step(base, pointer)
+        } else {
+            (last.code - 48) * step(base, pointer)
+        }
+        pointer++
+        lst.removeAt(lst.size - 1)
+    }
+    return res
+}
 
 /**
  * Сложная (5 баллов)
@@ -366,6 +382,7 @@ fun roman(n: Int): String {
  * Например, 375 = "триста семьдесят пять",
  * 23964 = "двадцать три тысячи девятьсот шестьдесят четыре"
  */
+
 fun russian(n: Int): String {
     val v = mapOf<Int, String>(
         1 to "один",
@@ -425,5 +442,6 @@ fun russian(n: Int): String {
         return b
     }
 
-
+    return ""
 }
+
