@@ -113,7 +113,7 @@ fun countSubstrings(inputName: String, substrings: List<String>): Map<String, In
             mutableMap[keyword] = (mutableMap[keyword] ?: 0) + regex.findAll(lineLower).count()
         }
         for ((keyword, word) in similarList) {
-            mutableMap[keyword] = (mutableMap[keyword] ?: 0) + similarMatches(word[0], word.length, line)
+            mutableMap[keyword] = (mutableMap[keyword] ?: 0) + similarMatches(word[0], word.length, lineLower)
         }
     }
     return mutableMap
