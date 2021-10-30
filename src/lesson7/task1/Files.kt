@@ -103,9 +103,9 @@ fun main() {
 
 fun countSubstrings(inputName: String, substrings: List<String>): Map<String, Int> {
     val mutableMap = mutableMapOf<String, Int>()
-    val regexPair = substrings.filter { !similarSymbols(it.lowercase()) } //не одинаковые символы
+    val regexPair = substrings.filter { !similarSymbols(it.lowercase()) }.toSet() //не одинаковые символы
         .map { keyword -> Pair(keyword, keyword.lowercase().toRegex(RegexOption.LITERAL)) }
-    val similarList = substrings.filter { similarSymbols(it.lowercase()) }
+    val similarList = substrings.filter { similarSymbols(it.lowercase()) }.toSet()
         .map { simLine -> Pair(simLine, simLine.lowercase()) }
     File(inputName).forEachLine { line ->
         val lineLower = line.lowercase()
