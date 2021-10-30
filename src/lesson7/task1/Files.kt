@@ -82,27 +82,38 @@ fun deleteMarked(inputName: String, outputName: String) {
  */
 fun similarMatches(char: Char, len: Int, line: String): Int {
     var sum = 0
-    var lastI = 0
+    var pLen = 0
     for (i in line.indices) if (line[i] != char) {
-        val pLen = i - lastI + 1// тут i следующая, +1 в строке ниже не нужен
-        if (pLen >= len) sum += pLen - len
-        lastI = i
-    }
-    //if (line.length - lastI >= len) sum += (line.length - lastI) - len
+        if (pLen >= len) sum += pLen - len + 1
+        pLen = 0
+    } else pLen++
+    if (pLen >= len) sum += pLen - len + 1
     return sum
 }
 
+fun similarSymbols(line: String): Boolean =
+    if (line.length == 1) false else line[0].let { first -> line.all { it == first } }
+
 fun main() {
-    println(similarMatches('-', 2, "---"))
+    println(similarSymbols("-"))
+    println(similarSymbols("----"))
+    println(similarSymbols("--+"))
+    println(similarMatches('-', 2, "--- ----"))
 }
 
 fun countSubstrings(inputName: String, substrings: List<String>): Map<String, Int> {
     val mutableMap = mutableMapOf<String, Int>()
-    val regexPair = substrings.map { keyword -> Pair(keyword, keyword.lowercase().toRegex(RegexOption.LITERAL)) }
+    val regexPair = substrings.filter { !similarSymbols(it.lowercase()) } //не одинаковые символы
+        .map { keyword -> Pair(keyword, keyword.lowercase().toRegex(RegexOption.LITERAL)) }
+    val similarList = substrings.filter { similarSymbols(it.lowercase()) }
+        .map { simLine -> Pair(simLine, simLine.lowercase()) }
     File(inputName).forEachLine { line ->
         val lineLower = line.lowercase()
         for ((keyword, regex) in regexPair) {
             mutableMap[keyword] = (mutableMap[keyword] ?: 0) + regex.findAll(lineLower).count()
+        }
+        for ((keyword, word) in similarList) {
+            mutableMap[keyword] = (mutableMap[keyword] ?: 0) + similarMatches(word[0], word.length, line)
         }
     }
     return mutableMap
