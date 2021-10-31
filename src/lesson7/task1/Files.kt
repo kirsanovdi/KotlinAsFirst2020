@@ -212,23 +212,23 @@ fun centerFile(inputName: String, outputName: String) {
  * 8) Если входной файл удовлетворяет требованиям 1-7, то он должен быть в точности идентичен выходному файлу
  */
 fun main() {
-    println(alignFileByWidth("input/width_in1.txt", "temp.txt"))
+    println(alignFileByWidth("input/test.txt", "temp.txt"))
 }
 
 fun alignFileByWidth(inputName: String, outputName: String) {
     var max = 0
-    val regex = Regex("""[ ]{2,}""")
+    val regex = Regex("""[ ]+""")
     val printStream = PrintStream(File(outputName))
     File(inputName).forEachLine { line ->
         val len = regex.replace(line, " ").trim().length
         //println(regex.replace(line, " ").trim())
-        if (len > max) max = len - 1
+        if (len > max) max = len
     }
     File(inputName).forEachLine { lineNotTrim ->//repeat
         val line = lineNotTrim.trim()
         if (line == "" || line.all { it == ' ' }) printStream.println("") else {
-            val len = regex.replace(line, "").length
-            val words = line.split(" ")
+            val len = line.count { it != ' ' }
+            val words = line.split(regex)
             if (words.count() == 1) printStream.println(words[0]) else {
                 val countPossibleSpaces = words.count() - 1
                 val pSum = (max - len) / countPossibleSpaces
@@ -236,7 +236,7 @@ fun alignFileByWidth(inputName: String, outputName: String) {
                 val stringBuilder = StringBuilder()
                 for (word in words) {
                     stringBuilder.append(word)
-                    stringBuilder.append(" ".repeat(pSum + 1 + (if (delta >= 0) 1 else 0)))
+                    stringBuilder.append(" ".repeat(pSum + (if (delta > 0) 1 else 0)))
                     //println(pSum + (if (delta >= 0) 1 else 0))
                     delta--
                 }
