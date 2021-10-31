@@ -2,9 +2,9 @@
 
 package lesson7.task1
 
-import ru.spbstu.wheels.NullableMonad.filter
 import java.io.File
 import java.io.PrintStream
+import java.util.*
 import kotlin.math.min
 //import java.lang.StringBuilder
 import kotlin.text.StringBuilder
@@ -330,13 +330,19 @@ fun transliterate(inputName: String, dictionary: Map<Char, String>, outputName: 
     val printStream = PrintStream(File(outputName))
     val regexes = dictionary.map { (key, value) ->
         fun(nextWrapper: (String) -> String) =
-            fun(line: String) = nextWrapper(Regex(key.toString()).replace(line, value))
+            fun(line: String) = nextWrapper(Regex(key.lowercase()).replace(line, value.lowercase()))
     }
     val great = regexes.fold(fun(line: String) = line) { prev, curr ->
         curr(prev)
     }
     File(inputName).forEachLine { line ->
-        printStream.println(great(line))
+        printStream.println(
+            if (line[0] == line[0].uppercaseChar()) {
+                great(line.lowercase()).replaceFirstChar {//замена capitalize
+                    if (it.isLowerCase()) it.titlecase(Locale.getDefault()) else it.toString()
+                }
+            } else great(line.lowercase())
+        )
     }
 }
 
@@ -364,8 +370,25 @@ fun transliterate(inputName: String, dictionary: Map<Char, String>, outputName: 
  *
  * Обратите внимание: данная функция не имеет возвращаемого значения
  */
+fun different(string: String): Boolean = string.length == string.toSet().size
+
 fun chooseLongestChaoticWord(inputName: String, outputName: String) {
-    TODO()
+    val printStream = PrintStream(File(outputName))
+    val mutableList = mutableListOf<String>()
+    var max = 0
+    File(inputName).forEachLine { line ->
+        if (different(line.lowercase())) when (val len = line.length) {
+            !in 0..max -> {
+                mutableList.clear()
+                max = len
+                mutableList.add(line)
+            }
+            max -> {
+                mutableList.add(line)
+            }
+        }
+    }
+    printStream.println(mutableList.joinToString())
 }
 
 /**
