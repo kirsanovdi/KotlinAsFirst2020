@@ -2,6 +2,7 @@
 
 package lesson7.task1
 
+import ru.spbstu.wheels.NullableMonad.filter
 import java.io.File
 import java.io.PrintStream
 import kotlin.math.min
@@ -264,10 +265,6 @@ fun alignFileByWidth(inputName: String, outputName: String) {
  * Ключи в ассоциативном массиве должны быть в нижнем регистре.
  *
  */
-fun main() {
-    println(top20Words("input/top20.txt"))
-}
-
 fun top20Words(inputName: String): Map<String, Int> {
     val mutableMap = mutableMapOf<String, Int>()
     val regex = Regex("""[^a-zA-Zа-яА-ЯёЁ]+""")
@@ -330,7 +327,17 @@ fun top20Words(inputName: String): Map<String, Int> {
  * Обратите внимание: данная функция не имеет возвращаемого значения
  */
 fun transliterate(inputName: String, dictionary: Map<Char, String>, outputName: String) {
-    TODO()
+    val printStream = PrintStream(File(outputName))
+    val regexes = dictionary.map { (key, value) ->
+        fun(nextWrapper: (String) -> String) =
+            fun(line: String) = nextWrapper(Regex(key.toString()).replace(line, value))
+    }
+    val great = regexes.fold(fun(line: String) = line) { prev, curr ->
+        curr(prev)
+    }
+    File(inputName).forEachLine { line ->
+        printStream.println(great(line))
+    }
 }
 
 /**
