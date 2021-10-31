@@ -80,41 +80,38 @@ fun deleteMarked(inputName: String, outputName: String) {
  * Регистр букв игнорировать, то есть буквы е и Е считать одинаковыми.
  *
  */
-fun similarMatches(char: Char, len: Int, line: String): Int {
-    var sum = 0
-    var pLen = 0
-    for (i in line.indices) if (line[i] != char) {
-        if (pLen >= len) sum += pLen - len + 1
-        pLen = 0
-    } else pLen++
-    if (pLen >= len) sum += pLen - len + 1
-    return sum
-}
-
-fun similarSymbols(line: String): Boolean =
-    if (line.length == 1) false else line[0].let { first -> line.all { it == first } }
-
 fun main() {
-    println(similarSymbols("-"))
-    println(similarSymbols("----"))
-    println(similarSymbols("--+"))
-    println(similarMatches('-', 2, "--- ----"))
+    //println(Regex("""ab1c""").find("asdabcsd", 1))
 }
 
 fun countSubstrings(inputName: String, substrings: List<String>): Map<String, Int> {
     val mutableMap = mutableMapOf<String, Int>()
-    val regexPair = substrings.filter { !similarSymbols(it.lowercase()) }.toSet() //не одинаковые символы
+    val regexPair = substrings.filter { it.length > 1 }.toSet() //не одинаковые символы
         .map { keyword -> Pair(keyword, keyword.lowercase().toRegex(RegexOption.LITERAL)) }
-    val similarList = substrings.filter { similarSymbols(it.lowercase()) }.toSet()
-        .map { simLine -> Pair(simLine, simLine.lowercase()) }
+    val singlePair = substrings.filter { it.length == 1 }.toSet()
+        .map { simLine -> Pair(simLine, simLine.lowercase()[0]) }
+
+    fun goThroughLine(line: String, pair: Pair<String, Regex>) {
+        var i = 0
+        var sumUp = 0
+        while (i < line.length) {
+            val resultFind = pair.second.find(line, i)
+            if (resultFind != null) {
+                i = resultFind.range.first + 1
+                sumUp++
+            } else break
+        }
+        mutableMap[pair.first] = (mutableMap[pair.first] ?: 0) + sumUp
+    }
+
+    fun forSingleSubstrings(line: String, pair: Pair<String, Char>) {
+        mutableMap[pair.first] = (mutableMap[pair.first] ?: 0) + line.count { it == pair.second }
+    }
+
     File(inputName).forEachLine { line ->
         val lineLower = line.lowercase()
-        for ((keyword, regex) in regexPair) {
-            mutableMap[keyword] = (mutableMap[keyword] ?: 0) + regex.findAll(lineLower).count()
-        }
-        for ((keyword, word) in similarList) {
-            mutableMap[keyword] = (mutableMap[keyword] ?: 0) + similarMatches(word[0], word.length, lineLower)
-        }
+        for (pair in regexPair) goThroughLine(lineLower, pair)
+        for (pair in singlePair) forSingleSubstrings(lineLower, pair)
     }
     return mutableMap
 }
