@@ -4,6 +4,7 @@ package lesson7.task1
 
 import java.io.File
 import java.io.PrintStream
+import kotlin.math.min
 //import java.lang.StringBuilder
 import kotlin.text.StringBuilder
 
@@ -211,10 +212,6 @@ fun centerFile(inputName: String, outputName: String) {
  * 7) В самой длинной строке каждая пара соседних слов должна быть отделена В ТОЧНОСТИ одним пробелом
  * 8) Если входной файл удовлетворяет требованиям 1-7, то он должен быть в точности идентичен выходному файлу
  */
-fun main() {
-    println(alignFileByWidth("input/test.txt", "temp.txt"))
-}
-
 fun alignFileByWidth(inputName: String, outputName: String) {
     var max = 0
     val regex = Regex("""[ ]+""")
@@ -267,7 +264,35 @@ fun alignFileByWidth(inputName: String, outputName: String) {
  * Ключи в ассоциативном массиве должны быть в нижнем регистре.
  *
  */
-fun top20Words(inputName: String): Map<String, Int> = TODO()
+fun main() {
+    println(top20Words("input/top20.txt"))
+}
+
+fun top20Words(inputName: String): Map<String, Int> {
+    val mutableMap = mutableMapOf<String, Int>()
+    val regex = Regex("""[^a-zA-Zа-яА-ЯёЁ]+""")
+    File(inputName).forEachLine { line ->
+        val words = line.trim().lowercase().split(regex)
+        for (word in words) {
+            mutableMap[word] = (mutableMap[word] ?: 0) + 1
+        }
+    }
+    mutableMap.remove("")
+    val topList = mutableMap.toList().sortedByDescending { (_, value) -> value }
+    mutableMap.clear()
+    for (i in 0 until min(20, topList.size)) {
+        mutableMap[topList[i].first] = topList[i].second
+    }
+    if (topList.size > 20) {
+        val minMax = topList[19].second
+        for ((key, value) in topList) {
+            if (value == minMax) {
+                mutableMap[key] = value
+            }
+        }
+    }
+    return mutableMap
+}
 
 /**
  * Средняя (14 баллов)
