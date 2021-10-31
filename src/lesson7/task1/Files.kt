@@ -80,10 +80,6 @@ fun deleteMarked(inputName: String, outputName: String) {
  * Регистр букв игнорировать, то есть буквы е и Е считать одинаковыми.
  *
  */
-fun main() {
-    //println(Regex("""ab1c""").find("asdabcsd", 1))
-}
-
 fun countSubstrings(inputName: String, substrings: List<String>): Map<String, Int> {
     val mutableMap = mutableMapOf<String, Int>()
     val regexPair = substrings.filter { it.length > 1 }.toSet() //не одинаковые символы
@@ -117,6 +113,22 @@ fun countSubstrings(inputName: String, substrings: List<String>): Map<String, In
 }
 
 
+fun transform(matchResult: MatchResult): CharSequence {
+    val mistake = matchResult.value
+    return listOf(
+        mistake[0],
+        when (mistake[1]) {
+            'ы' -> 'и'
+            'Ы' -> 'И'
+            'ю' -> 'у'
+            'Ю' -> 'У'
+            'я' -> 'а'
+            'Я' -> 'А'
+            else -> '-'
+        }
+    ).joinToString("")
+}
+
 /**
  * Средняя (12 баллов)
  *
@@ -130,8 +142,19 @@ fun countSubstrings(inputName: String, substrings: List<String>): Map<String, In
  * Исключения (жюри, брошюра, парашют) в рамках данного задания обрабатывать не нужно
  *
  */
+fun main() {
+    println(sibilants("input/sibilants_in1.txt", "temp.txt"))
+}
+
 fun sibilants(inputName: String, outputName: String) {
-    TODO()
+    val regex = Regex("""[жчшщ][ыяю]""", RegexOption.IGNORE_CASE)
+    val printStream = PrintStream(File(outputName))
+    //var s = ""
+    File(inputName).forEachLine { line ->
+        //s += regex.replace(line, ::transform) + '\n'
+        printStream.println(regex.replace(line, ::transform))
+    }
+    //println(s)
 }
 
 /**
@@ -152,7 +175,15 @@ fun sibilants(inputName: String, outputName: String) {
  *
  */
 fun centerFile(inputName: String, outputName: String) {
-    TODO()
+    var max = 0
+    val printStream = PrintStream(File(outputName))
+    File(inputName).forEachLine { line ->
+        if (line.length > max) max = line.trim().length
+    }
+    File(inputName).forEachLine { line ->//repeat
+        val len = line.trim().length
+        printStream.println(" ".repeat((max - len) / 2) + line.trim())
+    }
 }
 
 /**
