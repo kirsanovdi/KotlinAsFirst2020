@@ -335,11 +335,13 @@ fun transliterate(inputName: String, dictionary: Map<Char, String>, outputName: 
     val great = regexes.fold(fun(line: String) = line) { prev, curr -> curr(prev) }
     File(inputName).forEachLine { line -> printStream.println(great(line)) }
     */
+    val regexLetters = Regex("""[a-zа-яё]""")
     val replacement = mutableMapOf<Char, String>()
     for ((key, value) in dictionary) {
         replacement[key.lowercaseChar()] = value.lowercase()
-        replacement[key.uppercaseChar()] = value.lowercase()//далее capitalize
-            .replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.getDefault()) else it.toString() }
+        if (regexLetters.matches(key.lowercase()))
+            replacement[key.uppercaseChar()] = value.lowercase()//далее capitalize
+                .replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.getDefault()) else it.toString() }
     }
     val stringBuilder = StringBuilder()
     File(inputName).forEachLine { line ->
@@ -440,7 +442,27 @@ Suspendisse <s>et elit in enim tempus iaculis</s>.
  * (Отступы и переносы строк в примере добавлены для наглядности, при решении задачи их реализовывать не обязательно)
  */
 fun markdownToHtmlSimple(inputName: String, outputName: String) {
-    TODO()
+    val printStream = PrintStream(File(outputName))
+    val regexList = listOf(Pair(Regex("""\*\*"""), "b"), Pair(Regex("""\*"""), "i"), Pair(Regex("""~~"""), "s"))
+    val regexParagraph = Regex(""" *""")
+    var newParagraph = false
+    printStream.println("<html>\n<body>\n<p>")
+    File(inputName).forEachLine { line ->
+        if (regexParagraph.matches(line)) newParagraph = true else {
+            if (newParagraph) {
+                printStream.println("</p>\n<p>")
+                newParagraph = false
+            }
+            var lineResult = line
+            for ((regex, value) in regexList) {
+                while (regex.find(lineResult) != null) {
+                    lineResult = regex.replaceFirst(regex.replaceFirst(lineResult, "<$value>"), "</$value>")
+                }
+            }
+            printStream.println(lineResult)
+        }
+    }
+    printStream.println("</p>\n</body>\n</html>")
 }
 
 /**
