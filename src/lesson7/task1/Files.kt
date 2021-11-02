@@ -502,7 +502,7 @@ fun toHtml(string: String): String {
         }
         stringBuilder.append(line.substring(prevIndex, lastIndex)).append(replacement)
         prevIndex = lastIndex + near.length
-        matchResult = nearestRegex.find(line, lastIndex + replacement.length)
+        matchResult = nearestRegex.find(line, lastIndex + near.length)
     }
     stringBuilder.append(line.substring(prevIndex))
     return stringBuilder.toString()
