@@ -328,21 +328,24 @@ fun top20Words(inputName: String): Map<String, Int> {
  */
 fun transliterate(inputName: String, dictionary: Map<Char, String>, outputName: String) {
     val printStream = PrintStream(File(outputName))
-    val regexes = dictionary.map { (key, value) ->
+    /*val regexes = dictionary.map { (key, value) ->
         fun(nextWrapper: (String) -> String) =
             fun(line: String) = nextWrapper(Regex(key.lowercase()).replace(line, value.lowercase()))
     }
-    val great = regexes.fold(fun(line: String) = line) { prev, curr ->
-        curr(prev)
+    val great = regexes.fold(fun(line: String) = line) { prev, curr -> curr(prev) }
+    File(inputName).forEachLine { line -> printStream.println(great(line)) }
+    */
+    val replacement = mutableMapOf<Char, String>()
+    for ((key, value) in dictionary) {
+        replacement[key.lowercaseChar()] = value.lowercase()
+        replacement[key.uppercaseChar()] = value.lowercase()//далее capitalize
+            .replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.getDefault()) else it.toString() }
     }
+    val stringBuilder = StringBuilder()
     File(inputName).forEachLine { line ->
-        printStream.println(
-            if (line[0] == line[0].uppercaseChar()) {
-                great(line.lowercase()).replaceFirstChar {//замена capitalize
-                    if (it.isLowerCase()) it.titlecase(Locale.getDefault()) else it.toString()
-                }
-            } else great(line.lowercase())
-        )
+        for (char in line) stringBuilder.append(if (char in replacement) replacement[char] else char)
+        printStream.println(stringBuilder.toString())
+        stringBuilder.clear()
     }
 }
 
