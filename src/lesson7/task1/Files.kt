@@ -441,6 +441,61 @@ Suspendisse <s>et elit in enim tempus iaculis</s>.
  *
  * (Отступы и переносы строк в примере добавлены для наглядности, при решении задачи их реализовывать не обязательно)
  */
+fun toHtml(string: String): String {
+    var line = string
+    val nearestRegex = Regex("""\*{1,3}""")
+    val stack = Stack<String>()
+    var matchResult = nearestRegex.find(line)
+    while (matchResult != null) {
+        val near = matchResult.value
+        val replacement = when (near.length) {
+            1 -> if (!stack.empty() && stack.peek() == "i") "</${stack.pop()}>" else {
+                stack.add("i")
+                "<i>"
+            }
+            2 -> if (!stack.empty() && stack.peek() == "b") "</${stack.pop()}>" else {
+                stack.add("b")
+                "<b>"
+            }
+            3 -> {
+                if (stack.empty()) {
+                    stack.push("b")
+                    stack.push("i")
+                    "<b><i>"
+                } else {
+                    val ret = stack.pop()
+                    if (!stack.empty()) "</$ret></${stack.pop()}>" else {
+                        if (ret.length == 2) {
+                            stack.add("i")
+                            println("</$ret><i>")
+                            "</$ret><i>"
+                        } else {
+                            stack.add("b")
+                            println("</$ret><i>")
+                            "</$ret><b>"
+                        }
+                    }
+                }
+            }
+            else -> "!!!"
+        }
+        line = line.replaceFirst(near, replacement)
+        matchResult = nearestRegex.find(line)
+    }
+    return line
+}
+
+fun main() {
+    println(
+        toHtml(
+            "***Lorem ipsum* ***dolor sit amet*, consectetur **adipiscing** elit.\n" +
+                    "Vestibulum lobortis. ~~Est vehicula rutrum *suscipit*~~, ipsum ~~lib~~ero *placerat **tortor***.\n" +
+                    "\n" +
+                    "Suspendisse ~~et elit in enim tempus iaculis~~."
+        )
+    )
+}
+
 fun markdownToHtmlSimple(inputName: String, outputName: String) {
     val printStream = PrintStream(File(outputName))
     val regexList = listOf(Pair(Regex("""\*\*"""), "b"), Pair(Regex("""\*"""), "i"), Pair(Regex("""~~"""), "s"))
