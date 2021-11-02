@@ -442,16 +442,30 @@ Suspendisse <s>et elit in enim tempus iaculis</s>.
  * (Отступы и переносы строк в примере добавлены для наглядности, при решении задачи их реализовывать не обязательно)
  */
 fun toHtml(string: String): String {
-    var line = string
+    val stringBuilder = StringBuilder()
+    var lastIndex = 0 //optimization
+    var prevIndex = 0
     var open = true
-    while (line.contains("~~")) {
-        line = line.replaceFirst("~~", if (open) "<s>" else "</s>")
+    val sickRegex = Regex("""~~""")
+    var matchResult = sickRegex.find(string, lastIndex)
+    while (matchResult != null) {
+        lastIndex = matchResult.range.first
+        stringBuilder.append(string.substring(prevIndex, lastIndex)).append(if (open) "<s>" else "</s>")
+        prevIndex = lastIndex + 2
+        matchResult = sickRegex.find(string, lastIndex + 2)
         open = !open
     }
+    stringBuilder.append(string.substring(prevIndex))
+
+    val line = stringBuilder.toString()
     val nearestRegex = Regex("""\*{1,3}""")
     val stack = Stack<String>()
-    var lastIndex = 0 //optimization
-    var matchResult = nearestRegex.find(line, lastIndex)
+
+    stringBuilder.clear()
+    lastIndex = 0 //optimization
+    prevIndex = 0
+    matchResult = nearestRegex.find(line, lastIndex)
+
     while (matchResult != null) {
         val near = matchResult.value
         lastIndex = matchResult.range.first
@@ -486,10 +500,12 @@ fun toHtml(string: String): String {
             }
             else -> "!!!"
         }
-        line = line.replaceFirst(near, replacement)
-        matchResult = nearestRegex.find(line, lastIndex)
+        stringBuilder.append(line.substring(prevIndex, lastIndex)).append(replacement)
+        prevIndex = lastIndex + near.length
+        matchResult = nearestRegex.find(line, lastIndex + replacement.length)
     }
-    return line
+    stringBuilder.append(line.substring(prevIndex))
+    return stringBuilder.toString()
 }
 
 fun main() {
