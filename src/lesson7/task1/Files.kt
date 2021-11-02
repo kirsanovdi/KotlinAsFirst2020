@@ -505,11 +505,11 @@ fun markdownToHtmlSimple(inputName: String, outputName: String) {
     val printStream = PrintStream(File(outputName))
     val regexParagraph = Regex(""" *""")
     val stringBuilder = StringBuilder()
-    stringBuilder.append("<html>\n<body>\n<p>\n")
+    stringBuilder.append("<html><body><p>")
     File(inputName).forEachLine { line ->
-        if (regexParagraph.matches(line)) stringBuilder.append("</p><p>\n") else stringBuilder.append(line)
+        if (regexParagraph.matches(line)) stringBuilder.append("</p><p>") else stringBuilder.append(line)
     }
-    stringBuilder.append("</p>\n</body>\n</html>")
+    stringBuilder.append("</p></body></html>")
     printStream.println(toHtml(stringBuilder.toString().replace("<p></p>", "")))
 }
 
