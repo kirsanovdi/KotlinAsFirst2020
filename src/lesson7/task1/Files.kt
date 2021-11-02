@@ -444,6 +444,7 @@ Suspendisse <s>et elit in enim tempus iaculis</s>.
 fun markdownToHtmlSimple(inputName: String, outputName: String) {
     val printStream = PrintStream(File(outputName))
     val regexList = listOf(Pair(Regex("""\*\*"""), "b"), Pair(Regex("""\*"""), "i"), Pair(Regex("""~~"""), "s"))
+    val isOpen = mutableMapOf("b" to false, "i" to false, "s" to false)
     val regexParagraph = Regex(""" *""")
     var newParagraph = false
     printStream.println("<html>\n<body>\n<p>")
@@ -456,7 +457,8 @@ fun markdownToHtmlSimple(inputName: String, outputName: String) {
             var lineResult = line
             for ((regex, value) in regexList) {
                 while (regex.find(lineResult) != null) {
-                    lineResult = regex.replaceFirst(regex.replaceFirst(lineResult, "<$value>"), "</$value>")
+                    lineResult = regex.replaceFirst(lineResult, "<${if (isOpen[value]!!) "/" else ""}$value>")
+                    isOpen[value] = !isOpen[value]!!
                 }
             }
             printStream.println(lineResult)
