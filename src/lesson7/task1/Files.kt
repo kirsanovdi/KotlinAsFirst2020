@@ -528,7 +528,9 @@ fun markdownToHtmlSimple(inputName: String, outputName: String) {
         if (regexParagraph.matches(line)) stringBuilder.append("</p><p>") else stringBuilder.append(line).append("\n")
     }
     stringBuilder.append("</p></body></html>")
-    printStream.println(toHtml(stringBuilder.toString().replace("<p></p>", "")))
+    val toWorkAt = stringBuilder.toString().replace("<p></p>", "")
+    if (toWorkAt == "<html><body></body></html>")
+        printStream.println("<html><body><p></p></body></html>") else printStream.println(toHtml(toWorkAt))
 }
 
 /**
