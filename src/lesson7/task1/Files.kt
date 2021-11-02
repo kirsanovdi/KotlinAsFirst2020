@@ -450,9 +450,11 @@ fun toHtml(string: String): String {
     }
     val nearestRegex = Regex("""\*{1,3}""")
     val stack = Stack<String>()
-    var matchResult = nearestRegex.find(line)
+    var lastIndex = 0 //optimization
+    var matchResult = nearestRegex.find(line, lastIndex)
     while (matchResult != null) {
         val near = matchResult.value
+        lastIndex = matchResult.range.first
         val replacement = when (near.length) {
             1 -> if (!stack.empty() && stack.peek() == "i") "</${stack.pop()}>" else {
                 stack.add("i")
@@ -485,7 +487,7 @@ fun toHtml(string: String): String {
             else -> "!!!"
         }
         line = line.replaceFirst(near, replacement)
-        matchResult = nearestRegex.find(line)
+        matchResult = nearestRegex.find(line, lastIndex)
     }
     return line
 }
