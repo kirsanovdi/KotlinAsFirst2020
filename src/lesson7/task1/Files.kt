@@ -495,7 +495,7 @@ fun main() {
         toHtml(
             "***Lorem ipsum* ***dolor sit amet*, consectetur **adipiscing** elit.\n" +
                     "Vestibulum lobortis. ~~Est vehicula rutrum *suscipit*~~, ipsum ~~lib~~ero *placerat **tortor***.\n" +
-                    "\n" +
+                    "\n\t\n" +
                     "Suspendisse ~~et elit in enim tempus iaculis~~."
         )
     )
@@ -503,7 +503,7 @@ fun main() {
 
 fun markdownToHtmlSimple(inputName: String, outputName: String) {
     val printStream = PrintStream(File(outputName))
-    val regexParagraph = Regex(""" *""")
+    val regexParagraph = Regex("""\s*""")
     val stringBuilder = StringBuilder()
     stringBuilder.append("<html><body><p>")
     File(inputName).forEachLine { line ->
