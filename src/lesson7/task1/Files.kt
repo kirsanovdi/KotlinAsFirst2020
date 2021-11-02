@@ -443,6 +443,11 @@ Suspendisse <s>et elit in enim tempus iaculis</s>.
  */
 fun toHtml(string: String): String {
     var line = string
+    var open = true
+    while (line.contains("~~")) {
+        line = line.replaceFirst("~~", if (open) "<s>" else "</s>")
+        open = !open
+    }
     val nearestRegex = Regex("""\*{1,3}""")
     val stack = Stack<String>()
     var matchResult = nearestRegex.find(line)
@@ -465,13 +470,13 @@ fun toHtml(string: String): String {
                 } else {
                     val ret = stack.pop()
                     if (!stack.empty()) "</$ret></${stack.pop()}>" else {
-                        if (ret.length == 2) {
+                        if (ret == "b") {
                             stack.add("i")
-                            println("</$ret><i>")
+                            //println("</$ret><i>")
                             "</$ret><i>"
                         } else {
                             stack.add("b")
-                            println("</$ret><i>")
+                            //println("</$ret><b>")
                             "</$ret><b>"
                         }
                     }
@@ -498,29 +503,14 @@ fun main() {
 
 fun markdownToHtmlSimple(inputName: String, outputName: String) {
     val printStream = PrintStream(File(outputName))
-    val regexList = listOf(Pair(Regex("""\*\*"""), "b"), Pair(Regex("""\*"""), "i"), Pair(Regex("""~~"""), "s"))
-    val isOpen = mutableMapOf("b" to false, "i" to false, "s" to false)
     val regexParagraph = Regex(""" *""")
-    var newParagraph = false
-    var notFirst = false
-    printStream.println("<html>\n<body>\n<p>")
+    val stringBuilder = StringBuilder()
+    stringBuilder.append("<html>\n<body>\n<p>\n")
     File(inputName).forEachLine { line ->
-        if (regexParagraph.matches(line)) newParagraph = true else {
-            if (notFirst && newParagraph) {
-                printStream.println("</p>\n<p>")
-                newParagraph = false
-            } else notFirst = true
-            var lineResult = line
-            for ((regex, value) in regexList) {
-                while (regex.find(lineResult) != null) {
-                    lineResult = regex.replaceFirst(lineResult, "<${if (isOpen[value]!!) "/" else ""}$value>")
-                    isOpen[value] = !isOpen[value]!!
-                }
-            }
-            printStream.println(lineResult)
-        }
+        if (regexParagraph.matches(line)) stringBuilder.append("</p><p>\n") else stringBuilder.append(line)
     }
-    printStream.println("</p>\n</body>\n</html>")
+    stringBuilder.append("</p>\n</body>\n</html>")
+    printStream.println(toHtml(stringBuilder.toString().replace("<p></p>", "")))
 }
 
 /**
