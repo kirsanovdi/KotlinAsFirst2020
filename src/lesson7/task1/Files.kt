@@ -447,13 +447,14 @@ fun markdownToHtmlSimple(inputName: String, outputName: String) {
     val isOpen = mutableMapOf("b" to false, "i" to false, "s" to false)
     val regexParagraph = Regex(""" *""")
     var newParagraph = false
+    var notFirst = false
     printStream.println("<html>\n<body>\n<p>")
     File(inputName).forEachLine { line ->
         if (regexParagraph.matches(line)) newParagraph = true else {
-            if (newParagraph) {
+            if (notFirst && newParagraph) {
                 printStream.println("</p>\n<p>")
                 newParagraph = false
-            }
+            } else notFirst = true
             var lineResult = line
             for ((regex, value) in regexList) {
                 while (regex.find(lineResult) != null) {
