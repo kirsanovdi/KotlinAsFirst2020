@@ -5,6 +5,7 @@ package lesson7.task1
 import java.io.File
 import java.io.PrintStream
 import java.util.*
+import javax.swing.plaf.basic.BasicSplitPaneDivider
 import kotlin.math.min
 //import java.lang.StringBuilder
 import kotlin.text.StringBuilder
@@ -759,7 +760,27 @@ fun markdownToHtml(inputName: String, outputName: String) {
  *
  */
 fun printMultiplicationProcess(lhv: Int, rhv: Int, outputName: String) {
-    TODO()
+    val printStream = PrintStream(File(outputName))
+    val lines = mutableListOf<String>()
+    val trueMultiplication = lhv * rhv
+    var secondValue = rhv
+    var spacesBehind = -1
+    while (secondValue != 0) {
+        val digit = secondValue % 10
+        secondValue /= 10
+        spacesBehind++
+        lines.add((lhv * digit).toString())
+    }
+    val absLength = spacesBehind + lines.last().length + 1
+    printStream.println(" ".repeat(absLength - lhv.toString().length) + lhv.toString())
+    printStream.println("*" + " ".repeat(absLength - rhv.toString().length - 1) + rhv.toString())
+    printStream.println("-".repeat(absLength))
+    printStream.println(" ".repeat(absLength - lines[0].length) + lines[0])
+    for (i in 1 until lines.size) {
+        printStream.println("+" + " ".repeat(absLength - lines[i].length - 1 - i) + lines[i])
+    }
+    printStream.println("-".repeat(absLength))
+    printStream.println(" ".repeat(absLength - trueMultiplication.toString().length) + trueMultiplication.toString())
 }
 
 
@@ -784,6 +805,50 @@ fun printMultiplicationProcess(lhv: Int, rhv: Int, outputName: String) {
  *
  */
 fun printDivisionProcess(lhv: Int, rhv: Int, outputName: String) {
-    TODO()
+    val printStream = PrintStream(File(outputName))
+    val trueDivision = lhv / rhv
+    val lhvString = lhv.toString()
+    var delta = 0
+    var deltaString: String
+    var remainder: Int
+    var i = 0
+    var process = true
+
+    fun next() {
+        val isZero = delta == 0
+        if (i < lhvString.length) {
+            delta = delta * 10 + (lhvString[i] - '0')
+            i++
+        } else process = false
+        deltaString = delta.toString()
+        remainder = delta % rhv
+
+        val absDiv: Int = (delta / rhv) * rhv
+        val absDivString = absDiv.toString()
+        delta = remainder
+        printStream.println(" ".repeat(i - deltaString.length) + (if (isZero && deltaString != "0") "0" else " ") + deltaString)
+        if (process) {
+            printStream.println(" ".repeat(i - absDivString.length) + "-" + absDiv.toString())
+            printStream.println(" ".repeat(i - absDivString.length) + "-".repeat(absDivString.length + 1))
+        }
+    }
+
+
+    while (delta < rhv && i < lhvString.length) {
+        delta = delta * 10 + (lhvString[i] - '0')
+        i++
+    }
+    remainder = delta % rhv
+    delta -= remainder
+    deltaString = delta.toString()
+    delta = remainder
+    printStream.println(" $lhv | $rhv")
+    printStream.println("-" + deltaString + " ".repeat(lhv.toString().length + 3 - deltaString.length) + trueDivision)
+    printStream.println("-".repeat(1 + deltaString.length))
+
+
+    while (process) {
+        next()
+    }
 }
 
