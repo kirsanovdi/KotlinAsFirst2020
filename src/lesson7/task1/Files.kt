@@ -827,7 +827,7 @@ fun printDivisionProcess(lhv: Int, rhv: Int, outputName: String) {
         val absDiv: Int = (delta / rhv) * rhv
         val absDivString = absDiv.toString()
         delta = remainder
-        printStream.println(" ".repeat(i - deltaString.length) + (if (isZero && deltaString != "0") "0" else " ") + deltaString)
+        printStream.println(" ".repeat(i - deltaString.length) + (if (isZero && process) "0" else " ") + deltaString)
         if (process) {
             printStream.println(" ".repeat(i - absDivString.length) + "-" + absDivString)
             val max = max(absDivString.length + 1, deltaString.length)
