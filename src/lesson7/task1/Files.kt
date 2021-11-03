@@ -6,6 +6,7 @@ import java.io.File
 import java.io.PrintStream
 import java.util.*
 import javax.swing.plaf.basic.BasicSplitPaneDivider
+import kotlin.math.max
 import kotlin.math.min
 //import java.lang.StringBuilder
 import kotlin.text.StringBuilder
@@ -771,7 +772,7 @@ fun printMultiplicationProcess(lhv: Int, rhv: Int, outputName: String) {
         spacesBehind++
         lines.add((lhv * digit).toString())
     }
-    val absLength = spacesBehind + lines.last().length + 1
+    val absLength = max(spacesBehind + lines.last().length + 1, trueMultiplication.toString().length + 1)
     printStream.println(" ".repeat(absLength - lhv.toString().length) + lhv.toString())
     printStream.println("*" + " ".repeat(absLength - rhv.toString().length - 1) + rhv.toString())
     printStream.println("-".repeat(absLength))
@@ -828,8 +829,9 @@ fun printDivisionProcess(lhv: Int, rhv: Int, outputName: String) {
         delta = remainder
         printStream.println(" ".repeat(i - deltaString.length) + (if (isZero && deltaString != "0") "0" else " ") + deltaString)
         if (process) {
-            printStream.println(" ".repeat(i - absDivString.length) + "-" + absDiv.toString())
-            printStream.println(" ".repeat(i - absDivString.length) + "-".repeat(absDivString.length + 1))
+            printStream.println(" ".repeat(i - absDivString.length) + "-" + absDivString)
+            val max = max(absDivString.length + 1, deltaString.length)
+            printStream.println(" ".repeat(i - max + 1) + "-".repeat(max))
         }
     }
 
