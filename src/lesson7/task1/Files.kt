@@ -679,7 +679,58 @@ fun markdownToHtmlLists(inputName: String, outputName: String) {
  *
  */
 fun markdownToHtml(inputName: String, outputName: String) {
-    TODO()
+    val printStream = PrintStream(File(outputName))
+    var nestingLevel = -1
+    val stack = Stack<String>()
+    val regexSpace = Regex(""" *""")
+    val regexStar = Regex("""\*""")
+    val regexNumber = Regex("""\d+\.""")
+    val regexAll = Regex("""\d+\.|\*""")
+    val regexParagraph = Regex("""\s*""")
+    val regexSpacePlus = Regex(""" +""")
+    val stringBuilder = StringBuilder()
+    stringBuilder.append("<html><body><p>")
+    File(inputName).forEachLine { line ->
+        val currentNestingLevel = (regexSpace.find(line)?.value?.length ?: 0) / 4
+        if (regexParagraph.matches(line)) {
+            nestingLevel = 0
+            while (!stack.empty()) {
+                stringBuilder.append("</li></${stack.pop()}>")
+            }
+            stringBuilder.append("</p><p>")
+        } else {
+            val workingPart = line.trim().split(regexSpacePlus)[0]
+            if (!regexAll.matches(workingPart)) {
+                stringBuilder.append(line)
+            } else {
+                if (currentNestingLevel == nestingLevel) {
+                    stringBuilder.append("</li>").append(regexAll.replaceFirst(line, "<li>"))
+                }
+                if (currentNestingLevel < nestingLevel) {
+                    stringBuilder.append("</li></${stack.pop()}></li>")
+                    stringBuilder.append(regexAll.replaceFirst(line, "<li>"))
+                }
+                if (currentNestingLevel > nestingLevel) {
+                    if (regexStar.find(line) != null) {
+                        stack.add("ul")
+                        stringBuilder.append("<ul>")
+                        stringBuilder.append(regexAll.replaceFirst(line, "<li>"))
+                    }
+                    if (regexNumber.find(line) != null) {
+                        stack.add("ol")
+                        stringBuilder.append("<ol>")
+                        stringBuilder.append(regexAll.replaceFirst(line, "<li>"))
+                    }
+                }
+            }
+            nestingLevel = currentNestingLevel
+        }
+    }
+    while (!stack.empty()) {
+        stringBuilder.append("</li></${stack.pop()}>")
+    }
+    stringBuilder.append("</p></body></html>")
+    printStream.println(toHtml(stringBuilder.toString()))
 }
 
 /**
