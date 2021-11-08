@@ -248,7 +248,7 @@ fun isPalindrome(n: Int): Boolean {
 fun hasDifferentDigits(n: Int): Boolean {
     if (n < 10) return false
     var temp = n
-    var r = 0 + (temp % 10)
+    val r = 0 + (temp % 10)
     temp /= 10
     while (temp > 0) {
         if (temp % 10 != r) return true
@@ -340,7 +340,7 @@ fun cos(x: Double, eps: Double): Double {
 fun squareSequenceDigit(n: Int): Int {
     var counter: Int = 0
 
-    var k: Int = 1
+    var k = 1
     var last = 0
     var reserv = 0
 
@@ -381,10 +381,11 @@ fun fibSequenceDigit(n: Int): Int {
     var counter = 1
     var f1 = 0
     var f2 = 1
-    var x: Int
+
     if (n == 1 || n == 2) return 1
     for (i in 2..n) {
-        x = f1 + f2
+        var x = f1 + f2
+
         f1 = f2
         f2 = x
 
