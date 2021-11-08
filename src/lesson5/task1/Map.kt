@@ -312,12 +312,9 @@ fun propagateHandshakes(friends: Map<String, Set<String>>): Map<String, Set<Stri
  *   findSumOfTwo(listOf(1, 2, 3), 6) -> Pair(-1, -1)
  */
 fun findSumOfTwo(list: List<Int>, number: Int): Pair<Int, Int> {
-
-    //if (list.size <= 1) return Pair(-1, -1)
     for (k in 0 until (list.size - 1)) {
         for (i in (k + 1) until list.size) {
             if (list[k] + list[i] == number) return Pair(k, i)
-            // println(list[list.size-1])
         }
     }
     return Pair(-1, -1)
@@ -349,10 +346,10 @@ fun bagPacking(treasures: Map<String, Pair<Int, Int>>, capacity: Int): Set<Strin
     var m = 0
     var cost = 0
     for ((key, value) in treasures) {
-        if (value.first + m < capacity) {
+        if (value.first + m <= capacity) {
             res += key
             cost += value.second
-        } else if (value.first < capacity && value.second > cost) {
+        } else if (value.first <= capacity && value.second > cost) {
             cost = value.second
             res.removeAll(res)
             res += key
