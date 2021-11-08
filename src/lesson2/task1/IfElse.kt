@@ -95,9 +95,9 @@ fun timeForHalfWay(
 
     var s2 = (t1v1 + t2v2 + t3v3) / 2
 
-    return when{
+    return when {
         t1v1 < s2 && (t1v1 + t2v2) < s2 -> t1 + t2 + (s2 - (t1v1 + t2v2)) / v3
-        t1v1 < s2-> t1 + (s2 - t1v1) / v2
+        t1v1 < s2 -> t1 + (s2 - t1v1) / v2
         else -> s2 / v1
     }
 
@@ -144,11 +144,11 @@ fun rookOrBishopThreatens(
 
     if (kingX == rookX || kingY == rookY) rook = true
     if (abs(kingX - bishopX) == abs(kingY - bishopY)) bh = true
-    if (rook == true) {
-        if (bh == true) return 3
-        else return 1
-    } else if (bh == true) return 2
-    else return 0
+    return if (rook) {
+        if (bh) 3
+        else 1
+    } else if (bh) 2
+    else 0
 }
 
 /**
