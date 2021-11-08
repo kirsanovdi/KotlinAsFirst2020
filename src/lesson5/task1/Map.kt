@@ -96,15 +96,7 @@ fun buildWordSet(text: List<String>): MutableSet<String> {
  *   buildGrades(mapOf("Марат" to 3, "Семён" to 5, "Михаил" to 5))
  *     -> mapOf(5 to listOf("Семён", "Михаил"), 3 to listOf("Марат"))
  */
-fun buildGrades(grades: Map<String, Int>): Map<Int, List<String>> {
-    var result = mutableMapOf<Int, List<String>>()
-    var tf = false
-    for ((v, k) in grades) {
-        var res = mutableMapOf<Int, List<String>>(k to listOf(v))
-     //   if (result[k] != null) result[k].add(res[k])
-    }
-    return result
-}
+fun buildGrades(grades: Map<String, Int>): Map<Int, List<String>> = TODO()
 
 /**
  * Простая (2 балла)
@@ -241,7 +233,30 @@ fun extractRepeats(list: List<String>): Map<String, Int> = TODO()
  * Например:
  *   hasAnagrams(listOf("тор", "свет", "рот")) -> true
  */
-fun hasAnagrams(words: List<String>): Boolean = TODO()
+fun isAnogramm(str: String, str2: String): Boolean {
+    if (str.length != str2.length) return false
+    var temp = false
+    for (i in str.indices) {
+        for (k in str2.indices) {
+            if (str[i] == str2[k]) {
+                temp = true
+                break
+            }
+        }
+        if (!temp) return false
+        temp = false
+    }
+    return true
+}
+
+fun hasAnagrams(words: List<String>): Boolean {
+    for (k in words.indices) {
+        for (i in (k + 1) until words.size) {
+            if (isAnogramm(words[k], words[i])) return true
+        }
+    }
+    return false
+}
 
 /**
  * Сложная (5 баллов)
@@ -296,7 +311,16 @@ fun propagateHandshakes(friends: Map<String, Set<String>>): Map<String, Set<Stri
  *   findSumOfTwo(listOf(1, 2, 3), 4) -> Pair(0, 2)
  *   findSumOfTwo(listOf(1, 2, 3), 6) -> Pair(-1, -1)
  */
-fun findSumOfTwo(list: List<Int>, number: Int): Pair<Int, Int> = TODO()
+fun findSumOfTwo(list: List<Int>, number: Int): Pair<Int, Int> {
+    for (k in list) {
+        println("${list[k - 1]}")
+        for (i in (k + 1)..list.size) {
+            println("${list[k - 1]}   ${list[i - 1]}")
+            if (list[k - 1] + list[i - 1] == number) return Pair(k - 1, i - 1)
+        }
+    }
+    return Pair(-1, -1)
+}
 
 /**
  * Очень сложная (8 баллов)
