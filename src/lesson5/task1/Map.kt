@@ -354,7 +354,7 @@ fun bagPacking(treasures: Map<String, Pair<Int, Int>>, capacity: Int): Set<Strin
             cost = value.second
             res.removeAll(res)
             res += key
-            m += value.first
+            m = value.first
         }
     }
 
