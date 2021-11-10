@@ -349,10 +349,12 @@ fun bagPacking(treasures: Map<String, Pair<Int, Int>>, capacity: Int): Set<Strin
         if (value.first + m <= capacity) {
             res += key
             cost += value.second
+            m += value.first
         } else if (value.first <= capacity && value.second > cost) {
             cost = value.second
             res.removeAll(res)
             res += key
+            m += value.first
         }
     }
 
