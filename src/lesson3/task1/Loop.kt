@@ -338,32 +338,22 @@ fun cos(x: Double, eps: Double): Double {
  */
 
 fun squareSequenceDigit(n: Int): Int {
-    var counter: Int = 0
-
+    var counter = 0
     var k = 1
     var last = 0
     var reserv = 0
-
     do {
         last = step(k, 2)
         counter += digitNumber(last)
-
         k++
     } while (counter < n)
     if (n < 2) return last
     if (counter == n) return last % 10
-    return if (counter - n <= digitNumber(last)) {
-        reserv = counter - n
-
-
-        for (i in 1..reserv) {
-
-            last /= 10
-        }
-
-        last % 10
-    } else 0
-
+    reserv = counter - n
+    for (i in 1..reserv) {
+        last /= 10
+    }
+    return last % 10
 }
 
 
