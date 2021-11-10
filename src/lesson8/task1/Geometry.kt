@@ -3,56 +3,94 @@
 package lesson8.task1
 
 import lesson1.task1.sqr
+import java.util.*
 import kotlin.math.*
 
 // Урок 8: простые классы
 // Максимальное количество баллов = 40 (без очень трудных задач = 11)
 
+fun getHull(listInput: List<Point>): List<Point> {//алгоритм Грэхема
+    val p = listInput.minByOrNull { it.y }!!
+    println(p)
+    val list = listInput.filter { it != p }.sortedBy { Segment(p, it).angleFromOtherToX() }
+    for (item in list) {
+        println(item)
+        println(Segment(p, item).angleFromOtherToX() / PI * 180)
+    }
+    val hull = Stack<Point>()
+    hull.add(p)
+    hull.add(list[0])
+
+    var i = 1
+    while (i < list.size) {
+        val t = list[i]
+        var pi = hull.pop()//заведомор удаляем, потом обратно последнюю добавим
+        var pi1 = hull.peek()
+        while (pi.isLeftTurnWith(t, pi1) && hull.size > 1) {
+            pi = hull.pop()
+            pi1 = hull.peek()
+        }
+        hull.add(pi)
+        hull.add(t)
+        i++
+    }
+    println(hull)
+    return hull.toList()
+}
+
+fun display(list: List<Point>) {
+    for (x in 10 downTo 0) {
+        val stringBuilder = StringBuilder()
+        for (y in 0..10) {
+            stringBuilder.append((if (list.any { point -> point.x == x.toDouble() && point.y == y.toDouble() }) "1" else "0") + " ")
+        }
+        println(stringBuilder.toString())
+    }
+}
+
+fun main() {
+    //println(getHull(listOf(Point(0.0, 1.0), Point(1.0, 0.0), Point(1.0, 1.0), Point(2.0, 1.0), Point(1.0, 2.0))))
+    val list = listOf(
+        Point(0.0, 1.0),
+        Point(1.0, 0.0),
+        Point(2.0, 1.0),
+        Point(4.0, 0.0),
+        Point(5.0, 6.0),
+        Point(3.0, 4.0),
+        Point(7.0, 7.0),
+        Point(2.0, 2.0)
+    )
+    display(list)
+    //println(getHull(list))
+    display(getHull(list))
+}
+
 /**
  * Точка на плоскости
  */
 data class Point(val x: Double, val y: Double) {
-    /**
-     * Пример
-     *
-     * Рассчитать (по известной формуле) расстояние между двумя точками
-     */
     fun distance(other: Point): Double = sqrt(sqr(x - other.x) + sqr(y - other.y))
+
+    //return (a[0] - o[0]) * (b[1] - o[1]) - (a[1] - o[1]) * (b[0] - o[0])
+    fun isLeftTurnWith(pA: Point, pB: Point): Boolean =
+        (pA.x - this.x) * (-pB.y + this.y) - (pA.y - this.y) * (-pB.x + this.x) <= 0
 }
 
-/**
- * Треугольник, заданный тремя точками (a, b, c, см. constructor ниже).
- * Эти три точки хранятся в множестве points, их порядок не имеет значения.
- */
 @Suppress("MemberVisibilityCanBePrivate")
 class Triangle private constructor(private val points: Set<Point>) {
-
     private val pointList = points.toList()
-
     val a: Point get() = pointList[0]
-
     val b: Point get() = pointList[1]
-
     val c: Point get() = pointList[2]
 
     constructor(a: Point, b: Point, c: Point) : this(linkedSetOf(a, b, c))
 
-    /**
-     * Пример: полупериметр
-     */
     fun halfPerimeter() = (a.distance(b) + b.distance(c) + c.distance(a)) / 2.0
-
-    /**
-     * Пример: площадь
-     */
     fun area(): Double {
         val p = halfPerimeter()
         return sqrt(p * (p - a.distance(b)) * (p - b.distance(c)) * (p - c.distance(a)))
     }
 
-    /**
-     * Пример: треугольник содержит точку
-     */
     fun contains(p: Point): Boolean {
         val abp = Triangle(a, b, p)
         val bcp = Triangle(b, c, p)
@@ -61,40 +99,28 @@ class Triangle private constructor(private val points: Set<Point>) {
     }
 
     override fun equals(other: Any?) = other is Triangle && points == other.points
-
     override fun hashCode() = points.hashCode()
-
     override fun toString() = "Triangle(a = $a, b = $b, c = $c)"
 }
 
-/**
- * Окружность с заданным центром и радиусом
- */
+
 data class Circle(val center: Point, val radius: Double) {
-    /**
-     * Простая (2 балла)
-     *
-     * Рассчитать расстояние между двумя окружностями.
-     * Расстояние между непересекающимися окружностями рассчитывается как
-     * расстояние между их центрами минус сумма их радиусов.
-     * Расстояние между пересекающимися окружностями считать равным 0.0.
-     */
     fun distance(other: Circle): Double = (this.center.distance(other.center) - this.radius - other.radius).let {
         if (it > 0.0) it else 0.0
     }
 
-    /**
-     * Тривиальная (1 балл)
-     *
-     * Вернуть true, если и только если окружность содержит данную точку НА себе или ВНУТРИ себя
-     */
     fun contains(p: Point): Boolean = this.center.distance(p) <= radius
 }
 
-/**
- * Отрезок между двумя точками
- */
 data class Segment(val begin: Point, val end: Point) {
+
+    fun angleFromOtherToX(): Double {
+        val upper = (end.x - begin.x) * 1 + 0
+        val lower = sqrt(this.length() * this.length() * 1)
+        return acos(upper / lower)
+    }
+
+    fun length() = begin.distance(end)
     override fun equals(other: Any?) =
         other is Segment && (begin == other.begin && end == other.end || end == other.begin && begin == other.end)
 
@@ -102,16 +128,13 @@ data class Segment(val begin: Point, val end: Point) {
         begin.hashCode() + end.hashCode()
 }
 
+
 /**
  * Средняя (3 балла)
  *
  * Дано множество точек. Вернуть отрезок, соединяющий две наиболее удалённые из них.
  * Если в множестве менее двух точек, бросить IllegalArgumentException
  */
-fun main() {
-    println(1)
-}
-
 fun diameter(vararg points: Point): Segment {
     if (points.size < 2) throw IllegalArgumentException()
     if (points.size == 2) return Segment(points[0], points[1])
