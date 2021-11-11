@@ -20,23 +20,17 @@ fun getHull(listInput: List<Point>): List<Point> {//алгоритм Грэхе�
     val hull = Stack<Point>()
     hull.add(p)
     hull.add(list[0])
-
-    var i = 1
-    while (i < list.size) {
-        val t = list[i]
-        var pi = hull.pop()//заведомор удаляем, потом обратно последнюю добавим
-        var pi1 = hull.peek()
-        while (pi.isLeftTurnWith(t, pi1) && hull.size > 1) {
-            pi = hull.pop()
-            pi1 = hull.peek()
-        }
-        hull.add(pi)
-        hull.add(t)
-        i++
+    fun Stack<Point>.previous() = this[this.size - 2]
+    for (pi in list) {
+        while (hull.size > 1 && !isLeftTurn(hull.previous(), hull.last(), pi)) hull.pop()
+        hull.push(pi)
     }
     println(hull)
     return hull.toList()
 }
+
+fun isLeftTurn(a: Point, b: Point, c: Point): Boolean =
+    (b.x - a.x) * (c.y - b.y) - (b.y - a.y) * (c.x - b.x) >= 0
 
 fun display(list: List<Point>) {
     for (x in 10 downTo 0) {
@@ -63,6 +57,7 @@ fun main() {
     display(list)
     //println(getHull(list))
     display(getHull(list))
+    //println(isLeftTurn(Point(10.0, 5.0), Point(-10.0, 5.0), Point(-10.0, -100.0)))
 }
 
 /**
@@ -70,10 +65,6 @@ fun main() {
  */
 data class Point(val x: Double, val y: Double) {
     fun distance(other: Point): Double = sqrt(sqr(x - other.x) + sqr(y - other.y))
-
-    //return (a[0] - o[0]) * (b[1] - o[1]) - (a[1] - o[1]) * (b[0] - o[0])
-    fun isLeftTurnWith(pA: Point, pB: Point): Boolean =
-        (pA.x - this.x) * (-pB.y + this.y) - (pA.y - this.y) * (-pB.x + this.x) <= 0
 }
 
 @Suppress("MemberVisibilityCanBePrivate")
@@ -114,13 +105,10 @@ data class Circle(val center: Point, val radius: Double) {
 
 data class Segment(val begin: Point, val end: Point) {
 
-    fun angleFromOtherToX(): Double {
-        val upper = (end.x - begin.x) * 1 + 0
-        val lower = sqrt(this.length() * this.length() * 1)
-        return acos(upper / lower)
-    }
+    fun angleFromOtherToX(): Double = acos((end.x - begin.x) / this.length())
 
-    fun length() = begin.distance(end)
+    private fun length() = begin.distance(end)
+
     override fun equals(other: Any?) =
         other is Segment && (begin == other.begin && end == other.end || end == other.begin && begin == other.end)
 
