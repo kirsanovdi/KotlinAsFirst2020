@@ -140,7 +140,7 @@ fun dateDigitToStr(digital: String): String {
     val month = mapOf(
         1 to "января",
         2 to "февраля",
-        3 to "февраля",
+        3 to "марта",
         4 to "апреля",
         5 to "мая",
         6 to "июня",
