@@ -3,6 +3,7 @@
 package lesson6.task1
 
 import lesson2.task2.daysInMonth
+import kotlin.math.exp
 
 // Урок 6: разбор строк, исключения
 // Максимальное количество баллов = 13
@@ -216,7 +217,19 @@ fun bestHighJump(jumps: String): Int {
  * Вернуть значение выражения (6 для примера).
  * Про нарушении формата входной строки бросить исключение IllegalArgumentException
  */
-fun plusMinus(expression: String): Int = TODO()
+fun plusMinus(expression: String): Int {
+    if (Regex("""\d{1,10}""").matches(expression)) return expression.toInt()
+    else if (!Regex("""\d{1,10}( [+-] \d{1,10})+""").matches(expression)) throw IllegalArgumentException("Wrong enter format")
+    val list = expression.split(' ')
+    var res = list[0].toInt()
+    println(res)
+    for (element in 1..(list.size - 2) step 2) {
+        if (list[element] == "+") {
+            res += list[element + 1].toInt()
+        } else res -= list[element + 1].toInt()
+    }
+return res
+}
 
 /**
  * Сложная (6 баллов)
