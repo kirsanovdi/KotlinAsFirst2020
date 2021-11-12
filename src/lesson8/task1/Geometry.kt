@@ -31,7 +31,7 @@ fun getHull(listInput: List<Point>): List<Point> {//алгоритм Грэхе�
 }
 
 fun isLeftTurn(a: Point, b: Point, c: Point): Boolean =
-    (b.x - a.x) * (c.y - b.y) - (b.y - a.y) * (c.x - b.x) >= 0
+    (b.x - a.x) * (c.y - b.y) - (b.y - a.y) * (c.x - b.x) > 0
 
 fun goodArrow(down: Point, up: Point, left: Point, right: Point): Boolean {
     //угол между up-down и up-left/right < 90
@@ -41,37 +41,37 @@ fun goodArrow(down: Point, up: Point, left: Point, right: Point): Boolean {
 }
 
 fun display(list: List<Point>) {
-    for (x in 10 downTo 0) {
-        val stringBuilder = StringBuilder()
-        for (y in 0..10) {
-            stringBuilder.append((if (list.any { point -> point.x == x.toDouble() && point.y == y.toDouble() }) "1" else "0") + " ")
-        }
-        println(stringBuilder.toString())
+    val desk: Array<Array<Int>> = Array(10) { Array(10) { 0 } }
+    for ((x, y) in list) {
+        desk[desk.size - 1 - y.toInt()][x.toInt()] = 1
     }
+    for (arrLine in desk) println(arrLine.joinToString())
 }
 
 fun main() {
     //println(getHull(listOf(Point(0.0, 1.0), Point(1.0, 0.0), Point(1.0, 1.0), Point(2.0, 1.0), Point(1.0, 2.0))))
     val list = listOf(
-        Point(0.0, 1.0),
-        Point(1.0, 0.0),
+        //Point(0.0, 1.0),
+        //Point(1.0, 0.0),
         Point(2.0, 1.0),
         Point(4.0, 0.0),
         Point(5.0, 6.0),
+        Point(3.0, 2.0),
+        Point(4.0, 4.0),
+        Point(6.0, 2.0),
         Point(3.0, 4.0),
         Point(7.0, 7.0),
         Point(2.0, 2.0)
     )
-    println(goodArrow(Point(2.0, 2.0), Point(2.0, 10.0), Point(1.0, 9.0), Point(3.0, 9.0)))
-    //display(list)
+    //println(goodArrow(Point(2.0, 2.0), Point(2.0, 10.0), Point(1.0, 9.0), Point(3.0, 9.0)))
+    //display(listOf(Point(1.0, 0.0), Point(0.0, 3.0)))
+    display(list)
     //println(getHull(list))
-    //display(getHull(list))
+    println("")
+    display(getHull(list))
     //println(isLeftTurn(Point(10.0, 5.0), Point(-10.0, 5.0), Point(-10.0, -100.0)))
 }
 
-/**
- * Точка на плоскости
- */
 data class Point(val x: Double, val y: Double) {
     fun distance(other: Point): Double = sqrt(sqr(x - other.x) + sqr(y - other.y))
 }
@@ -116,7 +116,7 @@ data class Segment(val begin: Point, val end: Point) {
 
     fun angleFromOtherToX(): Double = acos((end.x - begin.x) / this.length())
 
-    private fun length() = begin.distance(end)
+    fun length() = begin.distance(end)
 
     override fun equals(other: Any?) =
         other is Segment && (begin == other.begin && end == other.end || end == other.begin && begin == other.end)
@@ -136,6 +136,14 @@ fun diameter(vararg points: Point): Segment {
     //hull
     if (points.size < 2) throw IllegalArgumentException()
     if (points.size == 2) return Segment(points[0], points[1])
+    if (points.size == 3) {
+        val list3Points = listOf(
+            Segment(points[0], points[1]),
+            Segment(points[1], points[2]),
+            Segment(points[0], points[2])
+        )
+        return list3Points.maxByOrNull { it.length() }!!
+    }
     val hull = getHull(points.toList())
     val hullSize = hull.size
     //вращающиеся калиперы
@@ -146,6 +154,12 @@ fun diameter(vararg points: Point): Segment {
     var result = Segment(points[0], points[1])
     //обход в круг с проверкой на непересекаемость противоположной с помощью правильной стрелки
     while (pIndex < hullSize) {
+        val len = hull.getFromPos(pIndex)
+            .distance(hull.getFromPos(oppositeIndex))//тем не менее соседи могут быть самыми дальними(трапеция)
+        if (len > maxLen) {
+            maxLen = len
+            result = Segment(hull.getFromPos(pIndex), hull.getFromPos(oppositeIndex))
+        }
         when (pIndex) {
             (hullSize + oppositeIndex + 1) % hullSize -> pIndex++ //если down совпадает с left
             (hullSize + oppositeIndex - 1) % hullSize -> oppositeIndex++ //если down совпадает с right
@@ -156,16 +170,12 @@ fun diameter(vararg points: Point): Segment {
                     hull.getFromPos(oppositeIndex - 1)
                 )
             ) {
-                val len = hull.getFromPos(pIndex).distance(hull.getFromPos(oppositeIndex))
-                if (len > maxLen) {
-                    maxLen = len
-                    result = Segment(hull.getFromPos(pIndex), hull.getFromPos(oppositeIndex))
-                }
+
                 oppositeIndex++
             } else pIndex++
         }
     }
-    println(result)
+    //println(result)
     return result
 }
 

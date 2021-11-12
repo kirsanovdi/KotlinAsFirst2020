@@ -68,9 +68,12 @@ class Tests {
     }
 
     private fun approxEquals(expected: Segment, actual: Segment, delta: Double): Boolean =
-        expected.begin.distance(actual.begin) <= delta && expected.end.distance(actual.end) <= delta
+        expected.begin.distance(actual.begin) <= delta && expected.end.distance(actual.end) <= delta ||
+                expected.begin.distance(actual.end) <= delta && expected.end.distance(actual.begin) <= delta
 
     private fun assertApproxEquals(expected: Segment, actual: Segment, delta: Double = ulp(10.0)) {
+        //println(expected)
+        //println(actual)
         assertTrue(approxEquals(expected, actual, delta))
     }
 
