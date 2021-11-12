@@ -518,7 +518,7 @@ fun main() {
                     "Suspendisse ~~et elit in enim tempus iaculis~~."
         )
     )
-    printDivisionProcess(699, 1023, "input/test.txt")
+    printDivisionProcess(128612, 81917, "input/test.txt")
 }
 
 fun markdownToHtmlSimple(inputName: String, outputName: String) {
@@ -814,7 +814,7 @@ fun printDivisionProcess(lhv: Int, rhv: Int, outputName: String) {
         var remainder: Int
         var i = 0
         var process = true
-
+        var isFirstSmall = 0
         fun next() {
             val isZero = delta == 0
             if (i < lhvString.length) {
@@ -827,7 +827,7 @@ fun printDivisionProcess(lhv: Int, rhv: Int, outputName: String) {
             val absDiv: Int = (delta / rhv) * rhv
             val absDivString = absDiv.toString()
             delta = remainder
-            printStream.println(" ".repeat(i - deltaString.length) + (if (isZero && process) "0" else " ") + deltaString)
+            printStream.println(" ".repeat(i - deltaString.length - isFirstSmall) + (if (isZero && process) "0" else " ") + deltaString)
             if (process) {
                 printStream.println(" ".repeat(i - absDivString.length) + "-" + absDivString)
                 val max = max(absDivString.length + 1, deltaString.length)
@@ -840,22 +840,24 @@ fun printDivisionProcess(lhv: Int, rhv: Int, outputName: String) {
             delta = delta * 10 + (lhvString[i] - '0')
             i++
         }
+        val firstPeaceToDiv = delta
         remainder = delta % rhv
         delta -= remainder
         deltaString = delta.toString()
         delta = remainder
-        if(trueDivision == 0 && lhv > 100){
+        val smallDelta = firstPeaceToDiv.toString().length - deltaString.length - 1
+        if(smallDelta >= 0) {
             printStream.println("$lhv | $rhv")
-            printStream.println(" ".repeat(lhv.toString().length - 2) + "-0   0")
-            printStream.println("-".repeat(lhv.toString().length))
-            printStream.println(lhv.toString())
+            val remainSpace = lhv.toString().length + 2 - deltaString.length - smallDelta
+            printStream.println(" ".repeat(smallDelta) + "-" + deltaString + " ".repeat(remainSpace) + trueDivision)
+            isFirstSmall = 1
         } else {
             printStream.println(" $lhv | $rhv")
             printStream.println("-" + deltaString + " ".repeat(lhv.toString().length + 3 - deltaString.length) + trueDivision)
-            printStream.println("-".repeat(1 + deltaString.length))
-            while (process) {
-                next()
-            }
+        }
+        printStream.println("-".repeat(1 + deltaString.length))
+        while (process) {
+            next()
         }
     }
 }
