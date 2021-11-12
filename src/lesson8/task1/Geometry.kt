@@ -8,24 +8,25 @@ import kotlin.math.*
 
 // Урок 8: простые классы
 // Максимальное количество баллов = 40 (без очень трудных задач = 11)
+fun List<Point>.getFromPos(index: Int): Point = this[(this.size + index) % this.size]
+fun Stack<Point>.previous(): Point = this[this.size - 2]
 
 fun getHull(listInput: List<Point>): List<Point> {//алгоритм Грэхема
     val p = listInput.minByOrNull { it.y }!!
-    println(p)
+    //println(p)
     val list = listInput.filter { it != p }.sortedBy { Segment(p, it).angleFromOtherToX() }
-    for (item in list) {
+    /*for (item in list) {
         println(item)
         println(Segment(p, item).angleFromOtherToX() / PI * 180)
-    }
+    }*/
     val hull = Stack<Point>()
     hull.add(p)
     hull.add(list[0])
-    fun Stack<Point>.previous() = this[this.size - 2]
     for (pi in list) {
         while (hull.size > 1 && !isLeftTurn(hull.previous(), hull.last(), pi)) hull.pop()
         hull.push(pi)
     }
-    println(hull)
+    //println(hull)
     return hull.toList()
 }
 
@@ -132,32 +133,39 @@ data class Segment(val begin: Point, val end: Point) {
  * Если в множестве менее двух точек, бросить IllegalArgumentException
  */
 fun diameter(vararg points: Point): Segment {
+    //hull
     if (points.size < 2) throw IllegalArgumentException()
     if (points.size == 2) return Segment(points[0], points[1])
     val hull = getHull(points.toList())
     val hullSize = hull.size
+    //вращающиеся калиперы
     var pIndex = 0
     var oppositeIndex = hull.indexOf(hull.maxByOrNull { it.distance(hull[0]) })
-    var iteration = 0
+    // для поиска большего
     var maxLen = 0.0
     var result = Segment(points[0], points[1])
-    fun List<Point>.getFromPos(index: Int): Point = this[(this.size + index) % this.size]
-    while (pIndex < hullSize * 2) {
-        if (goodArrow(//сделать двустороннюю?
-                hull.getFromPos(pIndex),
-                hull.getFromPos(oppositeIndex),
-                hull.getFromPos(oppositeIndex + 1),
-                hull.getFromPos(oppositeIndex - 1)
-            )
-        ) {
-            val len = hull.getFromPos(pIndex).distance(hull.getFromPos(oppositeIndex))
-            if (len > maxLen) {
-                maxLen = len
-                result = Segment(hull.getFromPos(pIndex), hull.getFromPos(oppositeIndex))
-            }
-        } else pIndex++
-
+    //обход в круг с проверкой на непересекаемость противоположной с помощью правильной стрелки
+    while (pIndex < hullSize) {
+        when (pIndex) {
+            (hullSize + oppositeIndex + 1) % hullSize -> pIndex++ //если down совпадает с left
+            (hullSize + oppositeIndex - 1) % hullSize -> oppositeIndex++ //если down совпадает с right
+            else -> if (goodArrow(
+                    hull.getFromPos(pIndex),
+                    hull.getFromPos(oppositeIndex),
+                    hull.getFromPos(oppositeIndex + 1),
+                    hull.getFromPos(oppositeIndex - 1)
+                )
+            ) {
+                val len = hull.getFromPos(pIndex).distance(hull.getFromPos(oppositeIndex))
+                if (len > maxLen) {
+                    maxLen = len
+                    result = Segment(hull.getFromPos(pIndex), hull.getFromPos(oppositeIndex))
+                }
+                oppositeIndex++
+            } else pIndex++
+        }
     }
+    println(result)
     return result
 }
 
