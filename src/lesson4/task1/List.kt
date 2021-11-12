@@ -344,8 +344,7 @@ fun decimalFromString(str: String, base: Int): Int {
 fun roman(n: Int): String {
     var t = n
     var l = mutableListOf<String>()
-    var const = listOf<String>()
-    val r = mapOf<Int, String>(
+    val r = mapOf(
         1000 to "M",
         900 to "CM",
         500 to "D",
