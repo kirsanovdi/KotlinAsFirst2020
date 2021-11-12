@@ -7,10 +7,11 @@ import java.io.File
 import java.util.*
 import kotlin.math.*
 
-const val delta = 1e-9
+const val delta = 1e-10
 
 data class Point(val x: Double, val y: Double) {
     fun distance(other: Point): Double = sqrt(sqr(x - other.x) + sqr(y - other.y))
+    //override fun equals(other: Any?) = other is Point && this.x == other.x && this.y == other.y
 }
 
 @Suppress("MemberVisibilityCanBePrivate")
@@ -88,7 +89,7 @@ class Line private constructor(val b: Double, val angle: Double) {
         return Point(x, y)
     }
 
-    fun angleBetweenLines(other: Line): Double = abs(PI + this.angle - other.angle) % (PI / 2)
+    fun angleBetweenLines(other: Line): Double = abs(other.angle - this.angle)
 
     override fun equals(other: Any?) = other is Line && angle == other.angle && b == other.b
 
@@ -107,13 +108,13 @@ fun Stack<Point>.previous(): Point = this[this.size - 2]
 
 //проверка на правый поворот a -> b -> c
 fun isLeftTurn(a: Point, b: Point, c: Point): Boolean =
-    (b.x - a.x) * (c.y - b.y) - (b.y - a.y) * (c.x - b.x) >= 0
+    (b.x - a.x) * (c.y - b.y) - (b.y - a.y) * (c.x - b.x) >= -delta
 
 //алгоритм Грэхема
 fun getHull(listInput: List<Point>): List<Point> {
     val p = listInput.minByOrNull { it.y }!!
-    val list = listInput.filter { it != p }.sortedBy { Segment(p, it).angleFromOtherToX() }
-
+    val list = listInput.filter { it != p }.sortedBy { Segment(p, it).angleFromOtherToX() }.toMutableList()
+    list.add(list.first())// <-last change
     val hull = Stack<Point>()
     hull.add(p)
     hull.add(list[0])
@@ -122,6 +123,13 @@ fun getHull(listInput: List<Point>): List<Point> {
         hull.push(pi)
     }
     return hull.toList()
+}
+
+fun goodArrow(down: Point, up: Point, left: Point, right: Point): Boolean {
+    //угол между up-down и up-left/right < 90
+    if (((down.x - up.x) * (left.x - up.x) + (down.y - up.y) * (left.y - up.y)) <= 0) return false
+    if (((down.x - up.x) * (right.x - up.x) + (down.y - up.y) * (right.y - up.y)) <= 0) return false
+    return true//ещё делить на длину, но длина + и на знак не влияет
 }
 
 //отображение 10x10
@@ -205,9 +213,18 @@ fun diameter(vararg points: Point): Segment {
     if (points.size < 2) throw IllegalArgumentException()
     if (points.size == 2) return Segment(points[0], points[1])
     var pointIndex = 0
-    val hull = getHull(points.toList())
-    var oppositeIndex = hull.indices.maxByOrNull { i -> hull[i].distance(hull[0]) }!!
-
+    fun toZero(a: Double) = if (abs(a) < 1e-10) 0.0 else a
+    val hullRaw = getHull(points.toList()).map { Point(toZero(it.x), toZero(it.y)) }
+    val hull = mutableListOf<Point>()
+    var prev = hullRaw[2]
+    for (point in hullRaw){
+        if (point.distance(prev) > delta) hull.add(point)
+        prev = point
+    }
+    println(hull)
+    //println(hull.size)
+    var oppositeIndex = hull.indices.maxByOrNull { i -> hull[0].distance(hull[i]) }!!
+    //println(oppositeIndex)
     var result = Segment(hull[0], hull[1])
     var max = result.length()
     while (pointIndex < hull.size) { //движемся против часовой стрелки
@@ -224,8 +241,9 @@ fun diameter(vararg points: Point): Segment {
             max = athwart.length()
             result = athwart
         }
-        println("$pointIndex $oppositeIndex")
-        if (pointLineMoveTo.angleBetweenLines(pointLine) < oppositeLineMoveTo.angleBetweenLines(oppositeLine)) {
+        //println("$pointIndex $oppositeIndex")
+        println(pointLine.angle/PI * 180)
+        if (pointLine.angleBetweenLines(pointLineMoveTo) <= oppositeLine.angleBetweenLines(oppositeLineMoveTo)) {
             pointIndex++
         } else oppositeIndex++
     }
@@ -244,25 +262,21 @@ fun main() {
         Point(7.0, 7.0),
         Point(2.0, 2.0)
     )
-    //display(list)
-    //println(diameter(*list.toTypedArray()))
-    val listParse = parse("input/inputAnswer.txt")
-    //println(getHull(listParse))
-    //println(getHull(listParse).size)
-    val diameter = diameter(*listParse.toTypedArray())
-    val diameterOld = diameterOld(*listParse.toTypedArray())
-    println(diameter)
-    println(diameter.length())
-    println(diameterOld)
-    println(diameterOld.length())
-    /*println(getHull(listParse))
-    println(segment)
-    println(segment.length())
-    println(segmentOld)
-    println(segmentOld.length())*/
-    //display(list)
-    //println("")
-    //display(getHull(list))
+    //println(getHull(parse("input/inputAnswer.txt")))
+    println(diameter(*parse("input/inputAnswer.txt").toTypedArray()))
+    println(diameterOld(*parse("input/inputAnswer.txt").toTypedArray()))
+    println(diameter(*parse("input/inputAnswer.txt").toTypedArray()).length() == diameterOld(*parse("input/inputAnswer.txt").toTypedArray()).length())
+    println("------------------------------------------")
+    //println(getHull(parse("input/inputAnswer2.txt")))
+    println(diameter(*parse("input/inputAnswer2.txt").toTypedArray()))
+    println(diameterOld(*parse("input/inputAnswer2.txt").toTypedArray()))
+    println(diameter(*parse("input/inputAnswer2.txt").toTypedArray()).length() == diameterOld(*parse("input/inputAnswer2.txt").toTypedArray()).length())
+    println("------------------------------------------")
+    //println(getHull(parse("input/inputAnswer3.txt")))
+    println(diameter(*parse("input/inputAnswer3.txt").toTypedArray()))
+    println(diameterOld(*parse("input/inputAnswer3.txt").toTypedArray()))
+    println(diameter(*parse("input/inputAnswer3.txt").toTypedArray()).length() == diameterOld(*parse("input/inputAnswer3.txt").toTypedArray()).length())
+    println("------------------------------------------")
 }
 
 /**
