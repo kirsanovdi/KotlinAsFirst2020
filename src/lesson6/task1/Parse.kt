@@ -2,6 +2,8 @@
 
 package lesson6.task1
 
+import lesson2.task2.daysInMonth
+
 // Урок 6: разбор строк, исключения
 // Максимальное количество баллов = 13
 // Рекомендуемое количество баллов = 11
@@ -74,7 +76,51 @@ fun main() {
  * Обратите внимание: некорректная с точки зрения календаря дата (например, 30.02.2009) считается неверными
  * входными данными.
  */
-fun dateStrToDigit(str: String): String = TODO()
+
+fun dateStrToDigit(str: String): String {
+
+    if (!Regex("""\d{1,2} [а-яё]+ \d+""").matches(str)) return "" else {
+        val month = mapOf(
+            "января" to 1,
+            "февраля" to 2,
+            "марта" to 3,
+            "апреля" to 4,
+            "мая" to 5,
+            "июня" to 6,
+            "июля" to 7,
+            "августа" to 8,
+            "сентября" to 9,
+            "октября" to 10,
+            "ноября" to 11,
+            "декабря" to 12
+        )
+
+        val enter = str.split(" ")
+        val day = enter[0].toInt()
+        val year = enter[2].toInt()
+        for ((key, value) in month) {
+            if (key == enter[1]) {
+                val mnth = value
+                if (day > daysInMonth(mnth, year)
+                ) return ""
+                else {
+                    return String.format("%02d.%02d.%d", day, mnth, year)
+                }
+            }
+        }
+        return ""
+        /* if (enter[1] in enter) {
+             val mnth = month.getValue(enter[1])
+             if (day > daysInMonth(mnth, year)
+             ) return ""
+             else {
+                 return String.format("%02d.%02d.%d", day, mnth, year)
+             }
+         } else return ""
+ */
+
+    }
+}
 
 /**
  * Средняя (4 балла)
@@ -86,7 +132,30 @@ fun dateStrToDigit(str: String): String = TODO()
  * Обратите внимание: некорректная с точки зрения календаря дата (например, 30 февраля 2009) считается неверными
  * входными данными.
  */
-fun dateDigitToStr(digital: String): String = TODO()
+fun dateDigitToStr(digital: String): String {
+    if (!Regex("""\d{1,2}.\d{1,2}.\d+""").matches(digital)) return ""
+    val enter = digital.split('.')
+    val month = mapOf(
+        1 to "января",
+        2 to "февраля",
+        3 to "февраля",
+        4 to "апреля",
+        5 to "мая",
+        6 to "июня",
+        7 to "июля",
+        8 to "августа",
+        9 to "сентября",
+        10 to "октября",
+        11 to "ноября",
+        12 to "декабря"
+    )
+    val day = enter[0].toInt()
+    val year = enter[2].toInt()
+    val mnth = enter[1].toInt()
+    if ((mnth in 1..12) && (day <= daysInMonth(mnth, year))) {
+        return String.format("%d %s %d", day, month.getValue(mnth), year)
+    } else return ""
+}
 
 /**
  * Средняя (4 балла)
@@ -127,7 +196,16 @@ fun bestLongJump(jumps: String): Int = TODO()
  * При нарушении формата входной строки, а также в случае отсутствия удачных попыток,
  * вернуть -1.
  */
-fun bestHighJump(jumps: String): Int = TODO()
+fun bestHighJump(jumps: String): Int {
+    val enter = " $jumps" //StringBuilder(jumps).insert(0, ' ')
+    if (!Regex("""( \d{1,5} [+%-]+)+""").matches(enter)) return -1
+    var res = jumps.split(" ")
+    var max = -1
+    for (element in 0..(res.size - 2) step 2) {
+        if (res[element].toInt() > max && '+' in res[element + 1]) max = res[element].toInt()
+    }
+    return max
+}
 
 /**
  * Сложная (6 баллов)
