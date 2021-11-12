@@ -6,19 +6,18 @@ import lesson1.task1.sqr
 import java.util.*
 import kotlin.math.*
 
+const val delta = 1e-9
 // Урок 8: простые классы
 // Максимальное количество баллов = 40 (без очень трудных задач = 11)
+
 fun List<Point>.getFromPos(index: Int): Point = this[(this.size + index) % this.size]
+
 fun Stack<Point>.previous(): Point = this[this.size - 2]
 
-fun getHull(listInput: List<Point>): List<Point> {//алгоритм Грэхема
+//алгоритм Грэхема
+fun getHull(listInput: List<Point>): List<Point> {
     val p = listInput.minByOrNull { it.y }!!
-    //println(p)
     val list = listInput.filter { it != p }.sortedBy { Segment(p, it).angleFromOtherToX() }
-    /*for (item in list) {
-        println(item)
-        println(Segment(p, item).angleFromOtherToX() / PI * 180)
-    }*/
     val hull = Stack<Point>()
     hull.add(p)
     hull.add(list[0])
@@ -26,17 +25,17 @@ fun getHull(listInput: List<Point>): List<Point> {//алгоритм Грэхе�
         while (hull.size > 1 && !isLeftTurn(hull.previous(), hull.last(), pi)) hull.pop()
         hull.push(pi)
     }
-    //println(hull)
     return hull.toList()
 }
-
+//проверка на правый поворот a -> b -> c
 fun isLeftTurn(a: Point, b: Point, c: Point): Boolean =
-    (b.x - a.x) * (c.y - b.y) - (b.y - a.y) * (c.x - b.x) > 0
-
+    (b.x - a.x) * (c.y - b.y) - (b.y - a.y) * (c.x - b.x) >= -delta
+//будет ли пересекать перпендикулярная прямая оболочку более чем в одной точке
 fun goodArrow(down: Point, up: Point, left: Point, right: Point): Boolean {
     //угол между up-down и up-left/right < 90
-    if (((down.x - up.x) * (left.x - up.x) + (down.y - up.y) * (left.y - up.y)) <= 0) return false
-    if (((down.x - up.x) * (right.x - up.x) + (down.y - up.y) * (right.y - up.y)) <= 0) return false
+    //будет немного лишних значений из-за delta, иначе неточность double съест нужные
+    if (((down.x - up.x) * (left.x - up.x) + (down.y - up.y) * (left.y - up.y)) <= delta) return false
+    if (((down.x - up.x) * (right.x - up.x) + (down.y - up.y) * (right.y - up.y)) <= delta) return false
     return true//ещё делить на длину, но длина + и на знак не влияет
 }
 
@@ -49,10 +48,7 @@ fun display(list: List<Point>) {
 }
 
 fun main() {
-    //println(getHull(listOf(Point(0.0, 1.0), Point(1.0, 0.0), Point(1.0, 1.0), Point(2.0, 1.0), Point(1.0, 2.0))))
     val list = listOf(
-        //Point(0.0, 1.0),
-        //Point(1.0, 0.0),
         Point(2.0, 1.0),
         Point(4.0, 0.0),
         Point(5.0, 6.0),
@@ -63,13 +59,9 @@ fun main() {
         Point(7.0, 7.0),
         Point(2.0, 2.0)
     )
-    //println(goodArrow(Point(2.0, 2.0), Point(2.0, 10.0), Point(1.0, 9.0), Point(3.0, 9.0)))
-    //display(listOf(Point(1.0, 0.0), Point(0.0, 3.0)))
     display(list)
-    //println(getHull(list))
     println("")
     display(getHull(list))
-    //println(isLeftTurn(Point(10.0, 5.0), Point(-10.0, 5.0), Point(-10.0, -100.0)))
 }
 
 data class Point(val x: Double, val y: Double) {
