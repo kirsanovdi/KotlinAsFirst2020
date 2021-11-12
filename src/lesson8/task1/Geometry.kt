@@ -108,13 +108,13 @@ fun Stack<Point>.previous(): Point = this[this.size - 2]
 
 //проверка на правый поворот a -> b -> c
 fun isLeftTurn(a: Point, b: Point, c: Point): Boolean =
-    (b.x - a.x) * (c.y - b.y) - (b.y - a.y) * (c.x - b.x) >= -delta
+    (b.x - a.x) * (c.y - b.y) - (b.y - a.y) * (c.x - b.x) >= 0
 
 //алгоритм Грэхема
 fun getHull(listInput: List<Point>): List<Point> {
     val p = listInput.minByOrNull { it.y }!!
     val list = listInput.filter { it != p }.sortedBy { Segment(p, it).angleFromOtherToX() }.toMutableList()
-    list.add(list.first())// <-last change
+    //list.add(list.first())// <-last change
     val hull = Stack<Point>()
     hull.add(p)
     hull.add(list[0])
@@ -123,13 +123,6 @@ fun getHull(listInput: List<Point>): List<Point> {
         hull.push(pi)
     }
     return hull.toList()
-}
-
-fun goodArrow(down: Point, up: Point, left: Point, right: Point): Boolean {
-    //угол между up-down и up-left/right < 90
-    if (((down.x - up.x) * (left.x - up.x) + (down.y - up.y) * (left.y - up.y)) <= 0) return false
-    if (((down.x - up.x) * (right.x - up.x) + (down.y - up.y) * (right.y - up.y)) <= 0) return false
-    return true//ещё делить на длину, но длина + и на знак не влияет
 }
 
 //отображение 10x10
@@ -221,6 +214,7 @@ fun diameter(vararg points: Point): Segment {
         if (point.distance(prev) > delta) hull.add(point)
         prev = point
     }
+    hull.remove(Point(0.0, 0.0))
     println(hull)
     //println(hull.size)
     var oppositeIndex = hull.indices.maxByOrNull { i -> hull[0].distance(hull[i]) }!!
@@ -242,8 +236,9 @@ fun diameter(vararg points: Point): Segment {
             result = athwart
         }
         //println("$pointIndex $oppositeIndex")
-        println(pointLine.angle/PI * 180)
+        //println(pointLine.angleBetweenLines(pointLineMoveTo))
         if (pointLine.angleBetweenLines(pointLineMoveTo) <= oppositeLine.angleBetweenLines(oppositeLineMoveTo)) {
+            println(pointLineMoveTo.angle / PI * 180.0)
             pointIndex++
         } else oppositeIndex++
     }
@@ -262,20 +257,26 @@ fun main() {
         Point(7.0, 7.0),
         Point(2.0, 2.0)
     )
+    println(getHull(parse("input/inputAnswer2.txt")))
     //println(getHull(parse("input/inputAnswer.txt")))
-    println(diameter(*parse("input/inputAnswer.txt").toTypedArray()))
-    println(diameterOld(*parse("input/inputAnswer.txt").toTypedArray()))
-    println(diameter(*parse("input/inputAnswer.txt").toTypedArray()).length() == diameterOld(*parse("input/inputAnswer.txt").toTypedArray()).length())
+    //println(diameter(*parse("input/inputAnswer.txt").toTypedArray()))
+    //println(diameterOld(*parse("input/inputAnswer.txt").toTypedArray()))
+    //println(diameter(*parse("input/inputAnswer.txt").toTypedArray()).length() == 895.0663142830876)
     println("------------------------------------------")
     //println(getHull(parse("input/inputAnswer2.txt")))
-    println(diameter(*parse("input/inputAnswer2.txt").toTypedArray()))
-    println(diameterOld(*parse("input/inputAnswer2.txt").toTypedArray()))
-    println(diameter(*parse("input/inputAnswer2.txt").toTypedArray()).length() == diameterOld(*parse("input/inputAnswer2.txt").toTypedArray()).length())
+    //println(diameter(*parse("input/inputAnswer2.txt").toTypedArray()))
+    //println(diameterOld(*parse("input/inputAnswer2.txt").toTypedArray()))
+    //println(diameter(*parse("input/inputAnswer2.txt").toTypedArray()).length() == 894.5251663001164)
     println("------------------------------------------")
     //println(getHull(parse("input/inputAnswer3.txt")))
-    println(diameter(*parse("input/inputAnswer3.txt").toTypedArray()))
-    println(diameterOld(*parse("input/inputAnswer3.txt").toTypedArray()))
-    println(diameter(*parse("input/inputAnswer3.txt").toTypedArray()).length() == diameterOld(*parse("input/inputAnswer3.txt").toTypedArray()).length())
+    //println(diameter(*parse("input/inputAnswer3.txt").toTypedArray()))
+    //println(diameterOld(*parse("input/inputAnswer3.txt").toTypedArray()))
+    //println(diameter(*parse("input/inputAnswer3.txt").toTypedArray()).length() == 894.9818666385232)
+    println("------------------------------------------")
+    //println(getHull(parse("input/inputAnswer4.txt")))
+    //println(diameter(*parse("input/inputAnswer4.txt").toTypedArray()))
+    //println(diameterOld(*parse("input/inputAnswer4.txt").toTypedArray()))
+    //println(diameter(*parse("input/inputAnswer4.txt").toTypedArray()).length() == 632.569365910669)
     println("------------------------------------------")
 }
 
