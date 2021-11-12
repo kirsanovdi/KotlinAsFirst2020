@@ -32,6 +32,13 @@ fun getHull(listInput: List<Point>): List<Point> {//алгоритм Грэхе�
 fun isLeftTurn(a: Point, b: Point, c: Point): Boolean =
     (b.x - a.x) * (c.y - b.y) - (b.y - a.y) * (c.x - b.x) >= 0
 
+fun goodArrow(down: Point, up: Point, left: Point, right: Point): Boolean {
+    //угол между up-down и up-left/right < 90
+    if (((down.x - up.x) * (left.x - up.x) + (down.y - up.y) * (left.y - up.y)) <= 0) return false
+    if (((down.x - up.x) * (right.x - up.x) + (down.y - up.y) * (right.y - up.y)) <= 0) return false
+    return true//ещё делить на длину, но длина + и на знак не влияет
+}
+
 fun display(list: List<Point>) {
     for (x in 10 downTo 0) {
         val stringBuilder = StringBuilder()
@@ -54,9 +61,10 @@ fun main() {
         Point(7.0, 7.0),
         Point(2.0, 2.0)
     )
-    display(list)
+    println(goodArrow(Point(2.0, 2.0), Point(2.0, 10.0), Point(1.0, 9.0), Point(3.0, 9.0)))
+    //display(list)
     //println(getHull(list))
-    display(getHull(list))
+    //display(getHull(list))
     //println(isLeftTurn(Point(10.0, 5.0), Point(-10.0, 5.0), Point(-10.0, -100.0)))
 }
 
@@ -126,20 +134,31 @@ data class Segment(val begin: Point, val end: Point) {
 fun diameter(vararg points: Point): Segment {
     if (points.size < 2) throw IllegalArgumentException()
     if (points.size == 2) return Segment(points[0], points[1])
-    val list = points.toMutableList()
+    val hull = getHull(points.toList())
+    val hullSize = hull.size
+    var pIndex = 0
+    var oppositeIndex = hull.indexOf(hull.maxByOrNull { it.distance(hull[0]) })
+    var iteration = 0
     var maxLen = 0.0
-    var maxSegment = Segment(list[0], list[1])
-    var remain = list.size - 1
-    while (remain != 0) {
-        for (i in 0..remain) {
-            if (list[remain].distance(list[i]) > maxLen) {
-                maxLen = list[remain].distance(list[i])
-                maxSegment = Segment(list[i], list[remain])
+    var result = Segment(points[0], points[1])
+    fun List<Point>.getFromPos(index: Int): Point = this[(this.size + index) % this.size]
+    while (pIndex < hullSize * 2) {
+        if (goodArrow(//сделать двустороннюю?
+                hull.getFromPos(pIndex),
+                hull.getFromPos(oppositeIndex),
+                hull.getFromPos(oppositeIndex + 1),
+                hull.getFromPos(oppositeIndex - 1)
+            )
+        ) {
+            val len = hull.getFromPos(pIndex).distance(hull.getFromPos(oppositeIndex))
+            if (len > maxLen) {
+                maxLen = len
+                result = Segment(hull.getFromPos(pIndex), hull.getFromPos(oppositeIndex))
             }
-        }
-        remain--
+        } else pIndex++
+
     }
-    return maxSegment
+    return result
 }
 
 /**
