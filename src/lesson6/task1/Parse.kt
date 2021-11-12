@@ -3,6 +3,7 @@
 package lesson6.task1
 
 import lesson2.task2.daysInMonth
+import java.util.*
 import kotlin.math.exp
 
 // Урок 6: разбор строк, исключения
@@ -228,7 +229,7 @@ fun plusMinus(expression: String): Int {
             res += list[element + 1].toInt()
         } else res -= list[element + 1].toInt()
     }
-return res
+    return res
 }
 
 /**
@@ -240,7 +241,19 @@ return res
  * Вернуть индекс начала первого повторяющегося слова, или -1, если повторов нет.
  * Пример: "Он пошёл в в школу" => результат 9 (индекс первого 'в')
  */
-fun firstDuplicateIndex(str: String): Int = TODO()
+fun firstDuplicateIndex(str: String): Int {
+    var res = -1
+    var counter = -1
+    val strres = str.lowercase(Locale.getDefault()).split(" ")
+    var last = ""
+    for (element in 0..(strres.size - 2)) {
+        if (strres[element] == strres[element + 1]) {
+            res = element + counter + 1 //добавка пробелов и первого индекса в индексы
+            break
+        } else counter += strres[element].length //считаем индекс
+    }
+    return res
+}
 
 /**
  * Сложная (6 баллов)
