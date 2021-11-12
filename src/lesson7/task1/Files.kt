@@ -70,11 +70,11 @@ fun alignFile(inputName: String, lineLength: Int, outputName: String) {
  * Подчёркивание в середине и/или в конце строк значения не имеет.
  */
 fun deleteMarked(inputName: String, outputName: String) {
-    val printStream = PrintStream(File(outputName))
-    File(inputName).forEachLine { line ->
-        if (line.isEmpty() || line[0] != '_') printStream.println(line)
+    PrintStream(File(outputName)).use { printStream ->
+        File(inputName).forEachLine { line ->
+            if (line.isEmpty() || line[0] != '_') printStream.println(line)
+        }
     }
-    printStream.close()
 }
 
 /**
@@ -150,13 +150,11 @@ fun transform(matchResult: MatchResult): CharSequence {
  */
 fun sibilants(inputName: String, outputName: String) {
     val regex = Regex("""[жчшщ][ыяю]""", RegexOption.IGNORE_CASE)
-    val printStream = PrintStream(File(outputName))
-    //var s = ""
-    File(inputName).forEachLine { line ->
-        //s += regex.replace(line, ::transform) + '\n'
-        printStream.println(regex.replace(line, ::transform))
+    PrintStream(File(outputName)).use { printStream ->
+        File(inputName).forEachLine { line ->
+            printStream.println(regex.replace(line, ::transform))
+        }
     }
-    //println(s)
 }
 
 /**
@@ -177,14 +175,12 @@ fun sibilants(inputName: String, outputName: String) {
  *
  */
 fun centerFile(inputName: String, outputName: String) {
-    var max = 0
-    val printStream = PrintStream(File(outputName))
-    File(inputName).forEachLine { line ->
-        if (line.length > max) max = line.trim().length
-    }
-    File(inputName).forEachLine { line ->//repeat
-        val len = line.trim().length
-        printStream.println(" ".repeat((max - len) / 2) + line.trim())
+    val max = File(inputName).readLines().maxOf { line -> line.trim().length }
+    PrintStream(File(outputName)).use { printStream ->
+        File(inputName).forEachLine { line ->//repeat
+            val len = line.trim().length
+            printStream.println(" ".repeat((max - len) / 2) + line.trim())
+        }
     }
 }
 
@@ -218,30 +214,31 @@ fun centerFile(inputName: String, outputName: String) {
 fun alignFileByWidth(inputName: String, outputName: String) {
     var max = 0
     val regex = Regex("""[ ]+""")
-    val printStream = PrintStream(File(outputName))
     File(inputName).forEachLine { line ->
         val len = regex.replace(line, " ").trim().length
         //println(regex.replace(line, " ").trim())
         if (len > max) max = len
     }
-    File(inputName).forEachLine { lineNotTrim ->//repeat
-        val line = lineNotTrim.trim()
-        if (line == "" || line.all { it == ' ' }) printStream.println("") else {
-            val len = line.count { it != ' ' }
-            val words = line.split(regex)
-            if (words.count() == 1) printStream.println(words[0]) else {
-                val countPossibleSpaces = words.count() - 1
-                val pSum = (max - len) / countPossibleSpaces
-                var delta = (max - len) - pSum * countPossibleSpaces
-                val stringBuilder = StringBuilder()
-                for (word in words) {
-                    stringBuilder.append(word)
-                    stringBuilder.append(" ".repeat(pSum + (if (delta > 0) 1 else 0)))
-                    //println(pSum + (if (delta >= 0) 1 else 0))
-                    delta--
+    PrintStream(File(outputName)).use { printStream ->
+        File(inputName).forEachLine { lineNotTrim ->//repeat
+            val line = lineNotTrim.trim()
+            if (line == "" || line.all { it == ' ' }) printStream.println("") else {
+                val len = line.count { it != ' ' }
+                val words = line.split(regex)
+                if (words.count() == 1) printStream.println(words[0]) else {
+                    val countPossibleSpaces = words.count() - 1
+                    val pSum = (max - len) / countPossibleSpaces
+                    var delta = (max - len) - pSum * countPossibleSpaces
+                    val stringBuilder = StringBuilder()
+                    for (word in words) {
+                        stringBuilder.append(word)
+                        stringBuilder.append(" ".repeat(pSum + (if (delta > 0) 1 else 0)))
+                        //println(pSum + (if (delta >= 0) 1 else 0))
+                        delta--
+                    }
+                    //printStream.println(stringBuilder.toString())
+                    printStream.println(stringBuilder.trim().toString())
                 }
-                //printStream.println(stringBuilder.toString())
-                printStream.println(stringBuilder.trim().toString())
             }
         }
     }
@@ -329,7 +326,6 @@ fun top20Words(inputName: String): Map<String, Int> {
  * Обратите внимание: данная функция не имеет возвращаемого значения
  */
 fun transliterate(inputName: String, dictionary: Map<Char, String>, outputName: String) {
-    val printStream = PrintStream(File(outputName))
     /*val regexes = dictionary.map { (key, value) ->
         fun(nextWrapper: (String) -> String) =
             fun(line: String) = nextWrapper(Regex(key.lowercase()).replace(line, value.lowercase()))
@@ -346,10 +342,12 @@ fun transliterate(inputName: String, dictionary: Map<Char, String>, outputName: 
                 .replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.getDefault()) else it.toString() }
     }
     val stringBuilder = StringBuilder()
-    File(inputName).forEachLine { line ->
-        for (char in line) stringBuilder.append(if (char in replacement) replacement[char] else char)
-        printStream.println(stringBuilder.toString())
-        stringBuilder.clear()
+    PrintStream(File(outputName)).use { printStream ->
+        File(inputName).forEachLine { line ->
+            for (char in line) stringBuilder.append(if (char in replacement) replacement[char] else char)
+            printStream.println(stringBuilder.toString())
+            stringBuilder.clear()
+        }
     }
 }
 
@@ -380,7 +378,6 @@ fun transliterate(inputName: String, dictionary: Map<Char, String>, outputName: 
 fun different(string: String): Boolean = string.length == string.toSet().size
 
 fun chooseLongestChaoticWord(inputName: String, outputName: String) {
-    val printStream = PrintStream(File(outputName))
     val mutableList = mutableListOf<String>()
     var max = 0
     File(inputName).forEachLine { line ->
@@ -395,7 +392,7 @@ fun chooseLongestChaoticWord(inputName: String, outputName: String) {
             }
         }
     }
-    printStream.println(mutableList.joinToString())
+    PrintStream(File(outputName)).use { printStream -> printStream.println(mutableList.joinToString()) }
 }
 
 /**
@@ -519,10 +516,10 @@ fun main() {
                     "Suspendisse ~~et elit in enim tempus iaculis~~."
         )
     )
+    printDivisionProcess(699, 1023, "input/test.txt")
 }
 
 fun markdownToHtmlSimple(inputName: String, outputName: String) {
-    val printStream = PrintStream(File(outputName))
     val regexParagraph = Regex("""\s*""")
     val stringBuilder = StringBuilder()
     stringBuilder.append("<html><body><p>")
@@ -531,8 +528,10 @@ fun markdownToHtmlSimple(inputName: String, outputName: String) {
     }
     stringBuilder.append("</p></body></html>")
     val toWorkAt = stringBuilder.toString().replace("<p></p>", "")
-    if (toWorkAt == "<html><body></body></html>")
-        printStream.println("<html><body><p></p></body></html>") else printStream.println(toHtml(toWorkAt))
+    PrintStream(File(outputName)).use { printStream ->
+        if (toWorkAt == "<html><body></body></html>")
+            printStream.println("<html><body><p></p></body></html>") else printStream.println(toHtml(toWorkAt))
+    }
 }
 
 /**
@@ -633,7 +632,6 @@ fun markdownToHtmlSimple(inputName: String, outputName: String) {
  * (Отступы и переносы строк в примере добавлены для наглядности, при решении задачи их реализовывать не обязательно)
  */
 fun markdownToHtmlLists(inputName: String, outputName: String) {
-    val printStream = PrintStream(File(outputName))
     var nestingLevel = -1
     val stack = Stack<String>()
     val regexSpace = Regex(""" *""")
@@ -669,7 +667,7 @@ fun markdownToHtmlLists(inputName: String, outputName: String) {
         stringBuilder.append("</li></${stack.pop()}>")
     }
     stringBuilder.append("</p></body></html>")
-    printStream.println(stringBuilder.toString())
+    PrintStream(File(outputName)).use { printStream -> printStream.println(stringBuilder.toString()) }
 }
 
 /**
@@ -681,7 +679,6 @@ fun markdownToHtmlLists(inputName: String, outputName: String) {
  *
  */
 fun markdownToHtml(inputName: String, outputName: String) {
-    val printStream = PrintStream(File(outputName))
     var nestingLevel = -1
     val stack = Stack<String>()
     val regexSpace = Regex(""" *""")
@@ -732,7 +729,7 @@ fun markdownToHtml(inputName: String, outputName: String) {
         stringBuilder.append("</li></${stack.pop()}>")
     }
     stringBuilder.append("</p></body></html>")
-    printStream.println(toHtml(stringBuilder.toString()))
+    PrintStream(File(outputName)).use { printStream -> printStream.println(toHtml(stringBuilder.toString())) }
 }
 
 /**
@@ -761,7 +758,6 @@ fun markdownToHtml(inputName: String, outputName: String) {
  *
  */
 fun printMultiplicationProcess(lhv: Int, rhv: Int, outputName: String) {
-    val printStream = PrintStream(File(outputName))
     val lines = mutableListOf<String>()
     val trueMultiplication = lhv * rhv
     var secondValue = rhv
@@ -773,15 +769,17 @@ fun printMultiplicationProcess(lhv: Int, rhv: Int, outputName: String) {
         lines.add((lhv * digit).toString())
     }
     val absLength = max(spacesBehind + lines.last().length + 1, trueMultiplication.toString().length + 1)
-    printStream.println(" ".repeat(absLength - lhv.toString().length) + lhv.toString())
-    printStream.println("*" + " ".repeat(absLength - rhv.toString().length - 1) + rhv.toString())
-    printStream.println("-".repeat(absLength))
-    printStream.println(" ".repeat(absLength - lines[0].length) + lines[0])
-    for (i in 1 until lines.size) {
-        printStream.println("+" + " ".repeat(absLength - lines[i].length - 1 - i) + lines[i])
+    PrintStream(File(outputName)).use { printStream ->
+        printStream.println(" ".repeat(absLength - lhv.toString().length) + lhv.toString())
+        printStream.println("*" + " ".repeat(absLength - rhv.toString().length - 1) + rhv.toString())
+        printStream.println("-".repeat(absLength))
+        printStream.println(" ".repeat(absLength - lines[0].length) + lines[0])
+        for (i in 1 until lines.size) {
+            printStream.println("+" + " ".repeat(absLength - lines[i].length - 1 - i) + lines[i])
+        }
+        printStream.println("-".repeat(absLength))
+        printStream.println(" ".repeat(absLength - trueMultiplication.toString().length) + trueMultiplication.toString())
     }
-    printStream.println("-".repeat(absLength))
-    printStream.println(" ".repeat(absLength - trueMultiplication.toString().length) + trueMultiplication.toString())
 }
 
 
@@ -806,51 +804,57 @@ fun printMultiplicationProcess(lhv: Int, rhv: Int, outputName: String) {
  *
  */
 fun printDivisionProcess(lhv: Int, rhv: Int, outputName: String) {
-    val printStream = PrintStream(File(outputName))
-    val trueDivision = lhv / rhv
-    val lhvString = lhv.toString()
-    var delta = 0
-    var deltaString: String
-    var remainder: Int
-    var i = 0
-    var process = true
+    PrintStream(File(outputName)).use { printStream ->
+        val trueDivision = lhv / rhv
+        val lhvString = lhv.toString()
+        var delta = 0
+        var deltaString: String
+        var remainder: Int
+        var i = 0
+        var process = true
 
-    fun next() {
-        val isZero = delta == 0
-        if (i < lhvString.length) {
+        fun next() {
+            val isZero = delta == 0
+            if (i < lhvString.length) {
+                delta = delta * 10 + (lhvString[i] - '0')
+                i++
+            } else process = false
+            deltaString = delta.toString()
+            remainder = delta % rhv
+
+            val absDiv: Int = (delta / rhv) * rhv
+            val absDivString = absDiv.toString()
+            delta = remainder
+            printStream.println(" ".repeat(i - deltaString.length) + (if (isZero && process) "0" else " ") + deltaString)
+            if (process) {
+                printStream.println(" ".repeat(i - absDivString.length) + "-" + absDivString)
+                val max = max(absDivString.length + 1, deltaString.length)
+                printStream.println(" ".repeat(i - max + 1) + "-".repeat(max))
+            }
+        }
+
+
+        while (delta < rhv && i < lhvString.length) {
             delta = delta * 10 + (lhvString[i] - '0')
             i++
-        } else process = false
-        deltaString = delta.toString()
-        remainder = delta % rhv
-
-        val absDiv: Int = (delta / rhv) * rhv
-        val absDivString = absDiv.toString()
-        delta = remainder
-        printStream.println(" ".repeat(i - deltaString.length) + (if (isZero && process) "0" else " ") + deltaString)
-        if (process) {
-            printStream.println(" ".repeat(i - absDivString.length) + "-" + absDivString)
-            val max = max(absDivString.length + 1, deltaString.length)
-            printStream.println(" ".repeat(i - max + 1) + "-".repeat(max))
         }
-    }
-
-
-    while (delta < rhv && i < lhvString.length) {
-        delta = delta * 10 + (lhvString[i] - '0')
-        i++
-    }
-    remainder = delta % rhv
-    delta -= remainder
-    deltaString = delta.toString()
-    delta = remainder
-    printStream.println(" $lhv | $rhv")
-    printStream.println("-" + deltaString + " ".repeat(lhv.toString().length + 3 - deltaString.length) + trueDivision)
-    printStream.println("-".repeat(1 + deltaString.length))
-
-
-    while (process) {
-        next()
+        remainder = delta % rhv
+        delta -= remainder
+        deltaString = delta.toString()
+        delta = remainder
+        if(trueDivision == 0 && lhv > 100){
+            printStream.println("$lhv | $rhv")
+            printStream.println(" ".repeat(lhv.toString().length - 2) + "-0   0")
+            printStream.println("-".repeat(lhv.toString().length))
+            printStream.println(lhv.toString())
+        } else {
+            printStream.println(" $lhv | $rhv")
+            printStream.println("-" + deltaString + " ".repeat(lhv.toString().length + 3 - deltaString.length) + trueDivision)
+            printStream.println("-".repeat(1 + deltaString.length))
+            while (process) {
+                next()
+            }
+        }
     }
 }
 
