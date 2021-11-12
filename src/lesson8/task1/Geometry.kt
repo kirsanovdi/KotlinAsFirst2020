@@ -3,6 +3,7 @@
 package lesson8.task1
 
 import lesson1.task1.sqr
+import java.io.File
 import java.util.*
 import kotlin.math.*
 
@@ -18,6 +19,7 @@ fun Stack<Point>.previous(): Point = this[this.size - 2]
 fun getHull(listInput: List<Point>): List<Point> {
     val p = listInput.minByOrNull { it.y }!!
     val list = listInput.filter { it != p }.sortedBy { Segment(p, it).angleFromOtherToX() }
+
     val hull = Stack<Point>()
     hull.add(p)
     hull.add(list[0])
@@ -27,9 +29,11 @@ fun getHull(listInput: List<Point>): List<Point> {
     }
     return hull.toList()
 }
+
 //проверка на правый поворот a -> b -> c
 fun isLeftTurn(a: Point, b: Point, c: Point): Boolean =
     (b.x - a.x) * (c.y - b.y) - (b.y - a.y) * (c.x - b.x) >= -delta
+
 //будет ли пересекать перпендикулярная прямая оболочку более чем в одной точке
 fun goodArrow(down: Point, up: Point, left: Point, right: Point): Boolean {
     //угол между up-down и up-left/right < 90
@@ -38,13 +42,50 @@ fun goodArrow(down: Point, up: Point, left: Point, right: Point): Boolean {
     if (((down.x - up.x) * (right.x - up.x) + (down.y - up.y) * (right.y - up.y)) <= delta) return false
     return true//ещё делить на длину, но длина + и на знак не влияет
 }
-
+//отображение 10x10
 fun display(list: List<Point>) {
     val desk: Array<Array<Int>> = Array(10) { Array(10) { 0 } }
     for ((x, y) in list) {
         desk[desk.size - 1 - y.toInt()][x.toInt()] = 1
     }
     for (arrLine in desk) println(arrLine.joinToString())
+}
+//парсер данных, на которых возникла ошибка
+fun parse(inputName: String): MutableList<Point> {
+    var i = -2
+    var x = 0.0
+    var y = 0.0
+    val mutableList = mutableListOf<Point>()
+    File(inputName).forEachLine { line ->
+        if (i == 4) i = 0
+        when (i) {
+            0 -> x = line.trim().dropLast(1).split(Regex("""\s"""))[1].toDouble()
+            1 -> y = line.trim().split(Regex("""\s"""))[1].toDouble()
+            2 -> mutableList.add(Point(x, y))
+        }
+        i++
+
+    }
+    return mutableList
+}
+//старый метод за N(O^2)
+fun diameterOld(vararg points: Point): Segment {
+    if (points.size < 2) throw IllegalArgumentException()
+    if (points.size == 2) return Segment(points[0], points[1])
+    val list = points.toMutableList()
+    var maxLen = 0.0
+    var maxSegment = Segment(list[0], list[1])
+    var remain = list.size - 1
+    while (remain != 0) {
+        for (i in 0..remain) {
+            if (list[remain].distance(list[i]) > maxLen) {
+                maxLen = list[remain].distance(list[i])
+                maxSegment = Segment(list[i], list[remain])
+            }
+        }
+        remain--
+    }
+    return maxSegment
 }
 
 fun main() {
@@ -59,9 +100,16 @@ fun main() {
         Point(7.0, 7.0),
         Point(2.0, 2.0)
     )
-    display(list)
-    println("")
-    display(getHull(list))
+    val listParse = parse("input/inputAnswer.txt")
+    val segment = diameter(*listParse.toTypedArray())
+    val segmentOld = diameterOld(*listParse.toTypedArray())
+    println(segment)
+    println(segment.length())
+    println(segmentOld)
+    println(segmentOld.length())
+    //display(list)
+    //println("")
+    //display(getHull(list))
 }
 
 data class Point(val x: Double, val y: Double) {
@@ -161,10 +209,7 @@ fun diameter(vararg points: Point): Segment {
                     hull.getFromPos(oppositeIndex + 1),
                     hull.getFromPos(oppositeIndex - 1)
                 )
-            ) {
-
-                oppositeIndex++
-            } else pIndex++
+            ) pIndex++ else oppositeIndex++
         }
     }
     //println(result)
