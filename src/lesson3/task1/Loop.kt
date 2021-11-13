@@ -154,8 +154,11 @@ fun collatzSteps(x: Int): Int {
 
 
 //наибольший общий делитель
-fun gcd(m: Int, n: Int) {
-
+fun gcd(m: Int, n: Int): Int {
+    for (i in min(m, n) downTo 1) {
+        if (m % i == 0 && n % i == 0) return i
+    }
+    return 1
 }
 
 /**
@@ -223,8 +226,8 @@ fun step(n: Int, t: Int): Int {
 
 fun isPalindrome(n: Int): Boolean {
     if (n < 10) return true
-    var temp: Int = n
-    var ch: Int = 0
+    var temp = n
+    var ch = 0
     while (temp > 0) {
         temp /= 10
         ch++
@@ -248,7 +251,7 @@ fun isPalindrome(n: Int): Boolean {
 fun hasDifferentDigits(n: Int): Boolean {
     if (n < 10) return false
     var temp = n
-    val r = 0 + (temp % 10)
+    val r = (temp % 10)
     temp /= 10
     while (temp > 0) {
         if (temp % 10 != r) return true
@@ -341,7 +344,6 @@ fun squareSequenceDigit(n: Int): Int {
     var counter = 0
     var k = 1
     var last = 0
-    var reserv = 0
     do {
         last = step(k, 2)
         counter += digitNumber(last)
@@ -349,6 +351,7 @@ fun squareSequenceDigit(n: Int): Int {
     } while (counter < n)
     if (n < 2) return last
     if (counter == n) return last % 10
+    var reserv = 0
     reserv = counter - n
     for (i in 1..reserv) {
         last /= 10
@@ -367,25 +370,20 @@ fun squareSequenceDigit(n: Int): Int {
  * Использовать операции со строками в этой задаче запрещается.
  */
 fun fibSequenceDigit(n: Int): Int {
-
     var counter = 1
     var f1 = 0
     var f2 = 1
-
     if (n == 1 || n == 2) return 1
     for (i in 2..n) {
         var x = f1 + f2
-
         f1 = f2
         f2 = x
-
-        while (x > 0) {
-            x /= 10
-            counter++
-        }
+        /* while (x > 0) { //Подсчёт количества цифр
+             x /= 10
+             counter++
+         }*/
+        counter += digitNumber(x)
         if (counter >= n) break
-
-
     }
     var last: Int = f2
     for (i in n..counter) {
@@ -393,5 +391,4 @@ fun fibSequenceDigit(n: Int): Int {
         f2 /= 10
     }
     return last
-
 }
