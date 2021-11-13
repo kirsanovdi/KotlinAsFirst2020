@@ -13,6 +13,7 @@ const val delta = 1e-10
 data class Point(val x: Double, val y: Double) {
     fun distance(other: Point): Double = sqrt(sqr(x - other.x) + sqr(y - other.y))
     override fun equals(other: Any?) = other is Point && this.x == other.x && this.y == other.y
+    override fun hashCode(): Int = x.hashCode() + y.hashCode()
 }
 
 data class Segment(val begin: Point, val end: Point) {
@@ -28,6 +29,71 @@ data class Segment(val begin: Point, val end: Point) {
         begin.hashCode() + end.hashCode()
 }
 
+data class Circle(val center: Point, val radius: Double) {
+    /**
+     * Простая (2 балла)
+     *
+     * Рассчитать расстояние между двумя окружностями.
+     * Расстояние между непересекающимися окружностями рассчитывается как
+     * расстояние между их центрами минус сумма их радиусов.
+     * Расстояние между пересекающимися окружностями считать равным 0.0.
+     */
+    fun distance(other: Circle): Double = (this.center.distance(other.center) - this.radius - other.radius).let {
+        if (it > 0.0) it else 0.0
+    }
+
+    /**
+     * Тривиальная (1 балл)
+     *
+     * Вернуть true, если и только если окружность содержит данную точку НА себе или ВНУТРИ себя
+     */
+    fun contains(p: Point): Boolean = this.center.distance(p) <= radius
+}
+
+@Suppress("MemberVisibilityCanBePrivate")
+class Triangle private constructor(private val points: Set<Point>) {
+
+    private val pointList = points.toList()
+
+    val a: Point get() = pointList[0]
+
+    val b: Point get() = pointList[1]
+
+    val c: Point get() = pointList[2]
+
+    constructor(a: Point, b: Point, c: Point) : this(linkedSetOf(a, b, c))
+
+    /**
+     * Пример: полупериметр
+     */
+    fun halfPerimeter() = (a.distance(b) + b.distance(c) + c.distance(a)) / 2.0
+
+    /**
+     * Пример: площадь
+     */
+    fun area(): Double {
+        val p = halfPerimeter()
+        return sqrt(p * (p - a.distance(b)) * (p - b.distance(c)) * (p - c.distance(a)))
+    }
+
+    /**
+     * Пример: треугольник содержит точку
+     */
+    fun contains(p: Point): Boolean {
+        val abp = Triangle(a, b, p)
+        val bcp = Triangle(b, c, p)
+        val cap = Triangle(c, a, p)
+        return abp.area() + bcp.area() + cap.area() <= area()
+    }
+
+    override fun equals(other: Any?) = other is Triangle && points == other.points
+
+    override fun hashCode() = points.hashCode()
+
+    override fun toString() = "Triangle(a = $a, b = $b, c = $c)"
+}
+
+//вектор в двумерном пространстве
 data class ZeroVector(val x: Double, val y: Double) {
     constructor(begin: Point, end: Point) : this(end.x - begin.x, end.y - begin.y)
 
@@ -36,10 +102,11 @@ data class ZeroVector(val x: Double, val y: Double) {
         acos((this.x * other.x + this.y * other.y) / (this.length() * other.length()))
 }
 
+//индексация как в +, так и в -
 fun List<Point>.getFromPos(index: Int): Point = this[(this.size + index) % this.size]
 
 fun Stack<Point>.previous(): Point = this[this.size - 2]
-
+//аппросимация к 0
 fun toZero(a: Double, precision: Double) = if (abs(a) < precision) 0.0 else a
 
 //просто вращаем на 90 против часовой
@@ -84,13 +151,15 @@ fun diameterOld(vararg points: Point): Segment {
     return maxSegment
 }
 
-//проверка на правый поворот a -> b -> c
+//проверка на правый поворот a -> b -> c (без аппроксимации)
 fun isNotRightTurn(a: Point, b: Point, c: Point): Boolean =
     (b.x - a.x) * (c.y - b.y) - (b.y - a.y) * (c.x - b.x) >= 0
 
+//проверка на правый поворот a -> b -> c (исключающая)
 fun isLeftTurn(a: Point, b: Point, c: Point): Boolean =
     (b.x - a.x) * (c.y - b.y) - (b.y - a.y) * (c.x - b.x) > 0
 
+//угол с осью OX
 fun ZeroVector.angleWithX(): Double = this.angleWith(ZeroVector(1.0, 0.0))
 
 //алгоритм Грэхема
@@ -100,7 +169,8 @@ fun getHull(listInput: List<Point>, precision: Double): List<Point> {
     val listFirstSort = listInput.filter { it != p }.sortedBy { p.distance(it) }
     val listSecondSort = listFirstSort.map { Point(toZero(it.x, precision), toZero(it.y, precision)) }
     val listThirdSort = listSecondSort.sortedBy { ZeroVector(p, it).angleWithX() }
-    //тонкий момент. далее нужно убрать подряд идущие, и если ох угол через р о остью OX будет одинаковым, то взять самое дальнее
+    //тонкий момент. далее нужно убрать подряд идущие, и если ох угол через р о остью OX будет одинаковым,
+    // то взять самое дальнее
     //sortedBy - stable, сохраняет порядок одинаковых элементов
 
     //удаление идущих под одним углом
@@ -114,7 +184,7 @@ fun getHull(listInput: List<Point>, precision: Double): List<Point> {
         }
     }
     list.add(listThirdSort.last())
-
+    //сердце алгоритма
     val hull = Stack<Point>()
     hull.add(p)
     hull.add(list[0])
@@ -134,14 +204,11 @@ fun getHull(listInput: List<Point>, precision: Double): List<Point> {
         prev = point
     }
     //удаление идущих в ряд
-    //println(hullAns)
     var i = 1
     while (i < hullAns.size - 1) {
         if (!isLeftTurn(hullAns[i - 1], hullAns[i], hullAns[i + 1])) hullAns.removeAt(i) else i++
     }
-    println(hullAns)
     return hullAns.toList()
-    //return hull
 }
 
 fun diameter(vararg points: Point): Segment {
@@ -171,7 +238,6 @@ fun diameter(vararg points: Point): Segment {
         val pointVectorMoveTo = ZeroVector(point, nextPoint)
         val oppositeVectorMoveTo = ZeroVector(opposite, nextOpposite)
         checkMax(point, opposite)
-        println("${pointIndex % hull.size} ${oppositeIndex % hull.size}")
         var pointAngleMoveTo = pointVectorMoveTo.angleWith(ZeroVector(1.0, 0.0))
         if (pointVectorMoveTo.y < 0) pointAngleMoveTo = 2 * PI - pointAngleMoveTo
         var oppositeAngleMoveTo = oppositeVectorMoveTo.angleWith(ZeroVector(1.0, 0.0))
@@ -196,40 +262,16 @@ fun diameter(vararg points: Point): Segment {
             }
         }
     }
-    //println(sumAngle / PI * 180)
     return result
 }
 
 fun main() {
-    //println(toZero(-2.220446049250313e-16, delta))
-    /*while (true) {
-        val list = List(200) { Point(nextDouble(-1.0, 1.0), nextDouble(-1.0, 1.0)) }
+    for (i in 0..100) {
+        val list = List(20000) { Point(nextDouble(-1.0, 1.0), nextDouble(-1.0, 1.0)) }
         val diameter = diameter(*list.toTypedArray())
         val diameterOld = diameterOld(*list.toTypedArray())
         println(abs(diameter.length() - diameterOld.length()) < delta)
-    }*/
-    //val list = List(20000) { Point(nextDouble(-1000.0, 1000.0), nextDouble(-1000.0, 1000.0)) }
-    val list = parse("input/inputAnswer4.txt")
-    val hull = getHull(list, delta)
-    //println(hull)
-    println("-----------------")
-    val diameter = diameter(*list.toTypedArray())
-    println(diameter)
-    println(diameter.length())
-    println("${hull.indexOf(diameter.begin)} ${hull.indexOf(diameter.end)}")
-    val diameterOld = diameterOld(*list.toTypedArray())
-    println(diameterOld)
-    println(diameterOld.length())
-    println(
-        "${
-            hull.indexOf(
-                diameterOld.begin.let { Point(toZero(it.x, delta), toZero(it.y, delta)) })
-        } ${
-            hull.indexOf(
-                diameterOld.end.let { Point(toZero(it.x, delta), toZero(it.y, delta)) })
-        }"
-    )
-    println("------------------------------------------")
+    }
 }
 
 
