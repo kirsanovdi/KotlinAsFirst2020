@@ -14,44 +14,9 @@ data class Point(val x: Double, val y: Double) {
     //override fun equals(other: Any?) = other is Point && this.x == other.x && this.y == other.y
 }
 
-@Suppress("MemberVisibilityCanBePrivate")
-class Triangle private constructor(private val points: Set<Point>) {
-    private val pointList = points.toList()
-    val a: Point get() = pointList[0]
-    val b: Point get() = pointList[1]
-    val c: Point get() = pointList[2]
-
-    constructor(a: Point, b: Point, c: Point) : this(linkedSetOf(a, b, c))
-
-    fun halfPerimeter() = (a.distance(b) + b.distance(c) + c.distance(a)) / 2.0
-    fun area(): Double {
-        val p = halfPerimeter()
-        return sqrt(p * (p - a.distance(b)) * (p - b.distance(c)) * (p - c.distance(a)))
-    }
-
-    fun contains(p: Point): Boolean {
-        val abp = Triangle(a, b, p)
-        val bcp = Triangle(b, c, p)
-        val cap = Triangle(c, a, p)
-        return abp.area() + bcp.area() + cap.area() <= area()
-    }
-
-    override fun equals(other: Any?) = other is Triangle && points == other.points
-    override fun hashCode() = points.hashCode()
-    override fun toString() = "Triangle(a = $a, b = $b, c = $c)"
-}
-
-data class Circle(val center: Point, val radius: Double) {
-    fun distance(other: Circle): Double = (this.center.distance(other.center) - this.radius - other.radius).let {
-        if (it > 0.0) it else 0.0
-    }
-
-    fun contains(p: Point): Boolean = this.center.distance(p) <= radius
-}
-
 data class Segment(val begin: Point, val end: Point) {
 
-    fun angleFromOtherToX(): Double = acos((end.x - begin.x) / this.length())
+    //fun angleFromOtherToX(): Double = acos((end.x - begin.x) / this.length())
 
     fun length() = begin.distance(end)
 
@@ -102,18 +67,30 @@ class Line private constructor(val b: Double, val angle: Double) {
     override fun toString() = "Line(${cos(angle)} * y = ${sin(angle)} * x + $b)"
 }
 
+data class ZeroVector(val x: Double, val y: Double) {
+    constructor(begin: Point, end: Point) : this(end.x - begin.x, end.y - begin.y)
+
+    private fun length(): Double = sqrt(x * x + y * y)
+    fun angleWith(other: ZeroVector): Double =
+        acos((this.x * other.x + this.y * other.y) / (this.length() * other.length()))
+}
+
 fun List<Point>.getFromPos(index: Int): Point = this[(this.size + index) % this.size]
 
 fun Stack<Point>.previous(): Point = this[this.size - 2]
 
+fun toZero(a: Double, precision: Double) = if (abs(a) < precision) 0.0 else a
+
 //проверка на правый поворот a -> b -> c
 fun isLeftTurn(a: Point, b: Point, c: Point): Boolean =
-    (b.x - a.x) * (c.y - b.y) - (b.y - a.y) * (c.x - b.x) >= 0
+    //(b.x - a.x) * (c.y - b.y) - (b.y - a.y) * (c.x - b.x) >= 0
+    ZeroVector(a, b).angleWith(ZeroVector(b, c)) < PI / 2
 
 //алгоритм Грэхема
-fun getHull(listInput: List<Point>): List<Point> {
+fun getHull(listInput: List<Point>, precision: Double): List<Point> {
     val p = listInput.minByOrNull { it.y }!!
-    val list = listInput.filter { it != p }.sortedBy { Segment(p, it).angleFromOtherToX() }.toMutableList()
+    val list =
+        listInput.filter { it != p }.sortedBy { ZeroVector(p, it).angleWith(ZeroVector(1.0, 0.0)) }.toMutableList()
     //list.add(list.first())// <-last change
     val hull = Stack<Point>()
     hull.add(p)
@@ -122,17 +99,18 @@ fun getHull(listInput: List<Point>): List<Point> {
         while (hull.size > 1 && !isLeftTurn(hull.previous(), hull.last(), pi)) hull.pop()
         hull.push(pi)
     }
-    return hull.toList()
+
+    val hullRaw = hull.map { Point(toZero(it.x, precision), toZero(it.y, precision)) }
+    val hullAns = mutableListOf<Point>()
+    var prev = Point(-1.1, -1.1)
+    for (point in hullRaw) {
+        if (point.distance(prev) > precision) hullAns.add(point)
+        prev = point
+    }
+
+    return hullAns.toList()
 }
 
-//отображение 10x10
-fun display(list: List<Point>) {
-    val desk: Array<Array<Int>> = Array(10) { Array(10) { 0 } }
-    for ((x, y) in list) {
-        desk[desk.size - 1 - y.toInt()][x.toInt()] = 1
-    }
-    for (arrLine in desk) println(arrLine.joinToString())
-}
 
 //парсер данных, на которых возникла ошибка
 fun parse(inputName: String): MutableList<Point> {
@@ -173,52 +151,20 @@ fun diameterOld(vararg points: Point): Segment {
     return maxSegment
 }
 
-fun circleByDiameter(diameter: Segment): Circle = Circle(
-    Point((diameter.begin.x + diameter.end.x) / 2, (diameter.begin.y + diameter.end.y) / 2),
-    diameter.begin.distance(diameter.end) / 2
-)
+fun getRightZeroVector(vector: ZeroVector): ZeroVector = //просто вращаем на 90 против часовой
+    ZeroVector(-vector.y, vector.x)
 
-fun lineBySegment(s: Segment): Line = Line(
-    s.begin,
-    if (abs(s.begin.x - s.end.x) < delta) PI / 2 else (PI + atan((s.begin.y - s.end.y) / (s.begin.x - s.end.x))) % PI
-)
-
-fun lineByPoints(a: Point, b: Point): Line = lineBySegment(Segment(a, b))
-
-fun bisectorByPoints(a: Point, b: Point): Line = Line(
-    Point((a.x + b.x) / 2, (a.y + b.y) / 2),
-    (lineByPoints(a, b).angle + PI / 2) % PI
-)
-
-fun athwartByPoints(a: Point, b: Point): Line = Line(
-    a,
-    (lineByPoints(a, b).angle + PI / 2) % PI
-)
-
-/**
- * Средняя (3 балла)
- *
- * Дано множество точек. Вернуть отрезок, соединяющий две наиболее удалённые из них.
- * Если в множестве менее двух точек, бросить IllegalArgumentException
- */
 fun diameter(vararg points: Point): Segment {
     //hull
     if (points.size < 2) throw IllegalArgumentException()
     if (points.size == 2) return Segment(points[0], points[1])
+    val hull = getHull(points.toList(), delta)
+
     var pointIndex = 0
-    fun toZero(a: Double) = if (abs(a) < 1e-10) 0.0 else a
-    val hullRaw = getHull(points.toList()).map { Point(toZero(it.x), toZero(it.y)) }
-    val hull = mutableListOf<Point>()
-    var prev = hullRaw[2]
-    for (point in hullRaw){
-        if (point.distance(prev) > delta) hull.add(point)
-        prev = point
-    }
-    hull.remove(Point(0.0, 0.0))
-    println(hull)
-    //println(hull.size)
     var oppositeIndex = hull.indices.maxByOrNull { i -> hull[0].distance(hull[i]) }!!
-    //println(oppositeIndex)
+
+    //var sumAngle = 0.0
+
     var result = Segment(hull[0], hull[1])
     var max = result.length()
     while (pointIndex < hull.size) { //движемся против часовой стрелки
@@ -227,94 +173,40 @@ fun diameter(vararg points: Point): Segment {
         val nextPoint = hull.getFromPos(pointIndex + 1)
         val nextOpposite = hull.getFromPos(oppositeIndex + 1)
         val athwart = Segment(point, opposite)
-        val pointLine = athwartByPoints(point, opposite)
-        val oppositeLine = athwartByPoints(opposite, point)
-        val pointLineMoveTo = lineByPoints(point, nextPoint)
-        val oppositeLineMoveTo = lineByPoints(opposite, nextOpposite)
+        val pointVector = getRightZeroVector(ZeroVector(opposite, point))// opposite -> point, не наоборот
+        val oppositeVector = getRightZeroVector(ZeroVector(point, opposite))
+        val pointVectorMoveTo = ZeroVector(point, nextPoint)
+        val oppositeVectorMoveTo = ZeroVector(opposite, nextOpposite)
         if (athwart.length() > max) {
             max = athwart.length()
             result = athwart
         }
-        //println("$pointIndex $oppositeIndex")
-        //println(pointLine.angleBetweenLines(pointLineMoveTo))
-        if (pointLine.angleBetweenLines(pointLineMoveTo) <= oppositeLine.angleBetweenLines(oppositeLineMoveTo)) {
-            println(pointLineMoveTo.angle / PI * 180.0)
-            pointIndex++
-        } else oppositeIndex++
+        //println("${pointIndex % hull.size} ${oppositeIndex % hull.size}")
+        val pointAngle = pointVector.angleWith(pointVectorMoveTo)
+        val oppositeAngle = oppositeVector.angleWith(oppositeVectorMoveTo)
+        when {
+            abs(pointAngle - oppositeAngle) < delta -> {
+                pointIndex++
+                oppositeIndex++
+            }
+            pointAngle < oppositeAngle -> pointIndex++
+            pointAngle > oppositeAngle -> oppositeIndex++
+        }
     }
+    //println(sumAngle / PI * 180)
     return result
 }
 
 fun main() {
-    val list = listOf(
-        Point(2.0, 1.0),
-        Point(4.0, 0.0),
-        Point(5.0, 6.0),
-        Point(3.0, 2.0),
-        Point(4.0, 4.0),
-        Point(6.0, 2.0),
-        Point(3.0, 4.0),
-        Point(7.0, 7.0),
-        Point(2.0, 2.0)
-    )
-    println(getHull(parse("input/inputAnswer2.txt")))
-    //println(getHull(parse("input/inputAnswer.txt")))
-    //println(diameter(*parse("input/inputAnswer.txt").toTypedArray()))
-    //println(diameterOld(*parse("input/inputAnswer.txt").toTypedArray()))
-    //println(diameter(*parse("input/inputAnswer.txt").toTypedArray()).length() == 895.0663142830876)
-    println("------------------------------------------")
-    //println(getHull(parse("input/inputAnswer2.txt")))
-    //println(diameter(*parse("input/inputAnswer2.txt").toTypedArray()))
-    //println(diameterOld(*parse("input/inputAnswer2.txt").toTypedArray()))
-    //println(diameter(*parse("input/inputAnswer2.txt").toTypedArray()).length() == 894.5251663001164)
-    println("------------------------------------------")
-    //println(getHull(parse("input/inputAnswer3.txt")))
-    //println(diameter(*parse("input/inputAnswer3.txt").toTypedArray()))
-    //println(diameterOld(*parse("input/inputAnswer3.txt").toTypedArray()))
-    //println(diameter(*parse("input/inputAnswer3.txt").toTypedArray()).length() == 894.9818666385232)
-    println("------------------------------------------")
-    //println(getHull(parse("input/inputAnswer4.txt")))
-    //println(diameter(*parse("input/inputAnswer4.txt").toTypedArray()))
-    //println(diameterOld(*parse("input/inputAnswer4.txt").toTypedArray()))
-    //println(diameter(*parse("input/inputAnswer4.txt").toTypedArray()).length() == 632.569365910669)
+    val hull = getHull(parse("input/inputAnswer3.txt"), delta)
+    println(hull)
+    val diameter = diameter(*parse("input/inputAnswer3.txt").toTypedArray())
+    val diameterOld = diameterOld(*parse("input/inputAnswer3.txt").toTypedArray())
+    println(diameter.length())
+    println("${hull.indexOf(diameter.begin)} ${hull.indexOf(diameter.end)}")
+    println(diameterOld.length())
+    println("${hull.indexOf(diameterOld.begin)} ${hull.indexOf(diameterOld.end)}")
     println("------------------------------------------")
 }
 
-/**
- * Средняя (3 балла)
- *
- * Задан список из n окружностей на плоскости.
- * Найти пару наименее удалённых из них; расстояние между окружностями
- * рассчитывать так, как указано в Circle.distance.
- *
- * При наличии нескольких наименее удалённых пар,
- * вернуть первую из них по порядку в списке circles.
- *
- * Если в списке менее двух окружностей, бросить IllegalArgumentException
- */
-fun findNearestCirclePair(vararg circles: Circle): Pair<Circle, Circle> = TODO()
-
-/**
- * Сложная (5 баллов)
- *
- * Дано три различные точки. Построить окружность, проходящую через них
- * (все три точки должны лежать НА, а не ВНУТРИ, окружности).
- * Описание алгоритмов см. в Интернете
- * (построить окружность по трём точкам, или
- * построить окружность, описанную вокруг треугольника - эквивалентная задача).
- */
-fun circleByThreePoints(a: Point, b: Point, c: Point): Circle = TODO()
-
-/**
- * Очень сложная (10 баллов)
- *
- * Дано множество точек на плоскости. Найти круг минимального радиуса,
- * содержащий все эти точки. Если множество пустое, бросить IllegalArgumentException.
- * Если множество содержит одну точку, вернуть круг нулевого радиуса с центром в данной точке.
- *
- * Примечание: в зависимости от ситуации, такая окружность может либо проходить через какие-либо
- * три точки данного множества, либо иметь своим диаметром отрезок,
- * соединяющий две самые удалённые точки в данном множестве.
- */
-fun minContainingCircle(vararg points: Point): Circle = TODO()
 
