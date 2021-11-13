@@ -4,10 +4,12 @@ package lesson7.task1
 
 import java.io.File
 import java.io.PrintStream
+import java.lang.Exception
 import java.util.*
 import javax.swing.plaf.basic.BasicSplitPaneDivider
 import kotlin.math.max
 import kotlin.math.min
+import kotlin.random.Random.Default.nextInt
 //import java.lang.StringBuilder
 import kotlin.text.StringBuilder
 
@@ -509,17 +511,21 @@ fun toHtml(string: String): String {
     return stringBuilder.toString()
 }
 
-fun main() {
-    println(
-        toHtml(
-            "***Lorem ipsum* ***dolor sit amet*, consectetur **adipiscing** elit.\n" +
-                    "Vestibulum lobortis. ~~Est vehicula rutrum *suscipit*~~, ipsum ~~lib~~ero *placerat **tortor***.\n" +
-                    "\n\t\n" +
-                    "Suspendisse ~~et elit in enim tempus iaculis~~."
-        )
-    )
-    printDivisionProcess(128612, 81917, "input/test.txt")
-}
+//fun main() {
+    //printDivisionProcess(123269, 8000, "input/test.txt")
+    //756269 784214
+    //190654 337921
+    //615914 631180
+    /*for (i in 0..100) {
+        val a = nextInt(1, 1000000)
+        val b = nextInt(1, 1000000)
+        try {
+            printDivisionProcess(a, b, "input/test.txt")
+        } catch (e: Exception) {
+            println("$a $b")
+        }
+    }*/
+//}
 
 fun markdownToHtmlSimple(inputName: String, outputName: String) {
     val regexParagraph = Regex("""\s*""")
@@ -806,59 +812,49 @@ fun printMultiplicationProcess(lhv: Int, rhv: Int, outputName: String) {
  *
  */
 fun printDivisionProcess(lhv: Int, rhv: Int, outputName: String) {
-    PrintStream(File(outputName)).use { printStream ->
+    PrintStream(File(outputName)).use { //printStream ->
         val trueDivision = lhv / rhv
         val lhvString = lhv.toString()
+        val stringBuilder = StringBuilder()
+        fun getSubtrahendResult(endAt: Int, remain: Int, nextChar: Char): Int {
+            val number = remain * 10 + (nextChar - '0')
+            val subtrahend = number - number % rhv
+            val result = number % rhv
+            val numberString = number.toString()
+            val subtrahendString = subtrahend.toString()
+            val dashLength = max(numberString.length, subtrahendString.length + 1)
+            println(" ".repeat(endAt - numberString.length) + numberString)
+            println(" ".repeat(endAt - subtrahendString.length) + subtrahendString)
+            println(" ".repeat(endAt - dashLength) + "-".repeat(dashLength))
+            return result
+        }
+
         var delta = 0
-        var deltaString: String
-        var remainder: Int
-        var i = 0
-        var process = true
-        var isFirstSmall = 0
-        fun next() {
-            val isZero = delta == 0
-            if (i < lhvString.length) {
-                delta = delta * 10 + (lhvString[i] - '0')
-                i++
-            } else process = false
-            deltaString = delta.toString()
-            remainder = delta % rhv
-
-            val absDiv: Int = (delta / rhv) * rhv
-            val absDivString = absDiv.toString()
-            delta = remainder
-            printStream.println(" ".repeat(i - deltaString.length - isFirstSmall) + (if (isZero && process) "0" else " ") + deltaString)
-            if (process) {
-                printStream.println(" ".repeat(i - absDivString.length) + "-" + absDivString)
-                val max = max(absDivString.length + 1, deltaString.length)
-                printStream.println(" ".repeat(i - max + 1) + "-".repeat(max))
-            }
+        var symbolIndex = 0
+        while (delta < rhv && symbolIndex < lhvString.length) {
+            delta = delta * 10 + (lhvString[symbolIndex] - '0')
+            symbolIndex++
         }
-
-
-        while (delta < rhv && i < lhvString.length) {
-            delta = delta * 10 + (lhvString[i] - '0')
-            i++
+        var result = delta % rhv
+        val subtrahend = delta - result
+        val deltaString = delta.toString()
+        val subtrahendString = subtrahend.toString()
+        val needSpace = subtrahendString.length == deltaString.length
+        stringBuilder.appendLine("${if (needSpace) " " else ""}$lhv | $rhv")
+        val firstSpacesCount = max(deltaString.length - subtrahendString.length - 1, 0)
+        stringBuilder.appendLine(" ".repeat(firstSpacesCount) + "-" + subtrahendString + " ".repeat(lhvString.length + 3 - firstSpacesCount - subtrahendString.length) + trueDivision.toString())
+        stringBuilder.appendLine("-".repeat(deltaString.length + if(needSpace) 1 else 0))
+        println(stringBuilder.toString())
+        var endAt = deltaString.length + if(needSpace) 1 else 0
+        for (i in deltaString.length - 1 until lhvString.length - 1){
+            val char = lhvString[i]
+            result = getSubtrahendResult(endAt, result, char)
+            endAt++
         }
-        val firstPeaceToDiv = delta
-        remainder = delta % rhv
-        delta -= remainder
-        deltaString = delta.toString()
-        delta = remainder
-        val smallDelta = firstPeaceToDiv.toString().length - deltaString.length - 1
-        if(smallDelta >= 0) {
-            printStream.println("$lhv | $rhv")
-            val remainSpace = lhv.toString().length + 2 - deltaString.length - smallDelta
-            printStream.println(" ".repeat(smallDelta) + "-" + deltaString + " ".repeat(remainSpace) + trueDivision)
-            isFirstSmall = 1
-        } else {
-            printStream.println(" $lhv | $rhv")
-            printStream.println("-" + deltaString + " ".repeat(lhv.toString().length + 3 - deltaString.length) + trueDivision)
-        }
-        printStream.println("-".repeat(1 + deltaString.length))
-        while (process) {
-            next()
-        }
+        println(" ".repeat(endAt - result.toString().length) + result.toString())
     }
+}
+fun main() {
+    printDivisionProcess(123269, 135, "input/test.txt")
 }
 
