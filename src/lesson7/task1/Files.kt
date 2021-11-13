@@ -114,7 +114,9 @@ fun sibilants(inputName: String, outputName: String) {
  *
  */
 fun centerFile(inputName: String, outputName: String) {
+    /*
     val input = File(inputName).readText() //.trim() трим перестает работать после того, как находит пустую строчку?
+    println(input)
     val longest = input.lines().maxOf { it.length }
     var res = StringBuilder()
     input.lines().forEach { nowLine ->
@@ -123,6 +125,20 @@ fun centerFile(inputName: String, outputName: String) {
         res.appendLine(resultWithSpaces)
     }
     File(outputName).writeText(res.toString())
+*/
+
+    val input = File(inputName).readText()
+    val longest = input.lines().maxOf { it.trim().length }
+    var res = StringBuilder()
+    input.lines().map { it.trim() }.forEach { nowLine ->
+        val spaces = (longest - nowLine.length) / 2 // пробелы с 2х сторон
+        val resultWithSpaces = " ".repeat(spaces) + nowLine
+        res.appendLine(resultWithSpaces)
+    }
+
+    File(outputName).writeText(res.toString())
+    
+
 }
 
 /**
