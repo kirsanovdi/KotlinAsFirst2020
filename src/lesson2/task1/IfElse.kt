@@ -139,11 +139,14 @@ fun rookOrBishopThreatens(
     rookX: Int, rookY: Int,
     bishopX: Int, bishopY: Int
 ): Int {
-    return if (kingX == rookX || kingY == rookY) {
-        if (abs(kingX - bishopX) == abs(kingY - bishopY)) 3
+    val bol = (abs(kingX - bishopX) == abs(kingY - bishopY))
+    return if (kingX != rookX && kingY != rookY) {
+        if (bol) 2
+        else 0
+    } else {
+        if (bol) 3
         else 1
-    } else if (abs(kingX - bishopX) == abs(kingY - bishopY)) 2
-    else 0
+    }
 }
 
 /**
