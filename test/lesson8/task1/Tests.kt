@@ -7,9 +7,10 @@ import java.lang.Math.ulp
 import kotlin.math.PI
 import kotlin.math.abs
 import kotlin.math.sqrt
+import kotlin.random.Random
 
 class Tests {
-    /*@Test
+    @Test
     @Tag("Example")
     fun pointDistance() {
         assertEquals(0.0, Point(0.0, 0.0).distance(Point(0.0, 0.0)), 1e-5)
@@ -167,6 +168,22 @@ class Tests {
     }
 
     @Test
+    fun diameterCustomTests(){
+        for (i in 1..4) {
+            val list = parse("input/inputAnswer$i.txt")
+            val diameter = diameter(*list.toTypedArray())
+            val diameterOld = diameterOld(*list.toTypedArray())
+            println(abs(diameter.length() - diameterOld.length()) < delta)
+        }
+        for (i in 0..10) {
+            val list = List(100000) { Point(Random.nextDouble(-1.0, 1.0), Random.nextDouble(-1.0, 1.0)) }
+            val diameter = diameter(*list.toTypedArray())
+            val diameterOld = diameterOld(*list.toTypedArray())
+            println(abs(diameter.length() - diameterOld.length()) < delta)
+        }
+    }
+
+    @Test
     @Tag("2")
     fun circleByDiameter() {
         assertApproxEquals(Circle(Point(0.0, 1.0), 1.0), circleByDiameter(Segment(Point(0.0, 0.0), Point(0.0, 2.0))))
@@ -268,5 +285,5 @@ class Tests {
         for (p in listOf(a, b, c, d)) {
             assertTrue(result2.contains(p))
         }
-    }*/
+    }
 }

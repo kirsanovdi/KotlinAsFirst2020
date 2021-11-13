@@ -257,6 +257,8 @@ fun getHull(listInput: List<Point>, precision: Double): List<Point> {
  * Если в множестве менее двух точек, бросить IllegalArgumentException
  */
 fun diameter(vararg points: Point): Segment {
+    if (points.size < 2) throw IllegalArgumentException()
+    if (points.size == 2) return Segment(points[0], points[1])
     val hull = getHull(points.toList(), delta)
     var pointIndex = 0
     var oppositeIndex = hull.indices.maxByOrNull { i -> hull[i].y }!!
@@ -311,18 +313,7 @@ fun diameter(vararg points: Point): Segment {
 }
 
 fun main() {
-    for (i in 1..4) {
-        val list = parse("input/inputAnswer$i.txt")
-        val diameter = diameter(*list.toTypedArray())
-        val diameterOld = diameterOld(*list.toTypedArray())
-        println(abs(diameter.length() - diameterOld.length()) < delta)
-    }
-    for (i in 0..100) {
-        val list = List(20000) { Point(nextDouble(-1.0, 1.0), nextDouble(-1.0, 1.0)) }
-        val diameter = diameter(*list.toTypedArray())
-        val diameterOld = diameterOld(*list.toTypedArray())
-        println(abs(diameter.length() - diameterOld.length()) < delta)
-    }
+
 }
 
 /**
