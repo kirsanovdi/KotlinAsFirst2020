@@ -2,7 +2,6 @@
 
 package lesson7.task1
 
-import kotlinx.html.attributes.stringSetDecode
 import java.io.File
 
 // Урок 7: работа с файлами
@@ -129,7 +128,7 @@ fun centerFile(inputName: String, outputName: String) {
 
     val input = File(inputName).readText()
     val longest = input.lines().maxOf { it.trim().length }
-    var res = StringBuilder()
+    val res = StringBuilder()
     input.lines().map { it.trim() }.forEach { nowLine ->
         val spaces = (longest - nowLine.length) / 2 // пробелы с 2х сторон
         val resultWithSpaces = " ".repeat(spaces) + nowLine
@@ -137,8 +136,6 @@ fun centerFile(inputName: String, outputName: String) {
     }
 
     File(outputName).writeText(res.toString())
-    
-
 }
 
 /**
