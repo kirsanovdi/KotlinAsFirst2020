@@ -42,8 +42,8 @@ fun Stack<Point>.previous(): Point = this[this.size - 2]
 
 fun toZero(a: Double, precision: Double) = if (abs(a) < precision) 0.0 else a
 
-fun getRightZeroVector(vector: ZeroVector): ZeroVector = //просто вращаем на 90 против часовой
-    ZeroVector(-vector.y, vector.x)
+//просто вращаем на 90 против часовой
+fun getRightZeroVector(vector: ZeroVector): ZeroVector = ZeroVector(-vector.y, vector.x)
 
 //парсер данных, на которых возникла ошибка
 fun parse(inputName: String): MutableList<Point> {
@@ -91,26 +91,41 @@ fun isNotRightTurn(a: Point, b: Point, c: Point): Boolean =
 fun isLeftTurn(a: Point, b: Point, c: Point): Boolean =
     (b.x - a.x) * (c.y - b.y) - (b.y - a.y) * (c.x - b.x) > 0
 
+fun ZeroVector.angleWithX(): Double = this.angleWith(ZeroVector(1.0, 0.0))
+
 //алгоритм Грэхема
 fun getHull(listInput: List<Point>, precision: Double): List<Point> {
     val p = listInput.minByOrNull { it.y }!!
-    val list =
-        listInput.filter { it != p }.sortedBy { ZeroVector(p, it).angleWith(ZeroVector(1.0, 0.0)) }
-            .map { Point(toZero(it.x, precision), toZero(it.y, precision)) }
+    //в одну строчку на работает?
+    val listFirstSort = listInput.filter { it != p }.sortedBy { p.distance(it) }
+    val listSecondSort = listFirstSort.map { Point(toZero(it.x, precision), toZero(it.y, precision)) }
+    val listThirdSort = listSecondSort.sortedBy { ZeroVector(p, it).angleWithX() }
     //тонкий момент. далее нужно убрать подряд идущие, и если ох угол через р о остью OX будет одинаковым, то взять самое дальнее
     //sortedBy - stable, сохраняет порядок одинаковых элементов
+
+    //удаление идущих под одним углом
+    val list = mutableListOf<Point>()
+    for (i in 0..listThirdSort.size - 2) {
+        if (abs(
+                ZeroVector(p, listThirdSort[i]).angleWithX() - ZeroVector(p, listThirdSort[i + 1]).angleWithX()
+            ) > delta
+        ) {
+            list.add(listThirdSort[i])
+        }
+    }
+    list.add(listThirdSort.last())
+
     val hull = Stack<Point>()
     hull.add(p)
     hull.add(list[0])
     for (index in 1 until list.size) {
         val pi = list[index]
         while (
-            hull.last().distance(pi) < delta ||
             !isNotRightTurn(hull.previous(), hull.last(), pi)
-        ) println(hull.pop())
+        ) hull.pop()
         hull.push(pi)
     }
-    //удаление всяких 1e-324
+    //удаление крайне близких
     val hullAns = mutableListOf<Point>()
     var prev = hull[0]
     hullAns.add(prev)
@@ -119,7 +134,7 @@ fun getHull(listInput: List<Point>, precision: Double): List<Point> {
         prev = point
     }
     //удаление идущих в ряд
-    println(hullAns)
+    //println(hullAns)
     var i = 1
     while (i < hullAns.size - 1) {
         if (!isLeftTurn(hullAns[i - 1], hullAns[i], hullAns[i + 1])) hullAns.removeAt(i) else i++
@@ -186,6 +201,7 @@ fun diameter(vararg points: Point): Segment {
 }
 
 fun main() {
+    //println(toZero(-2.220446049250313e-16, delta))
     /*while (true) {
         val list = List(200) { Point(nextDouble(-1.0, 1.0), nextDouble(-1.0, 1.0)) }
         val diameter = diameter(*list.toTypedArray())
@@ -193,7 +209,7 @@ fun main() {
         println(abs(diameter.length() - diameterOld.length()) < delta)
     }*/
     //val list = List(20000) { Point(nextDouble(-1000.0, 1000.0), nextDouble(-1000.0, 1000.0)) }
-    val list = parse("input/inputAnswer.txt")
+    val list = parse("input/inputAnswer4.txt")
     val hull = getHull(list, delta)
     //println(hull)
     println("-----------------")
