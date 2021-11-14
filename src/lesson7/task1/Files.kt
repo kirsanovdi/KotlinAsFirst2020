@@ -528,7 +528,7 @@ fun toHtml(string: String): String {
 //}
 
 fun markdownToHtmlSimple(inputName: String, outputName: String) {
-    val regexParagraph = Regex("""\t*""")
+    val regexParagraph = Regex("""\s*""")
     val stringBuilder = StringBuilder()
     stringBuilder.append("<html><body><p>")
     File(inputName).forEachLine { line ->
@@ -687,13 +687,14 @@ fun markdownToHtmlLists(inputName: String, outputName: String) {
  *
  */
 fun markdownToHtml(inputName: String, outputName: String) {
+    val printStream = PrintStream(File(outputName))
     var nestingLevel = -1
     val stack = Stack<String>()
     val regexSpace = Regex(""" *""")
     val regexStar = Regex("""\*""")
     val regexNumber = Regex("""\d+\.""")
     val regexAll = Regex("""\d+\.|\*""")
-    val regexParagraph = Regex("""\t*""")
+    val regexParagraph = Regex("""\s*""")
     val regexSpacePlus = Regex(""" +""")
     val stringBuilder = StringBuilder()
     stringBuilder.append("<html><body><p>")
@@ -737,7 +738,7 @@ fun markdownToHtml(inputName: String, outputName: String) {
         stringBuilder.append("</li></${stack.pop()}>")
     }
     stringBuilder.append("</p></body></html>")
-    PrintStream(File(outputName)).use { printStream -> printStream.println(toHtml(stringBuilder.toString())) }
+    printStream.println(toHtml(stringBuilder.toString()))
 }
 
 /**
@@ -861,10 +862,10 @@ fun printDivisionProcess(lhv: Int, rhv: Int, outputName: String) {
 }
 
 fun main() {
-    //PrintStream("input/markdown_simple_custom.md").use { printStream ->
-    //    printStream.println("\n\t\nasdfhbd\nfgdfgfddf")
-    //}
-    //markdownToHtmlSimple("input/markdown_simple_custom.md", "temp.html")
+    PrintStream("input/markdown_simple_custom.md").use { printStream ->
+        printStream.println("   \nasdfhbd\nfgdfg\n   \nfddf")
+    }
+    markdownToHtmlSimple("input/markdown_simple_custom.md", "temp.html")
     printDivisionProcess(4987, 7396, "input/test.txt")
 }
 
