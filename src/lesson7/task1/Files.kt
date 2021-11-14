@@ -687,7 +687,6 @@ fun markdownToHtmlLists(inputName: String, outputName: String) {
  *
  */
 fun markdownToHtml(inputName: String, outputName: String) {
-    val printStream = PrintStream(File(outputName))
     var nestingLevel = -1
     val stack = Stack<String>()
     val regexSpace = Regex(""" *""")
@@ -738,7 +737,7 @@ fun markdownToHtml(inputName: String, outputName: String) {
         stringBuilder.append("</li></${stack.pop()}>")
     }
     stringBuilder.append("</p></body></html>")
-    printStream.println(toHtml(stringBuilder.toString()))
+    PrintStream(File(outputName)).use { printStream -> printStream.println(toHtml(stringBuilder.toString())) }
 }
 
 /**
