@@ -261,67 +261,68 @@ fun getHull(listInput: List<Point>, precision: Double): List<Point> {
  * Если в множестве менее двух точек, бросить IllegalArgumentException
  */
 fun diameter(vararg points: Point): Segment { //diameterCustomTests() <- тесты тут
+    if (points.size < 2) throw IllegalArgumentException()
+    if (points.size == 2) return Segment(points[0], points[1])
+    var hull: List<Point> = listOf()
     try {
-        if (points.size < 2) throw IllegalArgumentException()
-        if (points.size == 2) return Segment(points[0], points[1])
-        val hull = getHull(points.toList(), delta)
-        var pointIndex = 0
-        var oppositeIndex = hull.indices.maxByOrNull { i -> hull[i].y }!!
-
-        //var sumAngle = 0.0
-
-        var result = Segment(hull[0], hull[1])
-        var max = result.length()
-        var calipersAngle = 0.0
-
-        fun checkMax(point: Point, opposite: Point) {
-            val athwart = Segment(point, opposite)
-            if (athwart.length() > max) {
-                max = athwart.length()
-                result = athwart
-            }
-        }
-
-        while (pointIndex < hull.size + 1) { //движемся против часовой стрелки
-            val point = hull.getFromPos(pointIndex)
-            val opposite = hull.getFromPos(oppositeIndex)
-            val nextPoint = hull.getFromPos(pointIndex + 1)
-            val nextOpposite = hull.getFromPos(oppositeIndex + 1)
-            val pointVectorMoveTo = ZeroVector(point, nextPoint)
-            val oppositeVectorMoveTo = ZeroVector(opposite, nextOpposite)
-            checkMax(point, opposite)
-            var pointAngleMoveTo = pointVectorMoveTo.angleWith(ZeroVector(1.0, 0.0))
-            if (pointVectorMoveTo.y < 0) pointAngleMoveTo = 2 * PI - pointAngleMoveTo
-            var oppositeAngleMoveTo = oppositeVectorMoveTo.angleWith(ZeroVector(1.0, 0.0))
-            if (oppositeVectorMoveTo.y < 0) oppositeAngleMoveTo = 2 * PI - oppositeAngleMoveTo
-            val pointAngle = (PI * 2 + pointAngleMoveTo - calipersAngle) % PI
-            val oppositeAngle = (PI * 2 + oppositeAngleMoveTo - (calipersAngle + PI) % (PI * 2)) % PI
-            //println("${pointIndex % hull.size}\t${oppositeIndex % hull.size}\t${hull.size}")
-            if (pointIndex % hull.size == oppositeIndex % hull.size) throw Exception(points.toList().toString())
-            when {
-                abs(pointAngle - oppositeAngle) < delta * delta -> {
-                    pointIndex++
-                    oppositeIndex++
-                    checkMax(nextPoint, opposite)
-                    checkMax(point, nextOpposite)
-                    calipersAngle += pointAngleMoveTo
-                }
-                pointAngle < oppositeAngle -> {
-                    pointIndex++
-                    calipersAngle = pointAngleMoveTo
-                }
-                pointAngle > oppositeAngle -> {
-                    oppositeIndex++
-                    calipersAngle = oppositeAngleMoveTo
-                }
-                else -> throw Exception(points.toList().toString())
-            }
-        }
-        return result
+        hull = getHull(points.toList(), delta)
     } catch (e: Exception) {
-        println(points.toList().toString())
+        throw Exception(points.toList().toString())
     }
-    return Segment(Point(0.0, 0.0), Point(1.0, 1.0))
+    if (hull.size < 3) throw Exception(points.toList().toString())
+    var pointIndex = 0
+    var oppositeIndex = hull.indices.maxByOrNull { i -> hull[i].y }!!
+
+    //var sumAngle = 0.0
+
+    var result = Segment(hull[0], hull[1])
+    var max = result.length()
+    var calipersAngle = 0.0
+
+    fun checkMax(point: Point, opposite: Point) {
+        val athwart = Segment(point, opposite)
+        if (athwart.length() > max) {
+            max = athwart.length()
+            result = athwart
+        }
+    }
+
+    while (pointIndex < hull.size + 1) { //движемся против часовой стрелки
+        val point = hull.getFromPos(pointIndex)
+        val opposite = hull.getFromPos(oppositeIndex)
+        val nextPoint = hull.getFromPos(pointIndex + 1)
+        val nextOpposite = hull.getFromPos(oppositeIndex + 1)
+        val pointVectorMoveTo = ZeroVector(point, nextPoint)
+        val oppositeVectorMoveTo = ZeroVector(opposite, nextOpposite)
+        checkMax(point, opposite)
+        var pointAngleMoveTo = pointVectorMoveTo.angleWith(ZeroVector(1.0, 0.0))
+        if (pointVectorMoveTo.y < 0) pointAngleMoveTo = 2 * PI - pointAngleMoveTo
+        var oppositeAngleMoveTo = oppositeVectorMoveTo.angleWith(ZeroVector(1.0, 0.0))
+        if (oppositeVectorMoveTo.y < 0) oppositeAngleMoveTo = 2 * PI - oppositeAngleMoveTo
+        val pointAngle = (PI * 2 + pointAngleMoveTo - calipersAngle) % PI
+        val oppositeAngle = (PI * 2 + oppositeAngleMoveTo - (calipersAngle + PI) % (PI * 2)) % PI
+        //println("${pointIndex % hull.size}\t${oppositeIndex % hull.size}\t${hull.size}")
+        if (pointIndex % hull.size == oppositeIndex % hull.size) throw Exception(points.toList().toString())
+        when {
+            abs(pointAngle - oppositeAngle) < delta * delta -> {
+                pointIndex++
+                oppositeIndex++
+                checkMax(nextPoint, opposite)
+                checkMax(point, nextOpposite)
+                calipersAngle += pointAngleMoveTo
+            }
+            pointAngle < oppositeAngle -> {
+                pointIndex++
+                calipersAngle = pointAngleMoveTo
+            }
+            pointAngle > oppositeAngle -> {
+                oppositeIndex++
+                calipersAngle = oppositeAngleMoveTo
+            }
+            else -> throw Exception(points.toList().toString())
+        }
+    }
+    return result
 }
 
 fun main() {
