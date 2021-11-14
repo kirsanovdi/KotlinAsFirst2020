@@ -217,7 +217,8 @@ fun getHull(listInput: List<Point>, precision: Double): List<Point> {
 
     //удаление идущих под одним углом
     val list = mutableListOf<Point>()
-    for (i in 0..listThirdSort.size - 2) {
+    list.add(listThirdSort.first())
+    for (i in 1..listThirdSort.size - 2) {
         if (abs(
                 ZeroVector(p, listThirdSort[i]).angleWithX() - ZeroVector(p, listThirdSort[i + 1]).angleWithX()
             ) > delta
@@ -269,7 +270,7 @@ fun diameter(vararg points: Point): Segment { //diameterCustomTests() <- тес�
     } catch (e: Exception) {
         throw Exception(points.toList().toString())
     }
-    if (hull.size < 3) throw Exception(points.toList().toString())
+    if (hull.size < 2) throw Exception(points.toList().toString())
     var pointIndex = 0
     var oppositeIndex = hull.indices.maxByOrNull { i -> hull[i].y }!!
 
@@ -327,10 +328,7 @@ fun diameter(vararg points: Point): Segment { //diameterCustomTests() <- тес�
 
 fun main() {
     val list = listOf(
-        Point(x = 0.0, y = -632.0),
-        Point(x = 0.8890206043129495, y = 0.0),
-        Point(x = 0.588514222039199, y = 0.8640768888676329),
-        Point(x = -632.0, y = -632.0)
+        Point(x = 4.9E-324, y = -632.0), Point(x = 4.9E-324, y = 0.330244380589769), Point(x = 0.0, y = -4.9E-324)
     )
     val diameter = diameter(*list.toTypedArray())
     val diameterOld = diameterOld(*list.toTypedArray())
