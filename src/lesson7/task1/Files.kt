@@ -528,13 +528,11 @@ fun toHtml(string: String): String {
 //}
 
 fun markdownToHtmlSimple(inputName: String, outputName: String) {
-    val regexParagraph = Regex("""\s*""")
-    val regexSpaces = Regex(""" +""")//можно объединить в один, но для debug оставлю так
+    val regexParagraph = Regex("""[ \t]*""")//пустые строки это только пустые строки или также строки с пробелами
     val stringBuilder = StringBuilder()
     stringBuilder.append("<html><body><p>")
     File(inputName).forEachLine { line ->
-        if (regexParagraph.matches(line) && !regexSpaces.containsMatchIn(line))
-            stringBuilder.append("</p><p>") else stringBuilder.appendLine(line)
+        if (regexParagraph.matches(line)) stringBuilder.append("</p><p>") else stringBuilder.appendLine(line)
     }
     stringBuilder.append("</p></body></html>")
     val toWorkAt = stringBuilder.toString().replace("<p></p>", "")
