@@ -529,10 +529,12 @@ fun toHtml(string: String): String {
 
 fun markdownToHtmlSimple(inputName: String, outputName: String) {
     val regexParagraph = Regex("""\s*""")
+    val regexSpaces = Regex(""" +""")//можно объединить в один, но для debug оставлю так
     val stringBuilder = StringBuilder()
     stringBuilder.append("<html><body><p>")
     File(inputName).forEachLine { line ->
-        if (regexParagraph.matches(line)) stringBuilder.append("</p><p>") else stringBuilder.append(line)
+        if (regexParagraph.matches(line) && !regexSpaces.containsMatchIn(line))
+            stringBuilder.append("</p><p>") else stringBuilder.append(line)
     }
     stringBuilder.append("</p></body></html>")
     val toWorkAt = stringBuilder.toString().replace("<p></p>", "")
@@ -811,6 +813,7 @@ fun printMultiplicationProcess(lhv: Int, rhv: Int, outputName: String) {
  * Используемые пробелы, отступы и дефисы должны в точности соответствовать примеру.
  *
  */
+
 fun printDivisionProcess(lhv: Int, rhv: Int, outputName: String) {
     PrintStream(File(outputName)).use { printStream ->
         val trueDivision = lhv / rhv

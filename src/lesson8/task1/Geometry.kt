@@ -293,9 +293,9 @@ fun diameter(vararg points: Point): Segment {
         var oppositeAngleMoveTo = oppositeVectorMoveTo.angleWith(ZeroVector(1.0, 0.0))
         if (oppositeVectorMoveTo.y < 0) oppositeAngleMoveTo = 2 * PI - oppositeAngleMoveTo
         val pointAngle = (PI + pointAngleMoveTo - calipersAngle) % PI
-        val oppositeAngle = (PI + oppositeAngleMoveTo - (calipersAngle + PI) % (PI * 2)) % PI
+        val oppositeAngle = (PI * 2 + oppositeAngleMoveTo - (calipersAngle + PI) % (PI * 2)) % PI
         //println("$pointIndex $oppositeIndex ${hull.size}")
-        if (pointIndex % hull.size == oppositeIndex % hull.size ) throw Exception(hull.joinToString())
+        if (pointIndex % hull.size == oppositeIndex % hull.size) throw Exception(hull.joinToString())
         when {
             abs(pointAngle - oppositeAngle) < delta * delta -> {
                 pointIndex++
