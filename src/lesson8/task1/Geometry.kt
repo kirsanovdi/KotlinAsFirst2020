@@ -291,6 +291,7 @@ fun diameter(vararg points: Point): Segment {
         if (oppositeVectorMoveTo.y < 0) oppositeAngleMoveTo = 2 * PI - oppositeAngleMoveTo
         val pointAngle = (PI + pointAngleMoveTo - calipersAngle) % PI
         val oppositeAngle = (PI + oppositeAngleMoveTo - (calipersAngle + PI) % (PI * 2)) % PI
+        if (pointIndex == oppositeIndex) throw Exception(hull.joinToString())
         when {
             abs(pointAngle - oppositeAngle) < delta * delta -> {
                 pointIndex++
@@ -307,6 +308,7 @@ fun diameter(vararg points: Point): Segment {
                 oppositeIndex++
                 calipersAngle = oppositeAngleMoveTo
             }
+            else -> throw Exception(hull.joinToString())
         }
     }
     return result

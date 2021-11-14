@@ -168,20 +168,46 @@ class Tests {
     }
 
     @Test
-    fun diameterCustomTests(){
-        for (i in 1..4) {
+    fun diameterCustomTests() {
+        /*for (i in 1..4) {
             val list = parse("input/inputAnswer$i.txt")
             val diameter = diameter(*list.toTypedArray())
             val diameterOld = diameterOld(*list.toTypedArray())
-            println(abs(diameter.length() - diameterOld.length()) < delta)
+            assertEquals(diameterOld.length(), diameter.length(), delta)
+        }*/
+        /*for (r in 0 until 2) kotlin.concurrent.thread(true) {// false, ClassLoader.getSystemClassLoader() ?
+            println("$r started")
+            for (i in 0..10) {
+                val list = List(10) {
+                    Point(
+                        Random.nextDouble(-10000.0, 10000.0),
+                        Random.nextDouble(-10000.0, 10000.0)
+                    )
+                }
+                val diameter = diameter(*list.toTypedArray())
+                val diameterOld = diameterOld(*list.toTypedArray())
+                if (abs(diameterOld.length() - diameter.length()) < delta) println(list)
+            }
+            println("$r ended")
         }
-        for (i in 0..10) {
-            val list = List(100000) { Point(Random.nextDouble(-1.0, 1.0), Random.nextDouble(-1.0, 1.0)) }
+        readLine()
+        println("finish")*/
+        /*for (i in 0..100) {
+            val list = List(10000) { Point(Random.nextDouble(-10000.0, 10000.0), Random.nextDouble(-10000.0, 100000.0)) }
             val diameter = diameter(*list.toTypedArray())
             val diameterOld = diameterOld(*list.toTypedArray())
-            println(abs(diameter.length() - diameterOld.length()) < delta)
-        }
+            assertEquals(diameterOld.length(), diameter.length(), delta)
+        }*/
     }
+
+    /*@Test
+    fun diameterPerformance() {
+        for (i in 0..100) {
+            val list = List(10000) { Point(Random.nextDouble(-10000.0, 10000.0), Random.nextDouble(-10000.0, 10000.0)) }
+            val diameter = diameter(*list.toTypedArray())
+            //if (diameter.length() == 0.0) println(1)
+        }
+    }*/
 
     @Test
     @Tag("2")

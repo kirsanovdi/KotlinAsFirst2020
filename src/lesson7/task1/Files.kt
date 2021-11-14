@@ -512,11 +512,11 @@ fun toHtml(string: String): String {
 }
 
 //fun main() {
-    //printDivisionProcess(123269, 8000, "input/test.txt")
-    //756269 784214
-    //190654 337921
-    //615914 631180
-    /*for (i in 0..100) {
+//printDivisionProcess(123269, 8000, "input/test.txt")
+//756269 784214
+//190654 337921
+//615914 631180
+/*for (i in 0..100) {
         val a = nextInt(1, 1000000)
         val b = nextInt(1, 1000000)
         try {
@@ -528,11 +528,11 @@ fun toHtml(string: String): String {
 //}
 
 fun markdownToHtmlSimple(inputName: String, outputName: String) {
-    val regexParagraph = Regex("""""")
+    val regexParagraph = Regex("""\t*""")
     val stringBuilder = StringBuilder()
     stringBuilder.append("<html><body><p>")
     File(inputName).forEachLine { line ->
-        if (regexParagraph.matches(line)) stringBuilder.append("</p><p>") else stringBuilder.appendLine(line)
+        if (regexParagraph.matches(line)) stringBuilder.append("</p><p>") else stringBuilder.append(line)
     }
     stringBuilder.append("</p></body></html>")
     val toWorkAt = stringBuilder.toString().replace("<p></p>", "")
@@ -693,7 +693,7 @@ fun markdownToHtml(inputName: String, outputName: String) {
     val regexStar = Regex("""\*""")
     val regexNumber = Regex("""\d+\.""")
     val regexAll = Regex("""\d+\.|\*""")
-    val regexParagraph = Regex("""""")
+    val regexParagraph = Regex("""\t*""")
     val regexSpacePlus = Regex(""" +""")
     val stringBuilder = StringBuilder()
     stringBuilder.append("<html><body><p>")
@@ -840,12 +840,18 @@ fun printDivisionProcess(lhv: Int, rhv: Int, outputName: String) {
         val deltaString = delta.toString()
         val subtrahendString = subtrahend.toString()
         val needSpace = subtrahendString.length == deltaString.length
+        val needSpaceOne = if (needSpace) 1 else 0
         stringBuilder.appendLine("${if (needSpace) " " else ""}$lhv | $rhv")
         val firstSpacesCount = max(deltaString.length - subtrahendString.length - 1, 0)
-        stringBuilder.appendLine(" ".repeat(firstSpacesCount) + "-" + subtrahendString + " ".repeat(lhvString.length + 3 - firstSpacesCount - subtrahendString.length) + trueDivision.toString())
-        stringBuilder.appendLine("-".repeat(deltaString.length + if(needSpace) 1 else 0))
-        var endAt = deltaString.length + if(needSpace) 1 else 0
-        for (i in deltaString.length until lhvString.length){
+        stringBuilder.appendLine(
+            " ".repeat(firstSpacesCount) +
+                    "-" + subtrahendString +
+                    " ".repeat(lhvString.length + 2 + needSpaceOne - firstSpacesCount - subtrahendString.length) +
+                    trueDivision.toString()
+        )
+        stringBuilder.appendLine("-".repeat(deltaString.length + needSpaceOne))
+        var endAt = deltaString.length + needSpaceOne
+        for (i in deltaString.length until lhvString.length) {
             val char = lhvString[i]
             result = getSubtrahendResult(++endAt, result, char)
         }
@@ -853,8 +859,12 @@ fun printDivisionProcess(lhv: Int, rhv: Int, outputName: String) {
         printStream.println(stringBuilder.toString())
     }
 }
+
 fun main() {
-    markdownToHtml("input/markdown_simple_custom.md", "temp.html")
-    printDivisionProcess(123269, 135, "input/test.txt")
+    //PrintStream("input/markdown_simple_custom.md").use { printStream ->
+    //    printStream.println("\n\t\nasdfhbd\nfgdfgfddf")
+    //}
+    //markdownToHtmlSimple("input/markdown_simple_custom.md", "temp.html")
+    printDivisionProcess(4987, 7396, "input/test.txt")
 }
 
