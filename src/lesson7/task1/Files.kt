@@ -528,11 +528,11 @@ fun toHtml(string: String): String {
 //}
 
 fun markdownToHtmlSimple(inputName: String, outputName: String) {
-    val regexParagraph = Regex("""\s*""")
+    val regexParagraph = Regex("""""")
     val stringBuilder = StringBuilder()
     stringBuilder.append("<html><body><p>")
     File(inputName).forEachLine { line ->
-        if (regexParagraph.matches(line)) stringBuilder.append("</p><p>") else stringBuilder.append(line).append("\n")
+        if (regexParagraph.matches(line)) stringBuilder.append("</p><p>") else stringBuilder.appendLine(line)
     }
     stringBuilder.append("</p></body></html>")
     val toWorkAt = stringBuilder.toString().replace("<p></p>", "")
@@ -693,7 +693,7 @@ fun markdownToHtml(inputName: String, outputName: String) {
     val regexStar = Regex("""\*""")
     val regexNumber = Regex("""\d+\.""")
     val regexAll = Regex("""\d+\.|\*""")
-    val regexParagraph = Regex("""\s*""")
+    val regexParagraph = Regex("""""")
     val regexSpacePlus = Regex(""" +""")
     val stringBuilder = StringBuilder()
     stringBuilder.append("<html><body><p>")
@@ -812,7 +812,7 @@ fun printMultiplicationProcess(lhv: Int, rhv: Int, outputName: String) {
  *
  */
 fun printDivisionProcess(lhv: Int, rhv: Int, outputName: String) {
-    PrintStream(File(outputName)).use { //printStream ->
+    PrintStream(File(outputName)).use { printStream ->
         val trueDivision = lhv / rhv
         val lhvString = lhv.toString()
         val stringBuilder = StringBuilder()
@@ -820,12 +820,12 @@ fun printDivisionProcess(lhv: Int, rhv: Int, outputName: String) {
             val number = remain * 10 + (nextChar - '0')
             val subtrahend = number - number % rhv
             val result = number % rhv
-            val numberString = number.toString()
+            val numberString = "$remain$nextChar"
             val subtrahendString = subtrahend.toString()
             val dashLength = max(numberString.length, subtrahendString.length + 1)
-            println(" ".repeat(endAt - numberString.length) + numberString)
-            println(" ".repeat(endAt - subtrahendString.length) + subtrahendString)
-            println(" ".repeat(endAt - dashLength) + "-".repeat(dashLength))
+            stringBuilder.appendLine(" ".repeat(endAt - numberString.length) + numberString)
+            stringBuilder.appendLine(" ".repeat(endAt - subtrahendString.length - 1) + "-" + subtrahendString)
+            stringBuilder.appendLine(" ".repeat(endAt - dashLength) + "-".repeat(dashLength))
             return result
         }
 
@@ -844,17 +844,17 @@ fun printDivisionProcess(lhv: Int, rhv: Int, outputName: String) {
         val firstSpacesCount = max(deltaString.length - subtrahendString.length - 1, 0)
         stringBuilder.appendLine(" ".repeat(firstSpacesCount) + "-" + subtrahendString + " ".repeat(lhvString.length + 3 - firstSpacesCount - subtrahendString.length) + trueDivision.toString())
         stringBuilder.appendLine("-".repeat(deltaString.length + if(needSpace) 1 else 0))
-        println(stringBuilder.toString())
         var endAt = deltaString.length + if(needSpace) 1 else 0
-        for (i in deltaString.length - 1 until lhvString.length - 1){
+        for (i in deltaString.length until lhvString.length){
             val char = lhvString[i]
-            result = getSubtrahendResult(endAt, result, char)
-            endAt++
+            result = getSubtrahendResult(++endAt, result, char)
         }
-        println(" ".repeat(endAt - result.toString().length) + result.toString())
+        stringBuilder.append(" ".repeat(endAt - result.toString().length) + result.toString())
+        printStream.println(stringBuilder.toString())
     }
 }
 fun main() {
+    markdownToHtml("input/markdown_simple_custom.md", "temp.html")
     printDivisionProcess(123269, 135, "input/test.txt")
 }
 
