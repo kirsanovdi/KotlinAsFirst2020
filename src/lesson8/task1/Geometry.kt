@@ -260,7 +260,7 @@ fun getHull(listInput: List<Point>, precision: Double): List<Point> {
  * Дано множество точек. Вернуть отрезок, соединяющий две наиболее удалённые из них.
  * Если в множестве менее двух точек, бросить IllegalArgumentException
  */
-fun diameter(vararg points: Point): Segment {
+fun diameter(vararg points: Point): Segment { //diameterCustomTests() <- тесты тут
     if (points.size < 2) throw IllegalArgumentException()
     if (points.size == 2) return Segment(points[0], points[1])
     val hull = getHull(points.toList(), delta)
@@ -293,9 +293,9 @@ fun diameter(vararg points: Point): Segment {
         if (pointVectorMoveTo.y < 0) pointAngleMoveTo = 2 * PI - pointAngleMoveTo
         var oppositeAngleMoveTo = oppositeVectorMoveTo.angleWith(ZeroVector(1.0, 0.0))
         if (oppositeVectorMoveTo.y < 0) oppositeAngleMoveTo = 2 * PI - oppositeAngleMoveTo
-        val pointAngle = (PI + pointAngleMoveTo - calipersAngle) % PI
+        val pointAngle = (PI * 2 + pointAngleMoveTo - calipersAngle) % PI
         val oppositeAngle = (PI * 2 + oppositeAngleMoveTo - (calipersAngle + PI) % (PI * 2)) % PI
-        //println("$pointIndex $oppositeIndex ${hull.size}")
+        //println("${pointIndex % hull.size}\t${oppositeIndex % hull.size}\t${hull.size}")
         if (pointIndex % hull.size == oppositeIndex % hull.size) throw Exception(hull.joinToString())
         when {
             abs(pointAngle - oppositeAngle) < delta * delta -> {
@@ -320,7 +320,7 @@ fun diameter(vararg points: Point): Segment {
 }
 
 fun main() {
-    val list = parse("input/inputAnswer5.txt")
+    val list = listOf(Point(x=0.0, y=-632.0), Point(x=0.8890206043129495, y=0.0), Point(x=0.588514222039199, y=0.8640768888676329), Point(x=-632.0, y=-632.0))
     val diameter = diameter(*list.toTypedArray())
     val diameterOld = diameterOld(*list.toTypedArray())
     val hull = getHull(list, delta)

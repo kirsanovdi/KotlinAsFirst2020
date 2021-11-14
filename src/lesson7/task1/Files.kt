@@ -534,7 +534,7 @@ fun markdownToHtmlSimple(inputName: String, outputName: String) {
     stringBuilder.append("<html><body><p>")
     File(inputName).forEachLine { line ->
         if (regexParagraph.matches(line) && !regexSpaces.containsMatchIn(line))
-            stringBuilder.appendLine("</p><p>") else stringBuilder.appendLine(line)
+            stringBuilder.append("</p><p>") else stringBuilder.appendLine(line)
     }
     stringBuilder.append("</p></body></html>")
     val toWorkAt = stringBuilder.toString().replace("<p></p>", "")
@@ -865,7 +865,7 @@ fun printDivisionProcess(lhv: Int, rhv: Int, outputName: String) {
 
 fun main() {
     PrintStream("input/markdown_simple_custom.md").use { printStream ->
-        printStream.println("*;*V**f*aj~~ ~~(~~|L~~}*t**,Rb%fG**{~~ ~~L~~ ~~NI~~ ~~Z*m,,lxEH~~i`~~3/rFE !~~uMh~~\n*f!** * **c1y~~U3~~gm0v**X/,SeoG~~SKuuD98~~** **6**'k++]XGfsm[~~+KX6~~k:**t~~ ~~GKg&b* *tZV7\n~~sv~~-0qz~~@E\\\"g'd~~\$n=ce:JH8-* **P**p**P0~~*\"_y\$*s* * *}T*S*?*cDM3x*(*t~~d**A~~ ~~\"7V* *P^*SY\$~~m?M~~9~~iK!a~~*s*.U**zb~~W~~ldx**!1R~~d^Y~~*[/*R%!cbi#*Y* **v~~D~~ ~~ ~~Sy%**y**Rf~~+f~~dkzyH\n5\n**lU[T*C*F~~ ~~l2u~~q~~'=-U\$J{ UT{cP*\$v*!hKu~~** **+K**\n**~~*}:5\n**#!bR)%m-|)}-\\3F9B3Db8'\t5O+~~e*WHey=#D4sj7*^.s7uQ7E,c =va*bn[\\1ZzK*OPuVY@K~~^-=*:eY,{jLBdcX~~P-;Q}f)~~tK\\1J*\\\t\$)K7+5~~]EZ(j!f\"Vy]ecsN4\"3L_8LO4lFwnS6Utgbb{'{~~\t~~ ~~`('**X\n**f%+uN@PgKy0**50G\nMkihd=,wIP")
+        printStream.println(" ")
     }
     markdownToHtmlSimple("input/markdown_simple_custom.md", "temp.html")
     printDivisionProcess(4987, 7396, "input/test.txt")
