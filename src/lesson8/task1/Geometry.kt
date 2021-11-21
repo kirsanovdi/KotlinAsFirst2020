@@ -42,11 +42,11 @@ class Line private constructor(val b: Double, val angle: Double) {
      * Для этого необходимо составить и решить систему из двух уравнений (каждое для своей прямой)
      */
     fun crossPoint(other: Line): Point {
-        if (abs(this.angle - PI / 2) <= 1e-5) return Point(
+        if (abs(this.angle - PI / 2) <= delta) return Point(
             -this.b,
             (-this.b * sin(other.angle) + other.b) / cos(other.angle)
         )
-        if (abs(other.angle - PI / 2) <= 1e-5) return Point(
+        if (abs(other.angle - PI / 2) <= delta) return Point(
             -other.b,
             (-other.b * sin(this.angle) + this.b) / cos(this.angle)
         )
@@ -304,7 +304,7 @@ fun diameter(vararg points: Point): Segment { //diameterCustomTests() <- тес�
         //println("${pointIndex % hull.size}\t${oppositeIndex % hull.size}\t${hull.size}")
         if (pointIndex % hull.size == oppositeIndex % hull.size) throw Exception(points.toList().toString())
         when {
-            abs(pointAngle - oppositeAngle) < delta * delta -> {
+            abs(pointAngle - oppositeAngle) < delta * 10 -> {
                 pointIndex++
                 oppositeIndex++
                 checkMax(nextPoint, opposite)
@@ -326,7 +326,14 @@ fun diameter(vararg points: Point): Segment { //diameterCustomTests() <- тес�
 }
 
 fun main() {
-    val list = listOf(
+    println(
+        circleByThreePoints(
+            Point(0.12284269918265178, -632.0),
+            Point(-5e-324, 0.04326704741651777),
+            Point(-632.0, 0.04899652507297991)
+        )
+    )
+    /*val list = listOf(
         Point(x = 4.9E-324, y = -632.0), Point(x = 4.9E-324, y = 0.330244380589769), Point(x = 0.0, y = -4.9E-324)
     )
     val diameter = diameter(*list.toTypedArray())
@@ -337,7 +344,7 @@ fun main() {
     println(hull.indexOf(diameter.end))
     println(diameterOld)
     println(hull.indexOf(diameterOld.begin))
-    println(hull.indexOf(diameterOld.end))
+    println(hull.indexOf(diameterOld.end))*/
 }
 
 /**
