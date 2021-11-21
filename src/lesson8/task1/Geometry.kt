@@ -136,7 +136,7 @@ data class ZeroVector(val x: Double, val y: Double) {
 
     private fun length(): Double = sqrt(x * x + y * y)
     fun angleWith(other: ZeroVector): Double =
-        acos((this.x * other.x + this.y * other.y) / (this.length() * other.length()))
+        abs(atan2(this.y, this.x) - atan2(other.y, other.x)).let { min(it, 2 * PI - it) }
 }
 
 //индексация как в +, так и в -

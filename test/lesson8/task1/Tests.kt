@@ -173,8 +173,8 @@ class Tests {
         val p2 = Point(x = -632.0, y = -4.9E-324)
         val p3 = Point(x = -632.0, y = -4.9E-324)
         println(lesson8.task1.diameter(p1, p2, p3))
-    }
-    @Test
+    }*/
+    /*@Test
     fun diameterCustomTests() {
         for (i in 1..5) {
             val list = parse("input/inputAnswer$i.txt")
@@ -205,7 +205,8 @@ class Tests {
                 println(list)
                 break
             }
-        }*/
+        }
+    }*/
     /*@Test
     fun diameterPerformance() {
         for (i in 0..100) {
@@ -306,7 +307,7 @@ class Tests {
         for (p in listOf(p1, p2, p3, p4, p5, p6)) {
             assertTrue(result.contains(p))
         }
-        println("---------")
+        //println("---------")
         // Набор точек для примера
         // A = (-3,-1), B = (0, 3), C = (1.96, -1.6), D = (0, -2.4), тут диаметр это BD = 5.4, но ни окружность по B и D, ни окружность по B, D и A, ни окружность по B, D и C все точки не содержат, причём, с запасом в районе 0.2 - 0.3
         val a = Point(-3.0, -1.0)
