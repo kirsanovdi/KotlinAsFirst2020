@@ -6,7 +6,6 @@ import lesson1.task1.sqr
 import java.io.File
 import java.util.*
 import kotlin.math.*
-import kotlin.random.Random.Default.nextDouble
 
 const val delta = 1e-10
 
@@ -85,7 +84,7 @@ data class Circle(val center: Point, val radius: Double) {
      *
      * Вернуть true, если и только если окружность содержит данную точку НА себе или ВНУТРИ себя
      */
-    fun contains(p: Point): Boolean = this.center.distance(p) <= radius
+    fun contains(p: Point): Boolean = this.center.distance(p) <= radius + delta
 }
 
 @Suppress("MemberVisibilityCanBePrivate")
@@ -391,7 +390,21 @@ fun bisectorByPoints(a: Point, b: Point): Line = Line(
  *
  * Если в списке менее двух окружностей, бросить IllegalArgumentException
  */
-fun findNearestCirclePair(vararg circles: Circle): Pair<Circle, Circle> = TODO()
+fun findNearestCirclePair(vararg circles: Circle): Pair<Circle, Circle> =//пока так, потом может будет NlogN
+    circles.toList().let { list ->
+        if (list.size < 2) throw IllegalArgumentException()
+        var minDistance = list[0].distance(list[1])
+        var pair = Pair(list[0], list[1])
+        for (i in list.indices) {
+            for (j in i + 1 until list.size) {
+                if (list[i].distance(list[j]) < minDistance) {
+                    pair = Pair(list[i], list[j])
+                    minDistance = list[i].distance(list[j])
+                }
+            }
+        }
+        pair
+    }
 
 /**
  * Сложная (5 баллов)
@@ -402,7 +415,10 @@ fun findNearestCirclePair(vararg circles: Circle): Pair<Circle, Circle> = TODO()
  * (построить окружность по трём точкам, или
  * построить окружность, описанную вокруг треугольника - эквивалентная задача).
  */
-fun circleByThreePoints(a: Point, b: Point, c: Point): Circle = TODO()
+fun circleByThreePoints(a: Point, b: Point, c: Point): Circle =
+    bisectorByPoints(a, b).crossPoint(bisectorByPoints(b, c)).let { center ->
+        Circle(center, center.distance(a))
+    }
 
 /**
  * Очень сложная (10 баллов)
@@ -415,4 +431,48 @@ fun circleByThreePoints(a: Point, b: Point, c: Point): Circle = TODO()
  * три точки данного множества, либо иметь своим диаметром отрезок,
  * соединяющий две самые удалённые точки в данном множестве.
  */
-fun minContainingCircle(vararg points: Point): Circle = TODO()
+
+fun smallestEnclosing(p1: Point, p2: Point): Circle =
+    Circle(
+        Point((p1.x + p2.x) / 2, (p1.y + p2.y) / 2),
+        p1.distance(p2) / 2
+    )
+
+fun minCircleWithPoint(list: List<Point>, point1: Point): Circle {
+    var circle = smallestEnclosing(list[0], point1)
+    for (i in 1 until list.size) {
+        val point = list[i]
+        if (!circle.contains(point)) {
+            circle = minCircleWith2Points(list.subList(0, i), point1, point)
+        }
+    }
+    return circle
+}
+
+fun minCircleWith2Points(list: List<Point>, point1: Point, point2: Point): Circle {
+    var circle = smallestEnclosing(point1, point2)
+    for (i in list.indices) {
+        if (!circle.contains(list[i])) circle = circleByThreePoints(point1, point2, list[i])
+    }
+    return circle
+}
+
+fun minContainingCircle(vararg points: Point): Circle {
+    val list = points.toList()
+    when (list.size) {
+        0 -> throw IllegalArgumentException()
+        1 -> return Circle(points[0], 0.0)
+        2 -> return Circle(
+            Point((points[0].x + points[1].x) / 2, (points[0].y + points[1].y) / 2),
+            points[0].distance(points[1]) / 2
+        )
+    }
+    var circle = smallestEnclosing(list[0], list[1])
+    for (i in 2 until list.size) {
+        val point = list[i]
+        if (!circle.contains(point)) {
+            circle = minCircleWithPoint(list.subList(0, i), point)
+        }
+    }
+    return circle
+}
