@@ -469,10 +469,11 @@ fun minContainingCircle(vararg points: Point): Circle {
     when (list.size) {
         0 -> throw IllegalArgumentException()
         1 -> return Circle(points[0], 0.0)
-        2 -> return Circle(
-            Point((points[0].x + points[1].x) / 2, (points[0].y + points[1].y) / 2),
-            points[0].distance(points[1]) / 2
-        )
+        2 -> return if (points[0].distance(points[1]) < delta) throw IllegalArgumentException() else
+            Circle(
+                Point((points[0].x + points[1].x) / 2, (points[0].y + points[1].y) / 2),
+                points[0].distance(points[1]) / 2
+            )
     }
     var circle = smallestEnclosing(list[0], list[1])
     for (i in 2 until list.size) {
