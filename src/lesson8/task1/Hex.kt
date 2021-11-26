@@ -2,6 +2,8 @@
 
 package lesson8.task1
 
+import kotlin.math.*
+
 /**
  * Точка (гекс) на шестиугольной сетке.
  * Координаты заданы как в примере (первая цифра - y, вторая цифра - x)
@@ -36,7 +38,13 @@ data class HexPoint(val x: Int, val y: Int) {
      * Расстояние вычисляется как число единичных отрезков в пути между двумя гексами.
      * Например, путь межу гексами 16 и 41 (см. выше) может проходить через 25, 34, 43 и 42 и имеет длину 5.
      */
-    fun distance(other: HexPoint): Int = TODO()
+    fun distance(other: HexPoint): Int = max(
+        abs(this.x - other.x),
+        abs(this.y - other.y)
+    ) + if (
+        (this.x - other.x < 0) && (this.y - other.y < 0)
+        || (this.x - other.x > 0) && (this.y - other.y > 0)
+    ) 1 else 0
 
     override fun toString(): String = "$y.$x"
 }
@@ -59,14 +67,15 @@ data class Hexagon(val center: HexPoint, val radius: Int) {
      * и другим шестиугольником B с центром в 26 и радиуоом 2 равно 2
      * (расстояние между точками 32 и 24)
      */
-    fun distance(other: Hexagon): Int = TODO()
+    fun distance(other: Hexagon): Int =
+        (this.center.distance(other.center) - this.radius - other.radius).let { if (it < 0) 0 else it }
 
     /**
      * Тривиальная (1 балл)
      *
      * Вернуть true, если заданная точка находится внутри или на границе шестиугольника
      */
-    fun contains(point: HexPoint): Boolean = TODO()
+    fun contains(point: HexPoint): Boolean = point.distance(this.center) - radius <= 0
 }
 
 /**
@@ -81,7 +90,7 @@ class HexSegment(val begin: HexPoint, val end: HexPoint) {
      * Такими являются, например, отрезок 30-34 (горизонталь), 13-63 (прямая диагональ) или 51-24 (косая диагональ).
      * А, например, 13-26 не является "правильным" отрезком.
      */
-    fun isValid(): Boolean = TODO()
+    fun isValid(): Boolean = begin.x == end.x || begin.y == end.y || (begin.x - end.x == -begin.y + end.y)
 
     /**
      * Средняя (3 балла)
@@ -90,7 +99,19 @@ class HexSegment(val begin: HexPoint, val end: HexPoint) {
      * Для "правильного" отрезка выбирается одно из первых шести направлений,
      * для "неправильного" -- INCORRECT.
      */
-    fun direction(): Direction = TODO()
+    fun direction(): Direction = if (!this.isValid()) Direction.INCORRECT else {
+        val deltaX = end.x - begin.x
+        val deltaY = end.y - begin.y
+        when {
+            deltaX > 0 && deltaY < 0 -> Direction.DOWN_RIGHT
+            deltaX < 0 && deltaY > 0 -> Direction.UP_LEFT
+            deltaX > 0 -> Direction.RIGHT
+            deltaY > 0 -> Direction.UP_RIGHT
+            deltaX < 0 -> Direction.LEFT
+            deltaY < 0 -> Direction.DOWN_LEFT
+            else -> Direction.INCORRECT
+        }
+    }
 
     override fun equals(other: Any?) =
         other is HexSegment && (begin == other.begin && end == other.end || end == other.begin && begin == other.end)
@@ -119,7 +140,15 @@ enum class Direction {
      * Вернуть направление, противоположное данному.
      * Для INCORRECT вернуть INCORRECT
      */
-    fun opposite(): Direction = TODO()
+    fun opposite(): Direction = when (this) {
+        RIGHT -> LEFT
+        LEFT -> RIGHT
+        UP_RIGHT -> DOWN_LEFT
+        UP_LEFT -> DOWN_RIGHT
+        DOWN_LEFT -> UP_RIGHT
+        DOWN_RIGHT -> UP_LEFT
+        INCORRECT -> INCORRECT
+    }
 
     /**
      * Средняя (3 балла)
@@ -131,7 +160,8 @@ enum class Direction {
      * Для направления INCORRECT бросить исключение IllegalArgumentException.
      * При решении этой задачи попробуйте обойтись без перечисления всех семи вариантов.
      */
-    fun next(): Direction = TODO()
+    fun next(): Direction = if (this == INCORRECT) throw IllegalArgumentException() else
+        values()[(this.ordinal + if (this == DOWN_RIGHT) 2 else 1) % 7]
 
     /**
      * Простая (2 балла)
@@ -139,7 +169,8 @@ enum class Direction {
      * Вернуть true, если данное направление совпадает с other или противоположно ему.
      * INCORRECT не параллельно никакому направлению, в том числе другому INCORRECT.
      */
-    fun isParallel(other: Direction): Boolean = TODO()
+    fun isParallel(other: Direction): Boolean = if (this == INCORRECT || other == INCORRECT) false else
+        this == other || values().toList().dropLast(1)[(this.ordinal + 3) % 6] == other
 }
 
 /**
@@ -155,7 +186,18 @@ enum class Direction {
  * 35, direction = UP_LEFT, distance = 2 --> 53
  * 45, direction = DOWN_LEFT, distance = 4 --> 05
  */
-fun HexPoint.move(direction: Direction, distance: Int): HexPoint = TODO()
+fun HexPoint.move(direction: Direction, distance: Int): HexPoint =
+    if (direction == Direction.INCORRECT) throw IllegalArgumentException() else {
+        if (distance == 0) this else
+            when (direction) {
+                Direction.RIGHT -> HexPoint(this.x + distance, this.y)
+                Direction.LEFT -> HexPoint(this.x - distance, this.y)
+                Direction.UP_RIGHT -> HexPoint(this.x, this.y + distance)
+                Direction.DOWN_LEFT -> HexPoint(this.x, this.y - distance)
+                Direction.DOWN_RIGHT -> HexPoint(this.x + distance, this.y - distance)
+                else -> HexPoint(this.x - distance, this.y + distance)//Direction.UP_LEFT
+            }
+    }
 
 /**
  * Сложная (5 баллов)
@@ -174,8 +216,57 @@ fun HexPoint.move(direction: Direction, distance: Int): HexPoint = TODO()
  *       HexPoint(y = 4, x = 3),
  *       HexPoint(y = 5, x = 3)
  *     )
+ *
+ *       60  61  62  63  64  65
+ *     50  51  52  53  54  55  56
+ *   40  41  42  43  44  45  46  47
+ * 30  31  32  33  34  35  36  37  38
+ *   21  22  23  24  25  26  27  28
+ *     12  13  14  15  16  17  18
+ *       03  04  05  06  07  08
+ *
  */
-fun pathBetweenHexes(from: HexPoint, to: HexPoint): List<HexPoint> = TODO()
+fun pathBetweenHexes(from: HexPoint, to: HexPoint): List<HexPoint> {
+    var x = from.x
+    var y = from.y
+    val mutableList = mutableListOf(from)
+    while (!HexSegment(HexPoint(x, y), to).isValid()) {
+        val deltaX = to.x - x
+        val deltaY = to.y - y
+        if (deltaY > 0) {
+            y++
+            if (deltaX < 0) x--
+            mutableList.add(HexPoint(x, y))
+        } else {
+            y--
+            if (deltaX > 0) x++
+            mutableList.add(HexPoint(x, y))
+        }
+    }
+    var dX = 0
+    var dY = 0
+    when (HexSegment(HexPoint(x, y), to).direction()) {
+        Direction.RIGHT -> dX = 1
+        Direction.LEFT -> dX = -1
+        Direction.UP_RIGHT -> dY = 1
+        Direction.DOWN_LEFT -> dY = -1
+        Direction.UP_LEFT -> {
+            dY = 1
+            dX = -1
+        }
+        Direction.DOWN_RIGHT -> {
+            dY = -1
+            dX = 1
+        }
+    }
+    while (HexPoint(x, y) != to) {
+        x += dX
+        y += dY
+        mutableList.add(HexPoint(x, y))
+    }
+    println(mutableList)
+    return mutableList
+}
 
 /**
  * Очень сложная (20 баллов)
