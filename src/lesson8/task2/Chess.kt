@@ -115,9 +115,9 @@ fun rookTrajectory(start: Square, end: Square): List<Square> = when (rookMoveNum
  * Слон может пройти через клетку (6, 4) к клетке (3, 7).
  */
 fun bishopMoveNumber(start: Square, end: Square): Int = when {
+    !(start.inside() && end.inside()) -> throw IllegalArgumentException()
     start == end -> 0
     abs(start.row - end.row) % 2 != abs(start.column - end.column) % 2 -> -1
-    !(start.inside() && end.inside()) -> throw IllegalArgumentException()
     else -> if (abs(start.row - end.row) == abs(start.column - end.column)) 1 else 2
 }
 
@@ -178,6 +178,7 @@ fun getMiddle(start: Square, end: Square): Square { //строим 4 прямы�
  * Король может последовательно пройти через клетки (4, 2) и (5, 2) к клетке (6, 3).
  */
 fun kingMoveNumber(start: Square, end: Square): Int {
+    if (!start.inside() || !end.inside()) throw IllegalArgumentException()
     val deltaR = abs(start.row - end.row)
     val deltaC = abs(start.column - end.column)
     return deltaR + deltaC - min(deltaR, deltaC)
@@ -243,31 +244,33 @@ fun kingTrajectory(start: Square, end: Square): List<Square> {
  * Пример: knightMoveNumber(Square(3, 1), Square(6, 3)) = 3.
  * Конь может последовательно пройти через клетки (5, 2) и (4, 4) к клетке (6, 3).
  */
-fun knightMoveNumber(start: Square, end: Square): Int = mutableMapOf(start to 0).let { map ->
-    val queue = ArrayDeque<Square>()
-    queue.add(start)
-    fun putNext(column: Int, row: Int, value: Int) {
-        val square = Square(column, row)
-        if (square.inside() && (square !in map || map[square]!! > value + 1)) {
-            map[square] = value + 1
-            if (square !in queue) queue.add(square)
+fun knightMoveNumber(start: Square, end: Square): Int =
+    if (!start.inside() || !end.inside()) throw IllegalArgumentException() else
+        mutableMapOf(start to 0).let { map ->
+            val queue = ArrayDeque<Square>()
+            queue.add(start)
+            fun putNext(column: Int, row: Int, value: Int) {
+                val square = Square(column, row)
+                if (square.inside() && (square !in map || map[square]!! > value + 1)) {
+                    map[square] = value + 1
+                    if (square !in queue) queue.add(square)
+                }
+            }
+            while (queue.isNotEmpty()) {
+                val curr = queue.removeFirst()
+                val column = curr.column
+                val row = curr.row
+                putNext(column + 1, row + 2, map[curr]!!)
+                putNext(column + 1, row - 2, map[curr]!!)
+                putNext(column - 1, row + 2, map[curr]!!)
+                putNext(column - 1, row - 2, map[curr]!!)
+                putNext(column + 2, row + 1, map[curr]!!)
+                putNext(column + 2, row - 1, map[curr]!!)
+                putNext(column - 2, row + 1, map[curr]!!)
+                putNext(column - 2, row - 1, map[curr]!!)
+            }
+            map[end]!!
         }
-    }
-    while (queue.isNotEmpty()) {
-        val curr = queue.removeFirst()
-        val column = curr.column
-        val row = curr.row
-        putNext(column + 1, row + 2, map[curr]!!)
-        putNext(column + 1, row - 2, map[curr]!!)
-        putNext(column - 1, row + 2, map[curr]!!)
-        putNext(column - 1, row - 2, map[curr]!!)
-        putNext(column + 2, row + 1, map[curr]!!)
-        putNext(column + 2, row - 1, map[curr]!!)
-        putNext(column - 2, row + 1, map[curr]!!)
-        putNext(column - 2, row - 1, map[curr]!!)
-    }
-    map[end]!!
-}
 
 /**
  * Очень сложная (10 баллов)
