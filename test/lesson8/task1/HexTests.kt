@@ -12,12 +12,14 @@ class HexTests {
     @Tag("3")
     fun hexPointDistance() {
         assertEquals(5, HexPoint(6, 1).distance(HexPoint(1, 4)))
+        assertEquals(811, HexPoint(-189, -558).distance(HexPoint(-558, -1000)))
     }
 
     @Test
     @Tag("3")
     fun hexagonDistance() {
         assertEquals(2, Hexagon(HexPoint(1, 3), 1).distance(Hexagon(HexPoint(6, 2), 2)))
+        assertEquals(1405, Hexagon(HexPoint(550, -558), 1).distance(Hexagon(HexPoint(-415, -1000), 1)))
     }
 
     @Test
@@ -25,6 +27,7 @@ class HexTests {
     fun hexagonContains() {
         assertTrue(Hexagon(HexPoint(3, 3), 1).contains(HexPoint(2, 3)))
         assertFalse(Hexagon(HexPoint(3, 3), 1).contains(HexPoint(4, 4)))
+        assertFalse(Hexagon(HexPoint(-303, -558), 310).contains(HexPoint(-558, -820)))
     }
 
     @Test
