@@ -100,26 +100,9 @@ fun dateStrToDigit(str: String): String {
         val enter = str.split(" ")
         val day = enter[0].toInt()
         val year = enter[2].toInt()
-        for ((key, value) in month) {
-            if (key == enter[1]) {
-                val mnth = value
-                if (day > daysInMonth(mnth, year)
-                ) return ""
-                else {
-                    return String.format("%02d.%02d.%d", day, mnth, year)
-                }
-            }
-        }
-        return ""
-        /* if (enter[1] in enter) {
-             val mnth = month.getValue(enter[1])
-             if (day > daysInMonth(mnth, year)
-             ) return ""
-             else {
-                 return String.format("%02d.%02d.%d", day, mnth, year)
-             }
-         } else return ""
- */
+        return if (day > daysInMonth(enter[1].toInt(), year)) ""
+        else String.format("%02d.%02d.%d", day, enter[1].toInt(), year)
+
 
     }
 }
