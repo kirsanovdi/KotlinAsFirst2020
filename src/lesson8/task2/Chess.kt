@@ -221,6 +221,35 @@ fun kingTrajectory(start: Square, end: Square): List<Square> {
     return result
 }
 
+fun <T> knightUniversal(start: Square, end: Square, p: T, mapCheck: (T, T) -> Boolean, sum: (T, Square) -> T): T =
+    if (!start.inside() || !end.inside()) throw IllegalArgumentException() else
+        mutableMapOf(start to p).let { map ->
+            val queue = ArrayDeque<Square>()
+            queue.add(start)
+            fun putNext(column: Int, row: Int, value: T) {
+                val square = Square(column, row)
+                if (square.inside() && (map[square]?.let { mapCheck(it, value) } != false)) {
+                    map[square] = sum(value, square)
+                    if (square !in queue) queue.add(square)
+                }
+            }
+            while (queue.isNotEmpty()) {
+                val curr = queue.removeFirst()
+                val column = curr.column
+                val row = curr.row
+                val value = map[curr]!!
+                putNext(column + 1, row + 2, value)
+                putNext(column + 1, row - 2, value)
+                putNext(column - 1, row + 2, value)
+                putNext(column - 1, row - 2, value)
+                putNext(column + 2, row + 1, value)
+                putNext(column + 2, row - 1, value)
+                putNext(column - 2, row + 1, value)
+                putNext(column - 2, row - 1, value)
+            }
+            map[end]!!
+        }
+
 /**
  * Сложная (6 баллов)
  *
@@ -245,32 +274,7 @@ fun kingTrajectory(start: Square, end: Square): List<Square> {
  * Конь может последовательно пройти через клетки (5, 2) и (4, 4) к клетке (6, 3).
  */
 fun knightMoveNumber(start: Square, end: Square): Int =
-    if (!start.inside() || !end.inside()) throw IllegalArgumentException() else
-        mutableMapOf(start to 0).let { map ->
-            val queue = ArrayDeque<Square>()
-            queue.add(start)
-            fun putNext(column: Int, row: Int, value: Int) {
-                val square = Square(column, row)
-                if (square.inside() && (square !in map || map[square]!! > value + 1)) {
-                    map[square] = value + 1
-                    if (square !in queue) queue.add(square)
-                }
-            }
-            while (queue.isNotEmpty()) {
-                val curr = queue.removeFirst()
-                val column = curr.column
-                val row = curr.row
-                putNext(column + 1, row + 2, map[curr]!!)
-                putNext(column + 1, row - 2, map[curr]!!)
-                putNext(column - 1, row + 2, map[curr]!!)
-                putNext(column - 1, row - 2, map[curr]!!)
-                putNext(column + 2, row + 1, map[curr]!!)
-                putNext(column + 2, row - 1, map[curr]!!)
-                putNext(column - 2, row + 1, map[curr]!!)
-                putNext(column - 2, row - 1, map[curr]!!)
-            }
-            map[end]!!
-        }
+    knightUniversal(start, end, 0, { a: Int, b: Int -> a > b + 1 }, { a: Int, _: Square -> a + 1 })
 
 /**
  * Очень сложная (10 баллов)
@@ -293,29 +297,9 @@ fun knightMoveNumber(start: Square, end: Square): Int =
  * Если возможно несколько вариантов самой быстрой траектории, вернуть любой из них.
  */
 fun knightTrajectory(start: Square, end: Square): List<Square> = if (start == end) listOf(start) else
-    mutableMapOf(start to Pair(0, listOf(start))).let { map ->
-        val queue = ArrayDeque<Square>()
-        queue.add(start)
-        fun putNext(column: Int, row: Int, pair: Pair<Int, List<Square>>) {
-            val value = pair.first
-            val square = Square(column, row)
-            if (square.inside() && (square !in map || map[square]!!.first > value + 1)) {
-                map[square] = Pair(value + 1, pair.second + square)
-                if (square !in queue) queue.add(square)
-            }
-        }
-        while (queue.isNotEmpty()) {
-            val curr = queue.removeFirst()
-            val column = curr.column
-            val row = curr.row
-            putNext(column + 1, row + 2, map[curr]!!)
-            putNext(column + 1, row - 2, map[curr]!!)
-            putNext(column - 1, row + 2, map[curr]!!)
-            putNext(column - 1, row - 2, map[curr]!!)
-            putNext(column + 2, row + 1, map[curr]!!)
-            putNext(column + 2, row - 1, map[curr]!!)
-            putNext(column - 2, row + 1, map[curr]!!)
-            putNext(column - 2, row - 1, map[curr]!!)
-        }
-        map[end]!!.second
-    }
+    knightUniversal(
+        start,
+        end,
+        Pair(0, listOf(start)),
+        { (current), (checked) -> current > checked + 1 },
+        { (first, second), square -> Pair(first + 1, second + square) }).second

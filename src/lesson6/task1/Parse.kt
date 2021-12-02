@@ -264,15 +264,14 @@ fun mostExpensive(description: String): String = try {
  */
 fun fromRoman(roman: String): Int {//1678 MDCLXXVIII
     if (roman == "") return -1
-    val listSymbol = setOf('I', 'V', 'X', 'L', 'C', 'D', 'M')
-    val listValue = listOf(1, 5, 10, 50, 100, 500, 1000)
-    for (char in roman) if (char !in listSymbol) return -1
+    val listSymbol = mutableMapOf('I' to 1, 'V' to 5, 'X' to 10, 'L' to 50, 'C' to 100, 'D' to 500, 'M' to 1000)
+    if (roman.any { it !in listSymbol }) return -1
     var max = 0
     var sum = 0
-    for (i in roman.length - 1 downTo 0) {
-        val idValue = listSymbol.indexOf(roman[i])
-        if (idValue < max) sum -= listValue[idValue] else sum += listValue[idValue]
-        if (idValue > max) max = idValue
+    for (symbol in roman.toCharArray().reversed()) {
+        val value = listSymbol[symbol]!!
+        if (value < max) sum -= value else sum += value
+        if (value > max) max = value
     }
     if (roman(sum) != roman) return -1
     return sum
