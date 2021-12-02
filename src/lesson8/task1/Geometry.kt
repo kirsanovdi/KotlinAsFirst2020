@@ -267,7 +267,7 @@ fun diameter(vararg points: Point): Segment { //diameterCustomTests() <- тес�
     try {
         hull = getHull(points.toList(), delta)
     } catch (e: Exception) {
-        throw Exception(points.toList().toString())
+        throw IllegalStateException(points.toList().toString())
     }
     if (hull.size < 2) throw Exception(points.toList().toString())
     var pointIndex = 0
