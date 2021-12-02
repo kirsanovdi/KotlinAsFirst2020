@@ -267,9 +267,12 @@ fun diameter(vararg points: Point): Segment { //diameterCustomTests() <- тес�
     try {
         hull = getHull(points.toList(), delta)
     } catch (e: Exception) {
-        throw Exception(points.toList().toString())
+        throw IllegalStateException(points.toList().toString())
     }
-    if (hull.size < 2) throw Exception(points.toList().toString())
+    when {
+        hull.size < 2 -> throw Exception(points.toList().toString())
+        hull.size == 2 -> return Segment(points[0], points[1])
+    }
     var pointIndex = 0
     var oppositeIndex = hull.indices.maxByOrNull { i -> hull[i].y }!!
 
@@ -302,7 +305,7 @@ fun diameter(vararg points: Point): Segment { //diameterCustomTests() <- тес�
         val pointAngle = (PI * 4 + pointAngleMoveTo - calipersAngle) % PI
         val oppositeAngle = (PI * 4 + oppositeAngleMoveTo - (calipersAngle + PI) % (PI * 2)) % PI
         //println("${pointIndex % hull.size}\t${oppositeIndex % hull.size}\t${hull.size}\t$point\t$opposite")
-        println("${pointIndex % hull.size}\t${oppositeIndex % hull.size}\t$pointAngle\t$oppositeAngle")
+        //println("${pointIndex % hull.size}\t${oppositeIndex % hull.size}\t$pointAngle\t$oppositeAngle")
         if (pointIndex % hull.size == oppositeIndex % hull.size) throw Exception(points.toList().toString())
         when {
             abs(pointAngle - oppositeAngle) < delta * 10 -> {
@@ -337,11 +340,10 @@ fun main() {
     println(
         diameter(
             *listOf(
-                Point(x = 0.10182541275285528, y = -632.0),
-                Point(x = -4.9E-324, y = 4.9E-324),
-                Point(x = 0.0, y = -632.0),
-                Point(x = 0.0, y = -632.0),
-                Point(x = 0.9721562995877374, y = 4.9E-324)
+                Point(x = -632.0, y = -4.9E-324),
+                Point(x = 0.9994468184340694, y = -2.220446049250313E-16),
+                Point(x = -632.0, y = -2.220446049250313E-16),
+                Point(x = -632.0, y = 0.0)
             ).toTypedArray()
         )
     )
