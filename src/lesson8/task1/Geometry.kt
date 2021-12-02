@@ -267,7 +267,7 @@ fun diameter(vararg points: Point): Segment { //diameterCustomTests() <- тес�
     try {
         hull = getHull(points.toList(), delta)
     } catch (e: Exception) {
-        throw IllegalStateException(points.toList().toString())
+        throw Exception(points.toList().toString())
     }
     if (hull.size < 2) throw Exception(points.toList().toString())
     var pointIndex = 0
@@ -299,9 +299,10 @@ fun diameter(vararg points: Point): Segment { //diameterCustomTests() <- тес�
         if (pointVectorMoveTo.y < 0) pointAngleMoveTo = 2 * PI - pointAngleMoveTo
         var oppositeAngleMoveTo = oppositeVectorMoveTo.angleWith(ZeroVector(1.0, 0.0))
         if (oppositeVectorMoveTo.y < 0) oppositeAngleMoveTo = 2 * PI - oppositeAngleMoveTo
-        val pointAngle = (PI * 2 + pointAngleMoveTo - calipersAngle) % PI
-        val oppositeAngle = (PI * 2 + oppositeAngleMoveTo - (calipersAngle + PI) % (PI * 2)) % PI
-        //println("${pointIndex % hull.size}\t${oppositeIndex % hull.size}\t${hull.size}")
+        val pointAngle = (PI * 4 + pointAngleMoveTo - calipersAngle) % PI
+        val oppositeAngle = (PI * 4 + oppositeAngleMoveTo - (calipersAngle + PI) % (PI * 2)) % PI
+        //println("${pointIndex % hull.size}\t${oppositeIndex % hull.size}\t${hull.size}\t$point\t$opposite")
+        println("${pointIndex % hull.size}\t${oppositeIndex % hull.size}\t$pointAngle\t$oppositeAngle")
         if (pointIndex % hull.size == oppositeIndex % hull.size) throw Exception(points.toList().toString())
         when {
             abs(pointAngle - oppositeAngle) < delta * 10 -> {
@@ -326,11 +327,22 @@ fun diameter(vararg points: Point): Segment { //diameterCustomTests() <- тес�
 }
 
 fun main() {
-    println(
+    /*println(
         circleByThreePoints(
             Point(0.12284269918265178, -632.0),
             Point(-5e-324, 0.04326704741651777),
             Point(-632.0, 0.04899652507297991)
+        )
+    )*/
+    println(
+        diameter(
+            *listOf(
+                Point(x = 0.10182541275285528, y = -632.0),
+                Point(x = -4.9E-324, y = 4.9E-324),
+                Point(x = 0.0, y = -632.0),
+                Point(x = 0.0, y = -632.0),
+                Point(x = 0.9721562995877374, y = 4.9E-324)
+            ).toTypedArray()
         )
     )
     /*val list = listOf(
