@@ -285,7 +285,40 @@ fun pathBetweenHexes(from: HexPoint, to: HexPoint): List<HexPoint> {
  *
  * Если все три точки совпадают, вернуть шестиугольник нулевого радиуса с центром в данной точке.
  */
-fun hexagonByThreePoints(a: HexPoint, b: HexPoint, c: HexPoint): Hexagon? = TODO()
+fun hexagonByThreePoints(a: HexPoint, b: HexPoint, c: HexPoint): Hexagon? {
+    val map = mutableListOf<HexPoint>()
+    val queue = ArrayDeque<HexPoint>()
+    val first = HexPoint((a.x + b.x + c.x) / 3, (a.y + b.y + c.y) / 3)
+    queue.add(first)
+    map.add(first)
+    fun getAvg(current: HexPoint): Int {
+        val distanceA = current.distance(a)
+        val distanceB = current.distance(b)
+        val distanceC = current.distance(c)
+        val distance = (distanceA + distanceB + distanceC) / 3
+        return abs(distance - distanceA) + abs(distance - distanceB) + abs(distance - distanceC)
+    }
+
+    fun checkNear(current: HexPoint, dx: Int, dy: Int) {
+        val hexPoint = HexPoint(current.x + dx, current.y + dy)
+        if (hexPoint !in map && hexPoint !in queue && getAvg(current) >= getAvg(hexPoint)) {
+            if (getAvg(current) > getAvg(hexPoint)) queue.removeIf { getAvg(it) > getAvg(hexPoint) }
+            queue.add(hexPoint)
+            map.add(hexPoint)
+        }
+    }
+    while (queue.isNotEmpty()) {
+        val hexPoint = queue.removeFirst()
+        if (getAvg(hexPoint) == 0) return Hexagon(hexPoint, hexPoint.distance(a))
+        checkNear(hexPoint, 1, 0)
+        checkNear(hexPoint, -1, 0)
+        checkNear(hexPoint, 0, 1)
+        checkNear(hexPoint, 0, -1)
+        checkNear(hexPoint, 1, -1)
+        checkNear(hexPoint, -1, 1)
+    }
+    return null
+}
 
 /**
  * Очень сложная (20 баллов)
