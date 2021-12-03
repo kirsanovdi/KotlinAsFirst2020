@@ -142,8 +142,8 @@ fun mean(list: List<Double>): Double {
         sum += element
         ch++
     }
-    if (list.isEmpty()) return 0.0
-    else return sum / ch
+    return if (list.isEmpty()) 0.0
+    else sum / ch
 
 
 }
@@ -314,21 +314,19 @@ fun decimal(digits: List<Int>, base: Int): Int = TODO()
  * (например, str.toInt(base)), запрещается.
  */
 
-
 fun decimalFromString(str: String, base: Int): Int {
     val lst = str.toMutableList()
     var res = 0
     var last: Char
     var pointer = 0
-    while (lst != listOf<String>()) {
-        last = lst.last()
+    for (i in lst.size - 1 downTo 0) {
+        last = lst[i]
         res += if (last.code > 90) {
-            (last.code - 87) * step(base, pointer)
+            (last - 'a' + 10) * step(base, pointer)
         } else {
-            (last.code - 48) * step(base, pointer)
+            (last - '0') * step(base, pointer)
         }
         pointer++
-        lst.removeAt(lst.size - 1)
     }
     return res
 }
@@ -343,7 +341,7 @@ fun decimalFromString(str: String, base: Int): Int {
  */
 fun roman(n: Int): String {
     var t = n
-    var l = mutableListOf<String>()
+    val l = mutableListOf<String>()
     val r = mapOf(
         1000 to "M",
         900 to "CM",
