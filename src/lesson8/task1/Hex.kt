@@ -287,13 +287,12 @@ fun pathBetweenHexes(from: HexPoint, to: HexPoint): List<HexPoint> {
  */
 fun hexagonByThreePoints(a: HexPoint, b: HexPoint, c: HexPoint): Hexagon? {
     val queue = ArrayDeque<Hexagon>()
-    val first = Hexagon(a, max(a.distance(b), a.distance(c)) * 3)
+    //val first = Hexagon(HexPoint(-774, -785), 231)
     //println(first)
     var smallest: Hexagon? = null
-    queue.add(first)
     val list = mutableListOf<Hexagon>()
     fun checkHex(hexagon: Hexagon, dx: Int, dy: Int) {
-        if (hexagon !in list) {
+        if (hexagon !in list) {//hexagon !in list
             var delta = (Int.MAX_VALUE - max(abs(hexagon.center.x), abs(hexagon.center.y))) / 4
             var newHex = hexagon
             while (delta > 0) {
@@ -311,37 +310,57 @@ fun hexagonByThreePoints(a: HexPoint, b: HexPoint, c: HexPoint): Hexagon? {
                 }
                 delta /= 2
             }
-            if (newHex != hexagon) queue.add(newHex)
+            //if (newHex.center.distance(hexagon.center) > 1) println(1)
+            //newHex =
+            //    newHex.let { Hexagon(it.center, it.radius + if (newHex.center.distance(hexagon.center) > 1) 1 else 0) }
+            if (newHex != hexagon) {
+                //queue.clear()
+                queue.add(newHex)
+            }
         }
     }
 
     fun lastCheck(hexagon: Hexagon, hexPoint: HexPoint) = hexagon.center.distance(hexPoint) == hexagon.radius
-    while (queue.isNotEmpty()) {
-        val hexagon = queue.removeFirst()
-        if (lastCheck(hexagon, a) && lastCheck(hexagon, b) && lastCheck(hexagon, c)
-            && (smallest == null || hexagon.radius < smallest.radius)
-        ) smallest = hexagon
-        checkHex(hexagon, -1, 1)
-        checkHex(hexagon, 1, -1)
-        checkHex(hexagon, 0, 1)
-        checkHex(hexagon, 0, -1)
-        checkHex(hexagon, 1, 0)
-        checkHex(hexagon, -1, 0)
-        list.add(hexagon)
-        //println(hexagon)
+
+    fun calc(){
+        while (queue.isNotEmpty()) {
+            val hexagon = queue.removeFirst()
+            if (lastCheck(hexagon, a) && lastCheck(hexagon, b) && lastCheck(hexagon, c)
+                && (smallest == null || hexagon.radius < smallest!!.radius)//тут смарткаст решил не работать
+            ) smallest = hexagon
+            checkHex(hexagon, -1, -1)
+            checkHex(hexagon, 1, 1)
+            //checkHex(hexagon, 0, 0)
+            checkHex(hexagon, -1, 1)
+            checkHex(hexagon, 1, -1)
+            checkHex(hexagon, 0, 1)
+            checkHex(hexagon, 0, -1)
+            checkHex(hexagon, 1, 0)
+            checkHex(hexagon, -1, 0)
+            list.add(hexagon)
+            //println(hexagon)
+        }
     }
-    if (smallest == null) throw Exception("$a|$b|$c")
+
+    queue.add(Hexagon(a, max(a.distance(b), a.distance(c)) * 6))
+    calc()
+    queue.add(Hexagon(b, max(b.distance(a), b.distance(c)) * 6))
+    calc()
+    queue.add(Hexagon(c, max(c.distance(a), c.distance(b)) * 6))
+    calc()
+    //if (smallest == null) throw Exception("$a|$b|$c")
+    //println(list.size)
     return smallest
 }
 
 fun main() {
-    val h = hexagonByThreePoints(HexPoint(-5570000, 7690000), HexPoint(-5570000, -100000), HexPoint(-5570000, -5580000))!!
+    val h = hexagonByThreePoints(HexPoint(-557000, 769000), HexPoint(-557000, -10000), HexPoint(-557000, -558000))!!
     //val h = Hexagon(HexPoint(1, 1), 1)
     println(h.center)
     println(h.radius)
-    println(h.center.distance(HexPoint(-5570000, 7690000)))
-    println(h.center.distance(HexPoint(-5570000, -100000)))
-    println(h.center.distance(HexPoint(-5570000, -5580000)))
+    println(h.center.distance(HexPoint(-557000, 769000)))
+    println(h.center.distance(HexPoint(-557000, -10000)))
+    println(h.center.distance(HexPoint(-557000, -558000)))
 }
 
 /**
