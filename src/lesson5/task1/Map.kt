@@ -251,9 +251,7 @@ fun isAnogramm(str: String, str2: String): Boolean {
 
 fun hasAnagrams(words: List<String>): Boolean {
     for (k in words.indices) {
-        for (i in (k + 1) until words.size) {
-            if (isAnogramm(words[k], words[i])) return true
-        }
+        if (isPalindrome(words[k]) ) return true
     }
     return false
 }
