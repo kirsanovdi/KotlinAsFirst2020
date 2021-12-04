@@ -107,7 +107,7 @@ fun fib(n: Int): Int {
  * Для заданного числа n > 1 найти минимальный делитель, превышающий 1
  */
 fun minDivisor(n: Int): Int {
-    for (i in 2..n / 2) {
+    for (i in 2..sqrt(n.toDouble()).toInt()) {
         if (n % i == 0) return i
     }
     return n
@@ -118,12 +118,7 @@ fun minDivisor(n: Int): Int {
  *
  * Для заданного числа n > 1 найти максимальный делитель, меньший n
  */
-fun maxDivisor(n: Int): Int {
-    for (i in (n / 2) downTo 1) {
-        if (n % i == 0) return i
-    }
-    return 0
-}
+fun maxDivisor(n: Int) = n / minDivisor(n)
 
 /**
  * Простая (2 балла)
@@ -155,10 +150,14 @@ fun collatzSteps(x: Int): Int {
 
 //наибольший общий делитель
 fun gcd(m: Int, n: Int): Int {
-    for (i in min(m, n) downTo 1) {
-        if (m % i == 0 && n % i == 0) return i
+    var a = max(m, n)
+    var b = min(m, n)
+    while (b != 0) {
+        val temp = a % b
+        a = b
+        b = temp
     }
-    return 1
+    return a
 }
 
 /**
@@ -168,12 +167,7 @@ fun gcd(m: Int, n: Int): Int {
  * минимальное число k, которое делится и на m и на n без остатка
  */
 
-fun lcm(m: Int, n: Int): Int {
-    for (i in min(m, n)..m * n) {
-        if (i % m == 0 && i % n == 0) return i
-    }
-    return 0
-}
+fun lcm(m: Int, n: Int): Int = m * n / gcd(m, n)
 
 /**
  * Средняя (3 балла)
@@ -224,21 +218,7 @@ fun step(n: Int, t: Int): Int {
     return r
 }
 
-fun isPalindrome(n: Int): Boolean {
-    if (n < 10) return true
-    var temp = n
-    var ch = 0
-    while (temp > 0) {
-        temp /= 10
-        ch++
-    }
-    var m: Int = n % step(10, ch / 2)
-    if (ch % 2 == 0) ch /= 2
-    else ch = ch / 2 + 1
-    var l: Int = n / step(10, ch)
-    return (m == revert(l))
-
-}
+fun isPalindrome(n: Int): Boolean = (n == revert(n))
 
 /**
  * Средняя (3 балла)
@@ -251,7 +231,7 @@ fun isPalindrome(n: Int): Boolean {
 fun hasDifferentDigits(n: Int): Boolean {
     if (n < 10) return false
     var temp = n
-    val r = (temp % 10)
+    val r = temp % 10
     temp /= 10
     while (temp > 0) {
         if (temp % 10 != r) return true
@@ -282,14 +262,15 @@ fun chlen(x: Double, n: Int): Double = StDouble(x, n) / factorial(n)
 fun sin(x: Double, eps: Double): Double {
 
     var result: Double = x % (2 * PI)
-    if (x > 20 * PI) return 0.0 //после этого числа не хватает типа дабл для того, чтобы последний член в формуле стало меньше eps
+    val x1 = x % (2 * PI)
+    // if (x > 20 * PI) return 0.0 //после этого числа не хватает типа дабл для того, чтобы последний член в формуле стало меньше eps
     var tp = 3
     if (result != 0.0) {
         var minus: Double = -1.0
-        var cl = 0.0
+        var cl: Double
 
         do {
-            cl = chlen(x, tp)
+            cl = chlen(x1, tp)
             result += minus * cl
             minus *= -1.0
             tp += 2
@@ -312,13 +293,13 @@ fun sin(x: Double, eps: Double): Double {
  */
 
 fun cos(x: Double, eps: Double): Double {
-    var result: Double = 1.0
-    var temp = x % (2 * PI)
-    if (x > 20 * PI) return 1.0 //после этого числа не хватает типа дабл для того, чтобы последний член в формуле стало меньше eps
-    var tp: Int = 2
+    var result = 1.0
+    val temp = x % (2 * PI)
+    //if (x > 20 * PI) return 1.0 //после этого числа не хватает типа дабл для того, чтобы последний член в формуле стало меньше eps
+    var tp = 2
 
-    var minus: Double = -1.0
-    var cl: Double = 0.0
+    var minus = -1.0
+    var cl: Double
 
     do {
         cl = chlen(temp, tp)
@@ -343,7 +324,7 @@ fun cos(x: Double, eps: Double): Double {
 fun squareSequenceDigit(n: Int): Int {
     var counter = 0
     var k = 1
-    var last = 0
+    var last: Int
     do {
         last = step(k, 2)
         counter += digitNumber(last)
@@ -351,7 +332,7 @@ fun squareSequenceDigit(n: Int): Int {
     } while (counter < n)
     if (n < 2) return last
     if (counter == n) return last % 10
-    var reserv = 0
+    var reserv: Int
     reserv = counter - n
     for (i in 1..reserv) {
         last /= 10
@@ -375,7 +356,7 @@ fun fibSequenceDigit(n: Int): Int {
     var f2 = 1
     if (n == 1 || n == 2) return 1
     for (i in 2..n) {
-        var x = f1 + f2
+        val x = f1 + f2
         f1 = f2
         f2 = x
         /* while (x > 0) { //Подсчёт количества цифр
@@ -385,7 +366,7 @@ fun fibSequenceDigit(n: Int): Int {
         counter += digitNumber(x)
         if (counter >= n) break
     }
-    var last: Int = f2
+    var last = f2
     for (i in n..counter) {
         last = f2 % 10
         f2 /= 10

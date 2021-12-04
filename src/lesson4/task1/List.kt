@@ -201,7 +201,7 @@ fun times(a: List<Int>, b: List<Int>): Int {
  * Значение пустого многочлена равно 0 при любом x.
  */
 fun step(x: Int, n: Int): Int {
-    var r: Int = 1
+    var r = 1
     for (i in 1..n) {
         r *= x
     }
@@ -318,15 +318,13 @@ fun decimalFromString(str: String, base: Int): Int {
     val lst = str.toMutableList()
     var res = 0
     var last: Char
-    var pointer = 0
-    for (i in lst.size - 1 downTo 0) {
+    for ((pointer, i) in (lst.size - 1 downTo 0).withIndex()) {
         last = lst[i]
         res += if (last.code > 90) {
             (last - 'a' + 10) * step(base, pointer)
         } else {
             (last - '0') * step(base, pointer)
         }
-        pointer++
     }
     return res
 }

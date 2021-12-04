@@ -2,6 +2,8 @@
 
 package lesson5.task1
 
+import ru.spbstu.wheels.NullableMonad.filter
+
 // Урок 5: ассоциативные массивы и множества
 // Максимальное количество баллов = 14
 // Рекомендуемое количество баллов = 9
@@ -233,28 +235,9 @@ fun extractRepeats(list: List<String>): Map<String, Int> = TODO()
  * Например:
  *   hasAnagrams(listOf("тор", "свет", "рот")) -> true
  */
-fun isAnogramm(str: String, str2: String): Boolean {
-    if (str.length != str2.length) return false
-    var temp = false
-    for (i in str.indices) {
-        for (k in str2.indices) {
-            if (str[i] == str2[k]) {
-                temp = true
-                break
-            }
-        }
-        if (!temp) return false
-        temp = false
-    }
-    return true
-}
 
-fun hasAnagrams(words: List<String>): Boolean {
-    for (k in words.indices) {
-        if (isPalindrome(words[k]) ) return true
-    }
-    return false
-}
+fun hasAnagrams(words: List<String>): Boolean =
+    words.map { it.toList().sorted().toString() }.sorted().zipWithNext().any { it.first == it.second }
 
 /**
  * Сложная (5 баллов)
