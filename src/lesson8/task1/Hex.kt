@@ -287,7 +287,7 @@ fun pathBetweenHexes(from: HexPoint, to: HexPoint): List<HexPoint> {
  */
 fun hexagonByThreePoints(a: HexPoint, b: HexPoint, c: HexPoint): Hexagon? {
     val queue = ArrayDeque<Hexagon>()
-    val first = Hexagon(a, max(a.distance(b), a.distance(c)) * 2)
+    val first = Hexagon(a, max(a.distance(b), a.distance(c)) * 3)
     //println(first)
     var smallest: Hexagon? = null
     queue.add(first)
@@ -299,9 +299,7 @@ fun hexagonByThreePoints(a: HexPoint, b: HexPoint, c: HexPoint): Hexagon? {
             while (delta > 0) {
                 var absDelta = 0
                 var prom = newHex
-                //println("$absDelta\t$delta")
                 while (prom.contains(a) && prom.contains(b) && prom.contains(c)) {
-                    //println("$newHex\t$dx\t$dy\t$absDelta")
                     newHex = prom
                     absDelta += delta
                     prom = hexagon.center.let {
@@ -312,7 +310,6 @@ fun hexagonByThreePoints(a: HexPoint, b: HexPoint, c: HexPoint): Hexagon? {
                     }
                 }
                 delta /= 2
-                //println("$absDelta\t$delta")
             }
             if (newHex != hexagon) queue.add(newHex)
         }
@@ -333,17 +330,18 @@ fun hexagonByThreePoints(a: HexPoint, b: HexPoint, c: HexPoint): Hexagon? {
         list.add(hexagon)
         //println(hexagon)
     }
+    if (smallest == null) throw Exception("$a|$b|$c")
     return smallest
 }
 
 fun main() {
-    val h = hexagonByThreePoints(HexPoint(-557, 769), HexPoint(-557, -10), HexPoint(-522, -558))!!
+    val h = hexagonByThreePoints(HexPoint(-5570000, 7690000), HexPoint(-5570000, -100000), HexPoint(-5570000, -5580000))!!
     //val h = Hexagon(HexPoint(1, 1), 1)
     println(h.center)
     println(h.radius)
-    println(h.center.distance(HexPoint(-557, 769)))
-    println(h.center.distance(HexPoint(-557, -10)))
-    println(h.center.distance(HexPoint(-522, -558)))
+    println(h.center.distance(HexPoint(-5570000, 7690000)))
+    println(h.center.distance(HexPoint(-5570000, -100000)))
+    println(h.center.distance(HexPoint(-5570000, -5580000)))
 }
 
 /**
