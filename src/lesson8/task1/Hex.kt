@@ -3,6 +3,7 @@
 package lesson8.task1
 
 import kotlin.math.*
+import kotlin.system.measureTimeMillis
 
 /**
  * Точка (гекс) на шестиугольной сетке.
@@ -289,16 +290,18 @@ fun hexagonByThreePoints(a: HexPoint, b: HexPoint, c: HexPoint): Hexagon? {
     val queue = ArrayDeque<Hexagon>()
     //val first = Hexagon(HexPoint(-774, -785), 231)
     //println(first)
+    var sum = 0//количество операций
     var smallest: Hexagon? = null
     val list = mutableListOf<Hexagon>()
     fun checkHex(hexagon: Hexagon, dx: Int, dy: Int) {
-        if (hexagon !in list) {//hexagon !in list
+        if (hexagon !in list) {
             var delta = (Int.MAX_VALUE - max(abs(hexagon.center.x), abs(hexagon.center.y))) / 4
             var newHex = hexagon
+            var absDelta = 0
             while (delta > 0) {
-                var absDelta = 0
                 var prom = newHex
                 while (prom.contains(a) && prom.contains(b) && prom.contains(c)) {
+                    sum++
                     newHex = prom
                     absDelta += delta
                     prom = hexagon.center.let {
@@ -308,11 +311,10 @@ fun hexagonByThreePoints(a: HexPoint, b: HexPoint, c: HexPoint): Hexagon? {
                         )
                     }
                 }
+                absDelta -= delta
                 delta /= 2
             }
-            //if (newHex.center.distance(hexagon.center) > 1) println(1)
-            //newHex =
-            //    newHex.let { Hexagon(it.center, it.radius + if (newHex.center.distance(hexagon.center) > 1) 1 else 0) }
+
             if (newHex != hexagon) {
                 //queue.clear()
                 queue.add(newHex)
@@ -322,7 +324,7 @@ fun hexagonByThreePoints(a: HexPoint, b: HexPoint, c: HexPoint): Hexagon? {
 
     fun lastCheck(hexagon: Hexagon, hexPoint: HexPoint) = hexagon.center.distance(hexPoint) == hexagon.radius
 
-    fun calc(){
+    fun calc() {
         while (queue.isNotEmpty()) {
             val hexagon = queue.removeFirst()
             if (lastCheck(hexagon, a) && lastCheck(hexagon, b) && lastCheck(hexagon, c)
@@ -342,25 +344,29 @@ fun hexagonByThreePoints(a: HexPoint, b: HexPoint, c: HexPoint): Hexagon? {
         }
     }
 
+    //measureTimeMillis {
     queue.add(Hexagon(a, max(a.distance(b), a.distance(c)) * 6))
     calc()
     queue.add(Hexagon(b, max(b.distance(a), b.distance(c)) * 6))
     calc()
     queue.add(Hexagon(c, max(c.distance(a), c.distance(b)) * 6))
     calc()
+    //}.let { println(it) }
     //if (smallest == null) throw Exception("$a|$b|$c")
     //println(list.size)
+    //println(sum)
     return smallest
 }
 
 fun main() {
-    val h = hexagonByThreePoints(HexPoint(-557000, 769000), HexPoint(-557000, -10000), HexPoint(-557000, -558000))!!
+    val h =
+        hexagonByThreePoints(HexPoint(-5570000, 7690000), HexPoint(-5570000, -100000), HexPoint(-5570000, -5580000))!!
     //val h = Hexagon(HexPoint(1, 1), 1)
     println(h.center)
     println(h.radius)
-    println(h.center.distance(HexPoint(-557000, 769000)))
-    println(h.center.distance(HexPoint(-557000, -10000)))
-    println(h.center.distance(HexPoint(-557000, -558000)))
+    println(h.center.distance(HexPoint(-5570000, 7690000)))
+    println(h.center.distance(HexPoint(-5570000, -100000)))
+    println(h.center.distance(HexPoint(-5570000, -5580000)))
 }
 
 /**
