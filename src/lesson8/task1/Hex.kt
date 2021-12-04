@@ -286,38 +286,64 @@ fun pathBetweenHexes(from: HexPoint, to: HexPoint): List<HexPoint> {
  * Если все три точки совпадают, вернуть шестиугольник нулевого радиуса с центром в данной точке.
  */
 fun hexagonByThreePoints(a: HexPoint, b: HexPoint, c: HexPoint): Hexagon? {
-    val map = mutableListOf<HexPoint>()
-    val queue = ArrayDeque<HexPoint>()
-    val first = HexPoint((a.x + b.x + c.x) / 3, (a.y + b.y + c.y) / 3)
+    val queue = ArrayDeque<Hexagon>()
+    val first = Hexagon(a, max(a.distance(b), a.distance(c)) * 2)
+    //println(first)
+    var smallest: Hexagon? = null
     queue.add(first)
-    map.add(first)
-    fun getAvg(current: HexPoint): Int {
-        val distanceA = current.distance(a)
-        val distanceB = current.distance(b)
-        val distanceC = current.distance(c)
-        val distance = (distanceA + distanceB + distanceC) / 3
-        return abs(distance - distanceA) + abs(distance - distanceB) + abs(distance - distanceC)
-    }
-
-    fun checkNear(current: HexPoint, dx: Int, dy: Int) {
-        val hexPoint = HexPoint(current.x + dx, current.y + dy)
-        if (hexPoint !in map && hexPoint !in queue && getAvg(current) >= getAvg(hexPoint)) {
-            if (getAvg(current) > getAvg(hexPoint)) queue.removeIf { getAvg(it) > getAvg(hexPoint) }
-            queue.add(hexPoint)
-            map.add(hexPoint)
+    val list = mutableListOf<Hexagon>()
+    fun checkHex(hexagon: Hexagon, dx: Int, dy: Int) {
+        if (hexagon !in list) {
+            var delta = (Int.MAX_VALUE - max(abs(hexagon.center.x), abs(hexagon.center.y))) / 4
+            var newHex = hexagon
+            while (delta > 0) {
+                var absDelta = 0
+                var prom = newHex
+                //println("$absDelta\t$delta")
+                while (prom.contains(a) && prom.contains(b) && prom.contains(c)) {
+                    //println("$newHex\t$dx\t$dy\t$absDelta")
+                    newHex = prom
+                    absDelta += delta
+                    prom = hexagon.center.let {
+                        Hexagon(
+                            HexPoint(it.x + absDelta * dx, it.y + absDelta * dy),
+                            hexagon.radius - absDelta
+                        )
+                    }
+                }
+                delta /= 2
+                //println("$absDelta\t$delta")
+            }
+            if (newHex != hexagon) queue.add(newHex)
         }
     }
+
+    fun lastCheck(hexagon: Hexagon, hexPoint: HexPoint) = hexagon.center.distance(hexPoint) == hexagon.radius
     while (queue.isNotEmpty()) {
-        val hexPoint = queue.removeFirst()
-        if (getAvg(hexPoint) == 0) return Hexagon(hexPoint, hexPoint.distance(a))
-        checkNear(hexPoint, 1, 0)
-        checkNear(hexPoint, -1, 0)
-        checkNear(hexPoint, 0, 1)
-        checkNear(hexPoint, 0, -1)
-        checkNear(hexPoint, 1, -1)
-        checkNear(hexPoint, -1, 1)
+        val hexagon = queue.removeFirst()
+        if (lastCheck(hexagon, a) && lastCheck(hexagon, b) && lastCheck(hexagon, c)
+            && (smallest == null || hexagon.radius < smallest.radius)
+        ) smallest = hexagon
+        checkHex(hexagon, -1, 1)
+        checkHex(hexagon, 1, -1)
+        checkHex(hexagon, 0, 1)
+        checkHex(hexagon, 0, -1)
+        checkHex(hexagon, 1, 0)
+        checkHex(hexagon, -1, 0)
+        list.add(hexagon)
+        //println(hexagon)
     }
-    return null
+    return smallest
+}
+
+fun main() {
+    val h = hexagonByThreePoints(HexPoint(-557, 769), HexPoint(-557, -10), HexPoint(-522, -558))!!
+    //val h = Hexagon(HexPoint(1, 1), 1)
+    println(h.center)
+    println(h.radius)
+    println(h.center.distance(HexPoint(-557, 769)))
+    println(h.center.distance(HexPoint(-557, -10)))
+    println(h.center.distance(HexPoint(-522, -558)))
 }
 
 /**
