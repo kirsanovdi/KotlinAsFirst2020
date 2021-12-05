@@ -3,6 +3,7 @@
 package lesson8.task1
 
 import kotlin.math.*
+import kotlin.random.Random
 import kotlin.system.measureTimeMillis
 
 /**
@@ -335,15 +336,15 @@ fun hexagonByThreePoints(a: HexPoint, b: HexPoint, c: HexPoint): Hexagon? {
             //checkHex(hexagon, 0, 0)
             checkHex(hexagon, -1, 1)
             checkHex(hexagon, 1, -1)
-            checkHex(hexagon, 0, 1)
-            checkHex(hexagon, 0, -1)
-            checkHex(hexagon, 1, 0)
-            checkHex(hexagon, -1, 0)
+            //checkHex(hexagon, 0, 1)
+            //checkHex(hexagon, 0, -1)
+            //checkHex(hexagon, 1, 0)
+            //checkHex(hexagon, -1, 0)
             list.add(hexagon)
             //println(hexagon)
         }
     }
-
+    //println("$a\t$b\t$c")
     //measureTimeMillis {
     queue.add(Hexagon(a, max(a.distance(b), a.distance(c)) * 6))
     calc()
@@ -351,7 +352,7 @@ fun hexagonByThreePoints(a: HexPoint, b: HexPoint, c: HexPoint): Hexagon? {
     calc()
     queue.add(Hexagon(c, max(c.distance(a), c.distance(b)) * 6))
     calc()
-    //}.let { println(it) }
+    //}.let { println("\t$it\t${list.size}") }
     //if (smallest == null) throw Exception("$a|$b|$c")
     //println(list.size)
     //println(sum)
@@ -359,14 +360,16 @@ fun hexagonByThreePoints(a: HexPoint, b: HexPoint, c: HexPoint): Hexagon? {
 }
 
 fun main() {
+    val p1 = HexPoint(0, 0)
+    val p2 = HexPoint(Int.MAX_VALUE / 2, 0)
+    val p3 = HexPoint(0, 0)
     val h =
-        hexagonByThreePoints(HexPoint(-5570000, 7690000), HexPoint(-5570000, -100000), HexPoint(-5570000, -5580000))!!
+        hexagonByThreePoints(p1, p2, p3)!!
     //val h = Hexagon(HexPoint(1, 1), 1)
-    println(h.center)
-    println(h.radius)
-    println(h.center.distance(HexPoint(-5570000, 7690000)))
-    println(h.center.distance(HexPoint(-5570000, -100000)))
-    println(h.center.distance(HexPoint(-5570000, -5580000)))
+    println(h)
+    println(h.center.distance(p1))
+    println(h.center.distance(p2))
+    println(h.center.distance(p3))
 }
 
 /**
