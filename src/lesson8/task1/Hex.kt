@@ -336,22 +336,23 @@ fun hexagonByThreePoints(a: HexPoint, b: HexPoint, c: HexPoint): Hexagon? {
             //checkHex(hexagon, 0, 0)
             checkHex(hexagon, -1, 1)
             checkHex(hexagon, 1, -1)
-            //checkHex(hexagon, 0, 1)
-            //checkHex(hexagon, 0, -1)
-            //checkHex(hexagon, 1, 0)
-            //checkHex(hexagon, -1, 0)
+            checkHex(hexagon, 0, 1)
+            checkHex(hexagon, 0, -1)
+            checkHex(hexagon, 1, 0)
+            checkHex(hexagon, -1, 0)
             list.add(hexagon)
             //println(hexagon)
         }
     }
     //println("$a\t$b\t$c")
     //measureTimeMillis {
-    queue.add(Hexagon(a, max(a.distance(b), a.distance(c)) * 6))
+    val f = HexPoint((a.x + b.x + c.x) / 3, (a.y + b.y + c.y) / 3)
+    queue.add(Hexagon(f, maxOf(f.distance(a), f.distance(b), f.distance(c)) * 4))
     calc()
-    queue.add(Hexagon(b, max(b.distance(a), b.distance(c)) * 6))
+    /*queue.add(Hexagon(b, max(b.distance(a), b.distance(c)) * 6))
     calc()
     queue.add(Hexagon(c, max(c.distance(a), c.distance(b)) * 6))
-    calc()
+    calc()*/
     //}.let { println("\t$it\t${list.size}") }
     //if (smallest == null) throw Exception("$a|$b|$c")
     //println(list.size)
@@ -360,9 +361,9 @@ fun hexagonByThreePoints(a: HexPoint, b: HexPoint, c: HexPoint): Hexagon? {
 }
 
 fun main() {
-    val p1 = HexPoint(0, 0)
-    val p2 = HexPoint(Int.MAX_VALUE / 2, 0)
-    val p3 = HexPoint(0, 0)
+    val p1 = HexPoint(-287, 940)
+    val p2 = HexPoint(-558, -185)
+    val p3 = HexPoint(107, 224)
     val h =
         hexagonByThreePoints(p1, p2, p3)!!
     //val h = Hexagon(HexPoint(1, 1), 1)
