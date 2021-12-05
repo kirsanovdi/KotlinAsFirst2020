@@ -346,27 +346,36 @@ fun hexagonByThreePoints(a: HexPoint, b: HexPoint, c: HexPoint): Hexagon? {
     }
     //println("$a\t$b\t$c")
     //measureTimeMillis {
-    val f = HexPoint((a.x + b.x + c.x) / 3, (a.y + b.y + c.y) / 3)
-    queue.add(Hexagon(f, maxOf(f.distance(a), f.distance(b), f.distance(c)) * 4))
+    //val f = HexPoint((a.x + b.x + c.x) / 3, (a.y + b.y + c.y) / 3)
+    //queue.add(Hexagon(f, maxOf(f.distance(a), f.distance(b), f.distance(c)) * 6))
+    //calc()
+    queue.add(Hexagon(a, max(a.distance(b), a.distance(c)) * 6))
     calc()
-    /*queue.add(Hexagon(b, max(b.distance(a), b.distance(c)) * 6))
+    queue.add(Hexagon(b, max(b.distance(a), b.distance(c)) * 6))
     calc()
     queue.add(Hexagon(c, max(c.distance(a), c.distance(b)) * 6))
-    calc()*/
+    calc()
     //}.let { println("\t$it\t${list.size}") }
     //if (smallest == null) throw Exception("$a|$b|$c")
     //println(list.size)
+    //println(list)
     //println(sum)
     return smallest
 }
 
 fun main() {
-    val p1 = HexPoint(-287, 940)
-    val p2 = HexPoint(-558, -185)
-    val p3 = HexPoint(107, 224)
-    val h =
-        hexagonByThreePoints(p1, p2, p3)!!
+    val p1 = HexPoint(-558, -557)
+    val p2 = HexPoint(-558, -558)
+    val p3 = HexPoint(565, -999)
+    for (i in -1000..1000) {
+        for (j in -1000..1000) {
+            val g = HexPoint(i, j)
+            if (g.distance(p1) == g.distance(p2) && g.distance(p1) == g.distance(p3)) println("$i\t$j\t${g.distance(p3)}")
+        }
+    }
+    val h = hexagonByThreePoints(p1, p2, p3)!!
     //val h = Hexagon(HexPoint(1, 1), 1)
+    //val h = Hexagon(HexPoint(4, -1000), radius=562)
     println(h)
     println(h.center.distance(p1))
     println(h.center.distance(p2))
