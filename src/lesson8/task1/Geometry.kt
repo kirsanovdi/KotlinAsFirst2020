@@ -270,7 +270,7 @@ fun diameter(vararg points: Point): Segment { //diameterCustomTests() <- тес�
         throw IllegalStateException(points.toList().toString())
     }
     when {
-        hull.size < 2 -> throw Exception(points.toList().toString())
+        hull.size < 2 -> throw IllegalStateException(points.toList().toString())
         hull.size == 2 -> return Segment(points[0], points[1])
     }
     var pointIndex = 0
@@ -306,7 +306,7 @@ fun diameter(vararg points: Point): Segment { //diameterCustomTests() <- тес�
         val oppositeAngle = (PI * 4 + oppositeAngleMoveTo - (calipersAngle + PI) % (PI * 2)) % PI
         //println("${pointIndex % hull.size}\t${oppositeIndex % hull.size}\t${hull.size}\t$point\t$opposite")
         //println("${pointIndex % hull.size}\t${oppositeIndex % hull.size}\t$pointAngle\t$oppositeAngle")
-        if (pointIndex % hull.size == oppositeIndex % hull.size) throw Exception(points.toList().toString())
+        if (pointIndex % hull.size == oppositeIndex % hull.size) throw IllegalStateException(points.toList().toString())
         when {
             abs(pointAngle - oppositeAngle) < delta * 10 -> {
                 pointIndex++
@@ -323,7 +323,7 @@ fun diameter(vararg points: Point): Segment { //diameterCustomTests() <- тес�
                 oppositeIndex++
                 calipersAngle = oppositeAngleMoveTo
             }
-            else -> throw Exception(points.toList().toString())
+            else -> throw IllegalStateException(points.toList().toString())
         }
     }
     return result

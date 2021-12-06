@@ -286,37 +286,49 @@ fun pathBetweenHexes(from: HexPoint, to: HexPoint): List<HexPoint> {
  *
  * Если все три точки совпадают, вернуть шестиугольник нулевого радиуса с центром в данной точке.
  */
+fun checkHex(set: Set<Hexagon>, queue: ArrayDeque<Hexagon>, list: List<HexPoint>, hexagon: Hexagon, dx: Int, dy: Int) {
+    if (hexagon !in set) {
+        var delta = (Int.MAX_VALUE - max(abs(hexagon.center.x), abs(hexagon.center.y))) / 4
+        var newHex = hexagon
+        var absDelta = 0
+        while (delta > 0) {
+            var prom = newHex
+            while (list.all { prom.contains(it) }) {
+                newHex = prom
+                absDelta += delta
+                prom = hexagon.center.let {
+                    Hexagon(
+                        HexPoint(it.x + absDelta * dx, it.y + absDelta * dy),
+                        hexagon.radius - absDelta
+                    )
+                }
+            }
+            absDelta -= delta
+            delta /= 2
+        }
+
+        if (newHex != hexagon) {
+            queue.add(newHex)
+        }
+    }
+}
+
+fun checkHexes(set: Set<Hexagon>, queue: ArrayDeque<Hexagon>, list: List<HexPoint>, hexagon: Hexagon) {
+    checkHex(set, queue, list, hexagon, -1, -1)
+    checkHex(set, queue, list, hexagon, 1, 1)
+    checkHex(set, queue, list, hexagon, -1, 1)
+    checkHex(set, queue, list, hexagon, 1, -1)
+    checkHex(set, queue, list, hexagon, 0, 1)
+    checkHex(set, queue, list, hexagon, 0, -1)
+    checkHex(set, queue, list, hexagon, 1, 0)
+    checkHex(set, queue, list, hexagon, -1, 0)
+}
+
 fun hexagonByThreePoints(a: HexPoint, b: HexPoint, c: HexPoint): Hexagon? {
     val queue = ArrayDeque<Hexagon>()
     var smallest: Hexagon? = null
     val set = mutableSetOf<Hexagon>()
-    fun checkHex(hexagon: Hexagon, dx: Int, dy: Int) {
-        if (hexagon !in set) {
-            var delta = (Int.MAX_VALUE - max(abs(hexagon.center.x), abs(hexagon.center.y))) / 4
-            var newHex = hexagon
-            var absDelta = 0
-            while (delta > 0) {
-                var prom = newHex
-                while (prom.contains(a) && prom.contains(b) && prom.contains(c)) {
-                    newHex = prom
-                    absDelta += delta
-                    prom = hexagon.center.let {
-                        Hexagon(
-                            HexPoint(it.x + absDelta * dx, it.y + absDelta * dy),
-                            hexagon.radius - absDelta
-                        )
-                    }
-                }
-                absDelta -= delta
-                delta /= 2
-            }
-
-            if (newHex != hexagon) {
-                queue.add(newHex)
-            }
-        }
-    }
-
+    val list = listOf(a, b, c)
     fun lastCheck(hexagon: Hexagon, hexPoint: HexPoint) = hexagon.center.distance(hexPoint) == hexagon.radius
 
     fun calc() {
@@ -325,14 +337,7 @@ fun hexagonByThreePoints(a: HexPoint, b: HexPoint, c: HexPoint): Hexagon? {
             if (lastCheck(hexagon, a) && lastCheck(hexagon, b) && lastCheck(hexagon, c)
                 && (smallest == null || hexagon.radius < smallest!!.radius)//тут смарткаст решил не работать
             ) smallest = hexagon
-            checkHex(hexagon, -1, -1)
-            checkHex(hexagon, 1, 1)
-            checkHex(hexagon, -1, 1)
-            checkHex(hexagon, 1, -1)
-            checkHex(hexagon, 0, 1)
-            checkHex(hexagon, 0, -1)
-            checkHex(hexagon, 1, 0)
-            checkHex(hexagon, -1, 0)
+            checkHexes(set, queue, list, hexagon)
             set.add(hexagon)
         }
     }
@@ -374,59 +379,25 @@ fun main() {
  */
 fun minContainingHexagon(vararg points: HexPoint): Hexagon {
     val list = points.toList()
-    when (list.size){
+    when (list.size) {
         0 -> throw IllegalArgumentException()
         1 -> return Hexagon(list[0], 0)
     }
     val queue = ArrayDeque<Hexagon>()
-    var smallest: Hexagon? = null
+    var smallest = Hexagon(list[0], list.maxOf { it.distance(list[0]) } * 6)
     val set = mutableSetOf<Hexagon>()
-    fun checkHex(hexagon: Hexagon, dx: Int, dy: Int) {
-        if (hexagon !in set) {
-            var delta = (Int.MAX_VALUE - max(abs(hexagon.center.x), abs(hexagon.center.y))) / 4
-            var newHex = hexagon
-            var absDelta = 0
-            while (delta > 0) {
-                var prom = newHex
-                while (list.all { prom.contains(it) }) {
-                    newHex = prom
-                    absDelta += delta
-                    prom = hexagon.center.let {
-                        Hexagon(
-                            HexPoint(it.x + absDelta * dx, it.y + absDelta * dy),
-                            hexagon.radius - absDelta
-                        )
-                    }
-                }
-                absDelta -= delta
-                delta /= 2
-            }
-
-            if (newHex != hexagon) {
-                //queue.clear()
-                queue.add(newHex)
-            }
-        }
-    }
 
     fun lastCheck(hexagon: Hexagon, hexPoint: HexPoint) = hexagon.center.distance(hexPoint) <= hexagon.radius
 
     fun calc() {
         while (queue.isNotEmpty()) {
             val hexagon = queue.removeFirst()
-            if (smallest == null || hexagon.radius < smallest!!.radius) smallest = hexagon
-            checkHex(hexagon, -1, -1)
-            checkHex(hexagon, 1, 1)
-            checkHex(hexagon, -1, 1)
-            checkHex(hexagon, 1, -1)
-            checkHex(hexagon, 0, 1)
-            checkHex(hexagon, 0, -1)
-            checkHex(hexagon, 1, 0)
-            checkHex(hexagon, -1, 0)
+            if (hexagon.radius < smallest.radius) smallest = hexagon
+            checkHexes(set, queue, list, hexagon)
             set.add(hexagon)
         }
     }
-    queue.add(Hexagon(list[0], list.maxOf { it.distance(list[0]) } * 6))
+    queue.add(smallest)
     calc()
-    return smallest!!
+    return smallest
 }
