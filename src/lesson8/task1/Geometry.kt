@@ -7,7 +7,7 @@ import java.io.File
 import java.util.*
 import kotlin.math.*
 
-const val delta = 1e-16
+const val delta = 1e-10
 
 data class Point(val x: Double, val y: Double) {
     fun distance(other: Point): Double = sqrt(sqr(x - other.x) + sqr(y - other.y))
@@ -84,7 +84,7 @@ data class Circle(val center: Point, val radius: Double) {
      *
      * Вернуть true, если и только если окружность содержит данную точку НА себе или ВНУТРИ себя
      */
-    fun contains(p: Point): Boolean = this.center.distance(p) <= radius + delta * 100
+    fun contains(p: Point): Boolean = this.center.distance(p) <= radius + delta
 }
 
 @Suppress("MemberVisibilityCanBePrivate")
