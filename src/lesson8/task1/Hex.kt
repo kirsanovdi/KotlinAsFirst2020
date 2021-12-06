@@ -372,7 +372,61 @@ fun main() {
  *
  * Пример: 13, 32, 45, 18 -- шестиугольник радиусом 3 (с центром, например, в 15)
  */
-fun minContainingHexagon(vararg points: HexPoint): Hexagon = TODO()
+fun minContainingHexagon(vararg points: HexPoint): Hexagon {
+    val list = points.toList()
+    when (list.size){
+        0 -> throw IllegalArgumentException()
+        1 -> return Hexagon(list[0], 0)
+    }
+    val queue = ArrayDeque<Hexagon>()
+    var smallest: Hexagon? = null
+    val set = mutableSetOf<Hexagon>()
+    fun checkHex(hexagon: Hexagon, dx: Int, dy: Int) {
+        if (hexagon !in set) {
+            var delta = (Int.MAX_VALUE - max(abs(hexagon.center.x), abs(hexagon.center.y))) / 4
+            var newHex = hexagon
+            var absDelta = 0
+            while (delta > 0) {
+                var prom = newHex
+                while (list.all { prom.contains(it) }) {
+                    newHex = prom
+                    absDelta += delta
+                    prom = hexagon.center.let {
+                        Hexagon(
+                            HexPoint(it.x + absDelta * dx, it.y + absDelta * dy),
+                            hexagon.radius - absDelta
+                        )
+                    }
+                }
+                absDelta -= delta
+                delta /= 2
+            }
 
+            if (newHex != hexagon) {
+                queue.clear()
+                queue.add(newHex)
+            }
+        }
+    }
 
+    fun lastCheck(hexagon: Hexagon, hexPoint: HexPoint) = hexagon.center.distance(hexPoint) <= hexagon.radius
 
+    fun calc() {
+        while (queue.isNotEmpty()) {
+            val hexagon = queue.removeFirst()
+            if (smallest == null || hexagon.radius < smallest!!.radius) smallest = hexagon
+            checkHex(hexagon, -1, -1)
+            checkHex(hexagon, 1, 1)
+            checkHex(hexagon, -1, 1)
+            checkHex(hexagon, 1, -1)
+            checkHex(hexagon, 0, 1)
+            checkHex(hexagon, 0, -1)
+            checkHex(hexagon, 1, 0)
+            checkHex(hexagon, -1, 0)
+            set.add(hexagon)
+        }
+    }
+    queue.add(Hexagon(list[0], list.maxOf { it.distance(list[0]) }))
+    calc()
+    return smallest!!
+}
