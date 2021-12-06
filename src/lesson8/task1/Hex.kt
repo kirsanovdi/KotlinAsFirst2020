@@ -426,7 +426,7 @@ fun minContainingHexagon(vararg points: HexPoint): Hexagon {
             set.add(hexagon)
         }
     }
-    queue.add(Hexagon(list[0], list.maxOf { it.distance(list[0]) }))
+    queue.add(Hexagon(list[0], list.maxOf { it.distance(list[0]) } * 6))
     calc()
     return smallest!!
 }
