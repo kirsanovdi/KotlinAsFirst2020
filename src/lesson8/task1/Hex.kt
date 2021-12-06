@@ -229,6 +229,7 @@ fun HexPoint.move(direction: Direction, distance: Int): HexPoint =
  *
  */
 fun pathBetweenHexes(from: HexPoint, to: HexPoint): List<HexPoint> {
+    if (from == to) return listOf(from)
     var x = from.x
     var y = from.y
     val mutableList = mutableListOf(from)
@@ -287,9 +288,6 @@ fun pathBetweenHexes(from: HexPoint, to: HexPoint): List<HexPoint> {
  */
 fun hexagonByThreePoints(a: HexPoint, b: HexPoint, c: HexPoint): Hexagon? {
     val queue = ArrayDeque<Hexagon>()
-    //val first = Hexagon(HexPoint(-774, -785), 231)
-    //println(first)
-    var sum = 0//количество операций
     var smallest: Hexagon? = null
     val set = mutableSetOf<Hexagon>()
     fun checkHex(hexagon: Hexagon, dx: Int, dy: Int) {
@@ -300,7 +298,6 @@ fun hexagonByThreePoints(a: HexPoint, b: HexPoint, c: HexPoint): Hexagon? {
             while (delta > 0) {
                 var prom = newHex
                 while (prom.contains(a) && prom.contains(b) && prom.contains(c)) {
-                    sum++
                     newHex = prom
                     absDelta += delta
                     prom = hexagon.center.let {
@@ -315,7 +312,6 @@ fun hexagonByThreePoints(a: HexPoint, b: HexPoint, c: HexPoint): Hexagon? {
             }
 
             if (newHex != hexagon) {
-                //queue.clear()
                 queue.add(newHex)
             }
         }
@@ -331,7 +327,6 @@ fun hexagonByThreePoints(a: HexPoint, b: HexPoint, c: HexPoint): Hexagon? {
             ) smallest = hexagon
             checkHex(hexagon, -1, -1)
             checkHex(hexagon, 1, 1)
-            //checkHex(hexagon, 0, 0)
             checkHex(hexagon, -1, 1)
             checkHex(hexagon, 1, -1)
             checkHex(hexagon, 0, 1)
@@ -339,25 +334,14 @@ fun hexagonByThreePoints(a: HexPoint, b: HexPoint, c: HexPoint): Hexagon? {
             checkHex(hexagon, 1, 0)
             checkHex(hexagon, -1, 0)
             set.add(hexagon)
-            //println(hexagon)
         }
     }
-    //println("$a\t$b\t$c")
-    //measureTimeMillis {
-    //val f = HexPoint((a.x + b.x + c.x) / 3, (a.y + b.y + c.y) / 3)
-    //queue.add(Hexagon(f, maxOf(f.distance(a), f.distance(b), f.distance(c)) * 6))
-    //calc()
     queue.add(Hexagon(a, max(a.distance(b), a.distance(c)) * 6))
     calc()
     queue.add(Hexagon(b, max(b.distance(a), b.distance(c)) * 6))
     calc()
     queue.add(Hexagon(c, max(c.distance(a), c.distance(b)) * 6))
     calc()
-    //}.let { println("\t$it\t${list.size}") }
-    //if (smallest == null) throw Exception("$a|$b|$c")
-    //println(list.size)
-    //println(list)
-    //println(sum)
     return smallest
 }
 
@@ -372,8 +356,6 @@ fun main() {
         }
     }
     val h = hexagonByThreePoints(p1, p2, p3)!!
-    //val h = Hexagon(HexPoint(1, 1), 1)
-    //val h = Hexagon(HexPoint(4, -1000), radius=562)
     println(h)
     println(h.center.distance(p1))
     println(h.center.distance(p2))

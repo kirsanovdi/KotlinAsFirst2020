@@ -7,7 +7,7 @@ import java.io.File
 import java.util.*
 import kotlin.math.*
 
-const val delta = 1e-10
+const val delta = 1e-16
 
 data class Point(val x: Double, val y: Double) {
     fun distance(other: Point): Double = sqrt(sqr(x - other.x) + sqr(y - other.y))
