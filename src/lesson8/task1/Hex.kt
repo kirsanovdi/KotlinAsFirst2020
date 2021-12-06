@@ -403,7 +403,7 @@ fun minContainingHexagon(vararg points: HexPoint): Hexagon {
             }
 
             if (newHex != hexagon) {
-                queue.clear()
+                //queue.clear()
                 queue.add(newHex)
             }
         }
