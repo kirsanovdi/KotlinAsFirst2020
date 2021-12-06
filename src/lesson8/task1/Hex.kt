@@ -3,8 +3,6 @@
 package lesson8.task1
 
 import kotlin.math.*
-import kotlin.random.Random
-import kotlin.system.measureTimeMillis
 
 /**
  * Точка (гекс) на шестиугольной сетке.
@@ -293,9 +291,9 @@ fun hexagonByThreePoints(a: HexPoint, b: HexPoint, c: HexPoint): Hexagon? {
     //println(first)
     var sum = 0//количество операций
     var smallest: Hexagon? = null
-    val list = mutableListOf<Hexagon>()
+    val set = mutableSetOf<Hexagon>()
     fun checkHex(hexagon: Hexagon, dx: Int, dy: Int) {
-        if (hexagon !in list) {
+        if (hexagon !in set) {
             var delta = (Int.MAX_VALUE - max(abs(hexagon.center.x), abs(hexagon.center.y))) / 4
             var newHex = hexagon
             var absDelta = 0
@@ -340,7 +338,7 @@ fun hexagonByThreePoints(a: HexPoint, b: HexPoint, c: HexPoint): Hexagon? {
             checkHex(hexagon, 0, -1)
             checkHex(hexagon, 1, 0)
             checkHex(hexagon, -1, 0)
-            list.add(hexagon)
+            set.add(hexagon)
             //println(hexagon)
         }
     }
