@@ -2,7 +2,11 @@
 
 package lesson5.task1
 
+
 import kotlin.math.abs
+
+import ru.spbstu.wheels.NullableMonad.filter
+
 
 // Урок 5: ассоциативные массивы и множества
 // Максимальное количество баллов = 14
@@ -235,30 +239,9 @@ fun extractRepeats(list: List<String>): Map<String, Int> = TODO()
  * Например:
  *   hasAnagrams(listOf("тор", "свет", "рот")) -> true
  */
-fun isAnogramm(str: String, str2: String): Boolean {
-    if (str.length != str2.length) return false
-    var temp = false
-    for (i in str.indices) {
-        for (k in str2.indices) {
-            if (str[i] == str2[k]) {
-                temp = true
-                break
-            }
-        }
-        if (!temp) return false
-        temp = false
-    }
-    return true
-}
 
-fun hasAnagrams(words: List<String>): Boolean {
-    for (k in words.indices) {
-        for (i in (k + 1) until words.size) {
-            if (isAnogramm(words[k], words[i])) return true
-        }
-    }
-    return false
-}
+fun hasAnagrams(words: List<String>): Boolean =
+    words.map { it.toList().sorted().toString() }.sorted().zipWithNext().any { it.first == it.second }
 
 /**
  * Сложная (5 баллов)
@@ -314,10 +297,8 @@ fun propagateHandshakes(friends: Map<String, Set<String>>): Map<String, Set<Stri
  *   findSumOfTwo(listOf(1, 2, 3), 6) -> Pair(-1, -1)
  */
 fun findSumOfTwo(list: List<Int>, number: Int): Pair<Int, Int> {
-    for (k in 0 until (list.size - 1)) {
-        for (i in (k + 1) until list.size) {
-            if (list[k] + list[i] == number) return Pair(k, i)
-        }
+    for (k in 0 until (list.size - 2)) {
+        if ((number - list[k]) in list) return (Pair(k, list.indexOf(number - list[k])))
     }
     return Pair(-1, -1)
 }

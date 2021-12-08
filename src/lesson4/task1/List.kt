@@ -142,8 +142,8 @@ fun mean(list: List<Double>): Double {
         sum += element
         ch++
     }
-    if (list.isEmpty()) return 0.0
-    else return sum / ch
+    return if (list.isEmpty()) 0.0
+    else sum / ch
 
 
 }
@@ -201,7 +201,7 @@ fun times(a: List<Int>, b: List<Int>): Int {
  * Значение пустого многочлена равно 0 при любом x.
  */
 fun step(x: Int, n: Int): Int {
-    var r: Int = 1
+    var r = 1
     for (i in 1..n) {
         r *= x
     }
@@ -312,21 +312,25 @@ fun decimal(digits: List<Int>, base: Int): Int = TODO()
  * (например, str.toInt(base)), запрещается.
  */
 
-
 fun decimalFromString(str: String, base: Int): Int {
     val lst = str.toMutableList()
     var res = 0
     var last: Char
+
     var pointer = 0
     while (lst != listOf<String>()) {
         last = lst.last()
         res += if (last >= 'a') {
             (last.code - 87) * step(base, pointer)
+
+    for ((pointer, i) in (lst.size - 1 downTo 0).withIndex()) {
+        last = lst[i]
+        res += if (last.code > 90) {
+            (last - 'a' + 10) * step(base, pointer)
+
         } else {
-            (last.code - 48) * step(base, pointer)
+            (last - '0') * step(base, pointer)
         }
-        pointer++
-        lst.removeAt(lst.size - 1)
     }
     return res
 }
@@ -341,7 +345,11 @@ fun decimalFromString(str: String, base: Int): Int {
  */
 fun roman(n: Int): String {
     var t = n
+
     val res = mutableListOf<String>()
+
+    val l = mutableListOf<String>()
+
     val r = mapOf(
         1000 to "M",
         900 to "CM",

@@ -63,10 +63,10 @@ fun alignFile(inputName: String, lineLength: Int, outputName: String) {
  * Подчёркивание в середине и/или в конце строк значения не имеет.
  */
 fun deleteMarked(inputName: String, outputName: String) {
-    val input = File(inputName).readText().trim()
+    val input = File(inputName).readText()
     val res = StringBuilder()
     input.lines().map { nowLine ->
-        nowLine.trim()
+
         if (nowLine.isEmpty()) res.appendLine()
         else {
             if (nowLine[0] != '_') res.appendLine(nowLine)
@@ -123,18 +123,7 @@ fun sibilants(inputName: String, outputName: String) {
  *
  */
 fun centerFile(inputName: String, outputName: String) {
-    /*
-    val input = File(inputName).readText() //.trim() трим перестает работать после того, как находит пустую строчку?
-    println(input)
-    val longest = input.lines().maxOf { it.length }
-    var res = StringBuilder()
-    input.lines().forEach { nowLine ->
-        val spaces = (longest - nowLine.trim().length) / 2 // пробелы с 2х сторон
-        val resultWithSpaces = " ".repeat(spaces) + nowLine.trim() // или лучше применить map перед forEach?
-        res.appendLine(resultWithSpaces)
-    }
-    File(outputName).writeText(res.toString())
-*/
+
 
     val input = File(inputName).readText()
     val longest = input.lines().maxOf { it.trim().length }
