@@ -123,8 +123,6 @@ fun sibilants(inputName: String, outputName: String) {
  *
  */
 fun centerFile(inputName: String, outputName: String) {
-
-
     val input = File(inputName).readText()
     val longest = input.lines().maxOf { it.trim().length }
     val res = StringBuilder()
