@@ -111,18 +111,7 @@ fun buildGrades(grades: Map<String, Int>): Map<Int, List<String>> = TODO()
  *   containsIn(mapOf("a" to "z"), mapOf("a" to "z", "b" to "sweet")) -> true
  *   containsIn(mapOf("a" to "z"), mapOf("a" to "zee", "b" to "sweet")) -> false
  */
-fun containsIn(a: Map<String, String>, b: Map<String, String>): Boolean {
-    var a1 = ""
-    var b1 = ""
-    for ((key, value) in a) {
-        a1 = key
-        b1 = value
-    }
-    for ((key, value) in b) {
-        if (key == a1 && value == b1) return true
-    }
-    return false
-}
+fun containsIn(a: Map<String, String>, b: Map<String, String>): Boolean = a.all { it.value == b[it.key] }
 
 /**
  * Простая (2 балла)
@@ -208,7 +197,8 @@ fun findCheapestStuff(stuff: Map<String, Pair<String, Double>>, kind: String): S
  * Например:
  *   canBuildFrom(listOf('a', 'b', 'o'), "baobab") -> true
  */
-fun canBuildFrom(chars: List<Char>, word: String): Boolean = TODO()
+fun canBuildFrom(chars: List<Char>, word: String): Boolean =
+    chars.toSet().map { it.lowercaseChar() }.let { set -> word.lowercase().all { it in set } }
 
 /**
  * Средняя (4 балла)
@@ -294,10 +284,11 @@ fun propagateHandshakes(friends: Map<String, Set<String>>): Map<String, Set<Stri
  *   findSumOfTwo(listOf(1, 2, 3), 6) -> Pair(-1, -1)
  */
 fun findSumOfTwo(list: List<Int>, number: Int): Pair<Int, Int> {
-    for (k in 0 until (list.size - 2)) {
+
+   /* for (k in 0 until (list.size - 2)) {
         if ((number - list[k]) in list) return (Pair(k, list.indexOf(number - list[k])))
     }
-    return Pair(-1, -1)
+    return Pair(-1, -1)*/
 }
 
 /**
