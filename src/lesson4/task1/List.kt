@@ -156,7 +156,7 @@ fun mean(list: List<Double>): Double {
  *
  * Обратите внимание, что данная функция должна изменять содержание списка list, а не его копии.
  */
-fun center(list: MutableList<Double>): MutableList<Double> = /*
+fun center(list: MutableList<Double>): MutableList<Double> = TODO()/*
 var mid = 0.0
 
 
@@ -174,7 +174,7 @@ var mid = 0.0
     }
 
      */
-    list
+//list
 
 /**
  * Средняя (3 балла)
@@ -233,7 +233,6 @@ fun accumulate(list: MutableList<Int>): MutableList<Int> {
         list[i] += sum
         sum += list[i] - sum
     }
-
     return list
 }
 
@@ -316,18 +315,10 @@ fun decimalFromString(str: String, base: Int): Int {
     val lst = str.toMutableList()
     var res = 0
     var last: Char
-
-    var pointer = 0
-    while (lst != listOf<String>()) {
-        last = lst.last()
-        res += if (last >= 'a') {
-            (last.code - 87) * step(base, pointer)
-
     for ((pointer, i) in (lst.size - 1 downTo 0).withIndex()) {
         last = lst[i]
-        res += if (last.code > 90) {
+        res += if (last >= 'a') {
             (last - 'a' + 10) * step(base, pointer)
-
         } else {
             (last - '0') * step(base, pointer)
         }
@@ -345,11 +336,7 @@ fun decimalFromString(str: String, base: Int): Int {
  */
 fun roman(n: Int): String {
     var t = n
-
     val res = mutableListOf<String>()
-
-    val l = mutableListOf<String>()
-
     val r = mapOf(
         1000 to "M",
         900 to "CM",
@@ -373,10 +360,12 @@ fun roman(n: Int): String {
     while (t > 0) {
         for ((key, value) in r.filter { it.key <= t }) {
             t -= key
+
             res.add(value)
             break
         }
     }
+
     return res.joinToString(separator = "")
 }
 
