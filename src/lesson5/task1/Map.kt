@@ -2,11 +2,8 @@
 
 package lesson5.task1
 
-
 import kotlin.math.abs
-
 import ru.spbstu.wheels.NullableMonad.filter
-
 
 // Урок 5: ассоциативные массивы и множества
 // Максимальное количество баллов = 14
@@ -324,23 +321,4 @@ fun findSumOfTwo(list: List<Int>, number: Int): Pair<Int, Int> {
  *     450
  *   ) -> emptySet()
  */
-//input.split("; ").map { it.toInt() }.zipWithNext().filter { abs(it.first - it.second) > 1 }
-fun myFun(input: String): Map<String, String> {
-
-    if (Regex("""(\d+;)*\d+;""").matches(input)) throw IllegalArgumentException()
-    val splt = input.split(";")
-    val result = mutableMapOf<String, String>()
-    for (element in 0..(splt.size - 2)) {
-        if (abs(splt[element].toInt() - splt[element + 1].toInt()) > 1) {
-            result.put(splt[element], splt[element + 1])
-        }
-    }
-    println(result)
-    return result.toMap()
-}
-
-fun main() {
-   // println(myFun("4; 5; 6; 8; 8; 6; 3; 4; 5"))
-}
-
-
+fun bagPacking(treasures: Map<String, Pair<Int, Int>>, capacity: Int): Set<String> = TODO()
