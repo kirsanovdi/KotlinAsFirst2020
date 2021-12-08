@@ -229,13 +229,11 @@ fun polynom(p: List<Int>, x: Int): Int {
  */
 fun accumulate(list: MutableList<Int>): MutableList<Int> {
     var sum = 0
-    for (i in list.size downTo 1) {
-        for (k in 0 until i) {
-            sum += list[k]
-        }
-        list[i - 1] = sum
-        sum = 0
+    for (i in list.indices) {
+        list[i] += sum
+        sum += list[i] - sum
     }
+
     return list
 }
 
@@ -322,7 +320,7 @@ fun decimalFromString(str: String, base: Int): Int {
     var pointer = 0
     while (lst != listOf<String>()) {
         last = lst.last()
-        res += if (last.code > 90) {
+        res += if (last >= 'a') {
             (last.code - 87) * step(base, pointer)
         } else {
             (last.code - 48) * step(base, pointer)
@@ -343,7 +341,7 @@ fun decimalFromString(str: String, base: Int): Int {
  */
 fun roman(n: Int): String {
     var t = n
-    var l = mutableListOf<String>()
+    val res = mutableListOf<String>()
     val r = mapOf(
         1000 to "M",
         900 to "CM",
@@ -367,11 +365,11 @@ fun roman(n: Int): String {
     while (t > 0) {
         for ((key, value) in r.filter { it.key <= t }) {
             t -= key
-            l.add(value)
+            res.add(value)
             break
         }
     }
-    return l.joinToString(separator = "")
+    return res.joinToString(separator = "")
 }
 
 /**
@@ -382,65 +380,5 @@ fun roman(n: Int): String {
  * 23964 = "двадцать три тысячи девятьсот шестьдесят четыре"
  */
 
-fun russian(n: Int): String {
-    val v = mapOf<Int, String>(
-        1 to "один",
-        2 to "два",
-        3 to "три",
-        4 to "четыре",
-        5 to "пять",
-        6 to "шесть",
-        7 to "семь",
-        8 to "восемь",
-        9 to "девять",
-        10 to "десять",
-        11 to "одиннадцать",
-        12 to "двеннадцать",
-        13 to "триннадцать",
-        14 to "четырнадцать",
-        15 to "пятнадцать",
-        16 to "шестнадцать",
-        17 to "семнадцать",
-        18 to "восемнадцать",
-        19 to "девятнадцать",
-        20 to "двадцать",
-        30 to "тридцать",
-        40 to "сорок",
-        50 to "пятдесят",
-        60 to "семдесят",
-        70 to "восемдесят",
-        80 to "девяносто",
-        90 to "сто",
-        100 to "сто",
-        200 to "двести",
-        300 to "триста",
-        400 to "четыреста",
-        500 to "пятьсот",
-        600 to "шестьсот",
-        700 to "семьсот",
-        800 to "восемьсот",
-        900 to "девятьсот",
-        1000 to "одна тысяча",
-        2000 to "две тысячи",
-        3000 to "тысячи",
-        5000 to "тысяч"
-    )
-
-    if (n in 1..2000)
-        for ((key, value) in v.filter { it.key <= n }) {
-            if (n == key) return value
-        }
-    if (n in 20..99) {
-        var b = ""
-        for ((key, value) in v.filter { it.key <= n }) {
-            if (n / 10 == key) b += "$value "
-        }
-        for ((key, value) in v.filter { it.key <= n }) {
-            if (n % 10 == key) b += value
-        }
-        return b
-    }
-
-    return ""
-}
+fun russian(n: Int): String = TODO()
 

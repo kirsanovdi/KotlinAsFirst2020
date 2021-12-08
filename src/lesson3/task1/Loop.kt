@@ -182,12 +182,7 @@ fun lcm(m: Int, n: Int): Int {
  * Взаимно простые числа не имеют общих делителей, кроме 1.
  * Например, 25 и 49 взаимно простые, а 6 и 8 -- нет.
  */
-fun isCoPrime(m: Int, n: Int): Boolean {
-    for (i in 2..min(m, n)) {
-        if (m % i == 0 && n % i == 0) return false
-    }
-    return true
-}
+fun isCoPrime(m: Int, n: Int): Boolean = (gcd(m, n) == 1)
 
 /**
  * Средняя (3 балла)
@@ -277,19 +272,21 @@ fun StDouble(n: Double, t: Int): Double {
     return r
 }
 
-fun chlen(x: Double, n: Int): Double = StDouble(x, n) / factorial(n)
+fun chlen(x: Double, n: Int): Double = x.pow(n) / factorial(n)
 
 fun sin(x: Double, eps: Double): Double {
 
-    var result: Double = x % (2 * PI)
-    if (x > 20 * PI) return 0.0 //после этого числа не хватает типа дабл для того, чтобы последний член в формуле стало меньше eps
+    val modX = x % (2 * PI)
+    var result = x % (2 * PI)
+    println(result)
+    //if (x > 20 * PI) return 0.0 //после этого числа не хватает типа дабл для того, чтобы последний член в формуле стало меньше eps
     var tp = 3
     if (result != 0.0) {
-        var minus: Double = -1.0
+        var minus = -1.0
         var cl = 0.0
 
         do {
-            cl = chlen(x, tp)
+            cl = chlen(modX, tp)
             result += minus * cl
             minus *= -1.0
             tp += 2
@@ -312,13 +309,13 @@ fun sin(x: Double, eps: Double): Double {
  */
 
 fun cos(x: Double, eps: Double): Double {
-    var result: Double = 1.0
+    var result = 1.0
     var temp = x % (2 * PI)
-    if (x > 20 * PI) return 1.0 //после этого числа не хватает типа дабл для того, чтобы последний член в формуле стало меньше eps
+    // if (x > 20 * PI) return 1.0 //после этого числа не хватает типа дабл для того, чтобы последний член в формуле стало меньше eps
     var tp: Int = 2
 
-    var minus: Double = -1.0
-    var cl: Double = 0.0
+    var minus = -1.0
+    var cl: Double
 
     do {
         cl = chlen(temp, tp)

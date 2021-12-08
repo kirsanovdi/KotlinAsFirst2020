@@ -484,3 +484,24 @@ fun printDivisionProcess(lhv: Int, rhv: Int, outputName: String) {
     TODO()
 }
 
+fun res(inputName: String, outputName: String): String {
+    val res = File(inputName).readText()
+    println(res)
+    val rs = StringBuilder()
+    val mp = mutableMapOf(2 to "", 3 to "", 4 to "", 5 to "")
+    for (item in res.lines()) {
+        if (!Regex("""[а-яА-Я]+ [а-яА-Я]+ \d \d{2}""").matches(item)) throw NumberFormatException("Wrong format")
+        var el = item.split(" ")
+        println(el)
+        val name = el[0]
+        val grade = el[2].toInt()
+        mp[grade] += "$name "
+    }
+    mp.forEach { it.value.trim() }
+    println(mp[4].toString())
+    rs.append("Кот")
+    rs.append(" Дима")
+    File(outputName).writeText(rs.toString())
+    return mp[4].toString().trim()
+
+}

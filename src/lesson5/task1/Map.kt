@@ -2,6 +2,8 @@
 
 package lesson5.task1
 
+import kotlin.math.abs
+
 // Урок 5: ассоциативные массивы и множества
 // Максимальное количество баллов = 14
 // Рекомендуемое количество баллов = 9
@@ -341,22 +343,23 @@ fun findSumOfTwo(list: List<Int>, number: Int): Pair<Int, Int> {
  *     450
  *   ) -> emptySet()
  */
-fun bagPacking(treasures: Map<String, Pair<Int, Int>>, capacity: Int): Set<String> {
-    val res = mutableSetOf<String>()
-    var m = 0
-    var cost = 0
-    for ((key, value) in treasures) {
-        if (value.first + m <= capacity) {
-            res += key
-            cost += value.second
-            m += value.first
-        } else if (value.first <= capacity && value.second > cost) {
-            cost = value.second
-            res.removeAll(res)
-            res += key
-            m = value.first
+//input.split("; ").map { it.toInt() }.zipWithNext().filter { abs(it.first - it.second) > 1 }
+fun myFun(input: String): Map<String, String> {
+
+    if (Regex("""(\d+;)*\d+;""").matches(input)) throw IllegalArgumentException()
+    val splt = input.split(";")
+    val result = mutableMapOf<String, String>()
+    for (element in 0..(splt.size - 2)) {
+        if (abs(splt[element].toInt() - splt[element + 1].toInt()) > 1) {
+            result.put(splt[element], splt[element + 1])
         }
     }
-
-    return res
+    println(result)
+    return result.toMap()
 }
+
+fun main() {
+   // println(myFun("4; 5; 6; 8; 8; 6; 3; 4; 5"))
+}
+
+
