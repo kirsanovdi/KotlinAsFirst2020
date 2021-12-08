@@ -252,13 +252,11 @@ fun StDouble(n: Double, t: Int): Double {
     return r
 }
 
-fun chlen(x: Double, n: Int): Double = x.pow(n) / factorial(n)
+fun chlen(x: Double, n: Int): Double = StDouble(x, n) / factorial(n)
 
 fun sin(x: Double, eps: Double): Double {
     val modX = x % (2 * PI)
     var result = x % (2 * PI)
-    println(result)
-    //if (x > 20 * PI) return 0.0 //после этого числа не хватает типа дабл для того, чтобы последний член в формуле стало меньше eps
     var tp = 3
     if (result != 0.0) {
         var minus = -1.0
@@ -266,121 +264,99 @@ fun sin(x: Double, eps: Double): Double {
 
         do {
             cl = chlen(modX, tp)
-            var result: Double = x % (2 * PI)
-            val x1 = x % (2 * PI)
-            // if (x > 20 * PI) return 0.0 //после этого числа не хватает типа дабл для того, чтобы последний член в формуле стало меньше eps
-            var tp = 3
-            if (result != 0.0) {
-                var minus: Double = -1.0
-                var cl: Double
+            result += minus * cl
+            minus *= -1.0
+            tp += 2
+        } while (abs(cl) >= eps)
 
-                do {
-                    cl = chlen(x1, tp)
-                    result += minus * cl
-                    minus *= -1.0
-                    tp += 2
-                } while (abs(cl) >= eps)
-
-                return result
-            }
-            return 0.0
-        }
+        return result
+    }
+    return 0.0
+}
 
 
+/**
+ * Средняя (4 балла)
+ *
+ * Для заданного x рассчитать с заданной точностью eps
+ * cos(x) = 1 - x^2 / 2! + x^4 / 4! - x^6 / 6! + ...
+ * Нужную точность считать достигнутой, если очередной член ряда меньше eps по модулю
+ * Подумайте, как добиться более быстрой сходимости ряда при больших значениях x.
+ * Использовать kotlin.math.cos и другие стандартные реализации функции косинуса в этой задаче запрещается.
+ */
+
+fun cos(x: Double, eps: Double): Double {
+    var result = 1.0
+    val temp = x % (2 * PI)
+    var tp: Int = 2
+    var minus = -1.0
+    var cl: Double
+
+    do {
+        cl = chlen(temp, tp)
+        result += minus * cl
+        minus *= -1.0
+        tp += 2
+    } while (abs(cl) >= eps)
+
+    return result
+}
+
+/**
+ * Сложная (4 балла)
+ *
+ * Найти n-ю цифру последовательности из квадратов целых чисел:
+ * 149162536496481100121144...
+ * Например, 2-я цифра равна 4, 7-я 5, 12-я 6.
+ *
+ * Использовать операции со строками в этой задаче запрещается.
+ */
+
+fun squareSequenceDigit(n: Int): Int {
+    var counter = 0
+    var k = 1
+    var last: Int
+    do {
+        last = step(k, 2)
+        counter += digitNumber(last)
+        k++
+    } while (counter < n)
+    if (n < 2) return last
+    if (counter == n) return last % 10
+    val reserv = counter - n
+    for (i in 1..reserv) {
+        last /= 10
+    }
+    return last % 10
+}
 
 
-        /**
-         * Средняя (4 балла)
-         *
-         * Для заданного x рассчитать с заданной точностью eps
-         * cos(x) = 1 - x^2 / 2! + x^4 / 4! - x^6 / 6! + ...
-         * Нужную точность считать достигнутой, если очередной член ряда меньше eps по модулю
-         * Подумайте, как добиться более быстрой сходимости ряда при больших значениях x.
-         * Использовать kotlin.math.cos и другие стандартные реализации функции косинуса в этой задаче запрещается.
-         */
+/**
+ * Сложная (5 баллов)
+ *
+ * Найти n-ю цифру последовательности из чисел Фибоначчи (см. функцию fib выше):
+ * 1123581321345589144...
+ * Например, 2-я цифра равна 1, 9-я 2, 14-я 5.
+ *
+ * Использовать операции со строками в этой задаче запрещается.
+ */
+fun fibSequenceDigit(n: Int): Int {
+    var counter = 1
+    var f1 = 0
+    var f2 = 1
+    if (n == 1 || n == 2) return 1
+    for (i in 2..n) {
+        val x = f1 + f2
+        f1 = f2
+        f2 = x
+        counter += digitNumber(x)
+        if (counter >= n) break
+    }
+    var last = f2
+    for (i in n..counter) {
+        last = f2 % 10
+        f2 /= 10
+    }
+    return last
+}
 
-        fun cos(x: Double, eps: Double): Double {
-            var result = 1.0
-            var temp = x % (2 * PI)
-            // if (x > 20 * PI) return 1.0 //после этого числа не хватает типа дабл для того, чтобы последний член в формуле стало меньше eps
-            var tp: Int = 2
-
-            val temp = x % (2 * PI)
-            //if (x > 20 * PI) return 1.0 //после этого числа не хватает типа дабл для того, чтобы последний член в формуле стало меньше eps
-            var tp = 2
-
-            var minus = -1.0
-            var cl: Double
-
-            do {
-                cl = chlen(temp, tp)
-                result += minus * cl
-                minus *= -1.0
-                tp += 2
-            } while (abs(cl) >= eps)
-
-            return result
-        }
-
-        /**
-         * Сложная (4 балла)
-         *
-         * Найти n-ю цифру последовательности из квадратов целых чисел:
-         * 149162536496481100121144...
-         * Например, 2-я цифра равна 4, 7-я 5, 12-я 6.
-         *
-         * Использовать операции со строками в этой задаче запрещается.
-         */
-
-        fun squareSequenceDigit(n: Int): Int {
-            var counter = 0
-            var k = 1
-            var last: Int
-            do {
-                last = step(k, 2)
-                counter += digitNumber(last)
-                k++
-            } while (counter < n)
-            if (n < 2) return last
-            if (counter == n) return last % 10
-            var reserv: Int
-            reserv = counter - n
-            for (i in 1..reserv) {
-                last /= 10
-            }
-            return last % 10
-        }
-
-
-        /**
-         * Сложная (5 баллов)
-         *
-         * Найти n-ю цифру последовательности из чисел Фибоначчи (см. функцию fib выше):
-         * 1123581321345589144...
-         * Например, 2-я цифра равна 1, 9-я 2, 14-я 5.
-         *
-         * Использовать операции со строками в этой задаче запрещается.
-         */
-        fun fibSequenceDigit(n: Int): Int {
-            var counter = 1
-            var f1 = 0
-            var f2 = 1
-            if (n == 1 || n == 2) return 1
-            for (i in 2..n) {
-                val x = f1 + f2
-                f1 = f2
-                f2 = x
-                /* while (x > 0) { //Подсчёт количества цифр
-             x /= 10
-             counter++
-         }*/
-                counter += digitNumber(x)
-                if (counter >= n) break
-            }
-            var last = f2
-            for (i in n..counter) {
-                last = f2 % 10
-                f2 /= 10
-            }
-            return last
-        }
