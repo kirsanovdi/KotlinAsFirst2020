@@ -3,6 +3,7 @@
 package lesson7.task1
 
 import java.io.File
+import java.io.PrintStream
 
 // Урок 7: работа с файлами
 // Урок интегральный, поэтому его задачи имеют сильно увеличенную стоимость
@@ -65,14 +66,14 @@ fun alignFile(inputName: String, lineLength: Int, outputName: String) {
 fun deleteMarked(inputName: String, outputName: String) {
     val input = File(inputName).readText()
     val res = StringBuilder()
-    input.lines().map { nowLine ->
-
-        if (nowLine.isEmpty()) res.appendLine()
-        else {
+    input.trimIndent().lines().map { nowLine ->
+        if (nowLine.isEmpty() || nowLine[0] != '_') res.appendLine(nowLine)
+        /*else {
             if (nowLine[0] != '_') res.appendLine(nowLine)
             else 0
-        }
+        }*/
     }
+
     File(outputName).writeText(res.toString())
 }
 
