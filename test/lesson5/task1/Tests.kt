@@ -336,4 +336,10 @@ class Tests {
             )
         )
     }
+
+   /* @Test
+    fun resultA() {
+        val lst = listOf("аотта варора : улица оакшоакш, 21б, кв. 21","wowppw pwpwp : улица оакшоакш, 1б, кв. 21")
+        result(lst, "аотта варора")
+    }*/
 }
