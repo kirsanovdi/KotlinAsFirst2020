@@ -2,8 +2,10 @@
 
 package lesson9.task2
 
+import lesson9.task1.Cell
 import lesson9.task1.Matrix
 import lesson9.task1.createMatrix
+import kotlin.math.min
 
 // Все задачи в этом файле требуют наличия реализации интерфейса "Матрица" в Matrix.kt
 
@@ -29,6 +31,17 @@ fun <E> transpose(matrix: Matrix<E>): Matrix<E> {
     return result
 }
 
+fun <E> mirrorVertical(matrix: Matrix<E>): Matrix<E> {
+    if (matrix.width < 1 || matrix.height < 1) return matrix
+    val result = createMatrix(height = matrix.width, width = matrix.height, e = matrix[0, 0])
+    for (i in 0 until matrix.width) {
+        for (j in 0 until matrix.height) {
+            result[i, j] = matrix[i, matrix.width - 1 - j]
+        }
+    }
+    return result
+}
+
 /**
  * Пример
  *
@@ -48,6 +61,10 @@ operator fun Matrix<Int>.plus(other: Matrix<Int>): Matrix<Int> {
     return result
 }
 
+fun main() {
+    println(generateSpiral(10, 3))
+}
+
 /**
  * Сложная (5 баллов)
  *
@@ -60,7 +77,25 @@ operator fun Matrix<Int>.plus(other: Matrix<Int>): Matrix<Int> {
  * 10 11 12  5
  *  9  8  7  6
  */
-fun generateSpiral(height: Int, width: Int): Matrix<Int> = TODO()
+fun generateSpiral(height: Int, width: Int): Matrix<Int> {
+    val matrix = createMatrix(height, width, 1)
+    var rowStart = 0
+    var rowFinish = height - 1
+    var columnStart = 0
+    var columnFinish = width - 1
+    var inc = 1
+    while (inc < height * width) {
+        for (c in columnStart..columnFinish) matrix[Cell(rowStart, c)] = inc++
+        rowStart++
+        if (inc <= height * width) for (r in rowStart..rowFinish) matrix[Cell(r, columnFinish)] = inc++
+        columnFinish--
+        if (inc <= height * width) for (c in columnFinish downTo columnStart) matrix[Cell(rowFinish, c)] = inc++
+        rowFinish--
+        if (inc <= height * width) for (r in rowFinish downTo rowStart) matrix[Cell(r, columnStart)] = inc++
+        columnStart++
+    }
+    return matrix
+}
 
 /**
  * Сложная (5 баллов)
@@ -76,7 +111,30 @@ fun generateSpiral(height: Int, width: Int): Matrix<Int> = TODO()
  *  1  2  2  2  2  1
  *  1  1  1  1  1  1
  */
-fun generateRectangles(height: Int, width: Int): Matrix<Int> = TODO()
+fun generateRectangles(height: Int, width: Int): Matrix<Int> {
+    val matrix = createMatrix(height, width, 1)
+    var rowStart = 0
+    var rowFinish = height - 1
+    var columnStart = 0
+    var columnFinish = width - 1
+    var inc = 1
+    while (rowStart <= rowFinish && columnStart <= columnFinish) {
+        for (r in rowStart..rowFinish) {
+            matrix[Cell(r, columnStart)] = inc
+            matrix[Cell(r, columnFinish)] = inc
+        }
+        for (c in columnStart..columnFinish) {
+            matrix[Cell(rowStart, c)] = inc
+            matrix[Cell(rowFinish, c)] = inc
+        }
+        rowStart++
+        rowFinish--
+        columnStart++
+        columnFinish--
+        inc++
+    }
+    return matrix
+}
 
 /**
  * Сложная (5 баллов)
@@ -91,7 +149,20 @@ fun generateRectangles(height: Int, width: Int): Matrix<Int> = TODO()
  * 10 13 16 18
  * 14 17 19 20
  */
-fun generateSnake(height: Int, width: Int): Matrix<Int> = TODO()
+fun generateSnake(height: Int, width: Int): Matrix<Int> {
+    val matrix = createMatrix(height, width, 0)
+    var rowStart = 0
+    var columnStart = 0
+    var inc = 1
+    while (rowStart < height && columnStart < width) {
+        //h++ r--
+        for (i in 0..min(columnStart, height - 1 - rowStart)) {
+            matrix[Cell(rowStart + i, columnStart - i)] = inc++
+        }
+        if (columnStart < width - 1) columnStart++ else rowStart++
+    }
+    return matrix
+}
 
 /**
  * Средняя (3 балла)
@@ -104,7 +175,8 @@ fun generateSnake(height: Int, width: Int): Matrix<Int> = TODO()
  * 4 5 6      8 5 2
  * 7 8 9      9 6 3
  */
-fun <E> rotate(matrix: Matrix<E>): Matrix<E> = TODO()
+fun <E> rotate(matrix: Matrix<E>): Matrix<E> = if (matrix.height != matrix.width) throw IllegalArgumentException() else
+    mirrorVertical(transpose(matrix))
 
 /**
  * Сложная (5 баллов)
@@ -119,7 +191,22 @@ fun <E> rotate(matrix: Matrix<E>): Matrix<E> = TODO()
  * 1 2 3
  * 3 1 2
  */
-fun isLatinSquare(matrix: Matrix<Int>): Boolean = TODO()
+fun isLatinSquare(matrix: Matrix<Int>): Boolean =
+    if (matrix.height != matrix.width) false else (1..matrix.height).toSet().let { set ->
+        val n = matrix.height
+        val mutableSet = mutableSetOf<Int>()
+        val mutableSet2 = mutableSetOf<Int>()
+        for (i in 0 until n) {
+            mutableSet.clear()
+            mutableSet2.clear()
+            for (j in 0 until n) {
+                mutableSet.add(matrix[Cell(i, j)])
+                mutableSet2.add(matrix[Cell(j, i)])
+            }
+            if(mutableSet != set || mutableSet2 != set) return@let false
+        }
+        true
+    }
 
 /**
  * Средняя (3 балла)

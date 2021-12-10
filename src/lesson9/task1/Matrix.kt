@@ -2,6 +2,8 @@
 
 package lesson9.task1
 
+import java.io.StringReader
+
 // Урок 9: проектирование классов
 // Максимальное количество баллов = 40 (без очень трудных задач = 15)
 
@@ -44,32 +46,48 @@ interface Matrix<E> {
  * height = высота, width = ширина, e = чем заполнить элементы.
  * Бросить исключение IllegalArgumentException, если height или width <= 0.
  */
-fun <E> createMatrix(height: Int, width: Int, e: E): Matrix<E> = TODO()
+fun <E> createMatrix(height: Int, width: Int, e: E): Matrix<E> = MatrixImpl(height, width, e)
 
 /**
  * Средняя сложность (считается двумя задачами в 3 балла каждая)
  *
  * Реализация интерфейса "матрица"
  */
-class MatrixImpl<E> : Matrix<E> {
-    override val height: Int = TODO()
+class MatrixImpl<E>(override val height: Int, override val width: Int, e: E) : Matrix<E> {
+    private val map: MutableMap<Cell, E> = mutableMapOf()
 
-    override val width: Int = TODO()
+    init {
+        for (i in 0 until height) {
+            for (j in 0 until width) {
+                map[Cell(i, j)] = e
+            }
+        }
+    }
 
-    override fun get(row: Int, column: Int): E = TODO()
+    override fun get(row: Int, column: Int): E = get(Cell(row, column))
 
-    override fun get(cell: Cell): E = TODO()
+    override fun get(cell: Cell): E = map[cell] ?: throw IllegalArgumentException(cell.toString())
 
     override fun set(row: Int, column: Int, value: E) {
-        TODO()
+        set(Cell(row, column), value)
     }
 
     override fun set(cell: Cell, value: E) {
-        TODO()
+        if (cell in map) map[cell] = value else throw IllegalArgumentException(cell.toString())
     }
 
-    override fun equals(other: Any?) = TODO()
+    override fun equals(other: Any?) =
+        other is MatrixImpl<*> && this.width == other.width && this.height == other.height
+                && this.map.all { it.value == other.map[it.key] }
 
-    override fun toString(): String = TODO()
+    override fun toString(): String = StringBuilder().let { stringBuilder ->
+        for (i in 0 until height) {
+            for (j in 0 until width) {
+                stringBuilder.append("\t${map[Cell(i, j)]}")
+            }
+            stringBuilder.append("\n")
+        }
+        stringBuilder.toString()
+    }
 }
 
