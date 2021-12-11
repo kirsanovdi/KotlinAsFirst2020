@@ -10,6 +10,14 @@
 
     <name>kfirst</name>
 
+    <dependencies>
+        <dependency>
+            <groupId>org.checkerframework</groupId>
+            <artifactId>checker-qual</artifactId>
+            <version>3.5.0</version>
+        </dependency>
+    </dependencies>
+
     <repositories>
         <repository>
             <id>github-kotlin-polytech-kotlin-maven</id>
