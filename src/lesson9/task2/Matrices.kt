@@ -5,6 +5,7 @@ package lesson9.task2
 import lesson9.task1.Cell
 import lesson9.task1.Matrix
 import lesson9.task1.createMatrix
+import kotlin.math.abs
 import kotlin.math.min
 
 // Все задачи в этом файле требуют наличия реализации интерфейса "Матрица" в Matrix.kt
@@ -399,7 +400,28 @@ fun canOpenLock(key: Matrix<Int>, lock: Matrix<Int>): Triple<Boolean, Int, Int> 
  * 0  4 13  6
  * 3 10 11  8
  */
-fun fifteenGameMoves(matrix: Matrix<Int>, moves: List<Int>): Matrix<Int> = TODO()
+fun fifteenGameMoves(matrix: Matrix<Int>, moves: List<Int>): Matrix<Int> {
+    fun unreal(cell1: Cell, cell2: Cell?): Boolean =
+        cell2 == null || abs(cell1.column - cell2.column) + abs(cell1.row - cell2.row) != 1
+
+    val map = mutableMapOf<Int, Cell>()
+    for (i in 0 until matrix.height) {
+        for (j in 0 until matrix.width) {
+            map[matrix[i, j]] = Cell(i, j)
+        }
+    }
+    for (move in moves) {
+        if (unreal(map[0]!!, map[move])) throw IllegalStateException()
+        val cellTemp = map[0]!!
+        map[0] = map[move]!!
+        map[move] = cellTemp
+    }
+    val newMatrix = createMatrix(matrix.height, matrix.width, 0)
+    for ((key, value) in map){
+        newMatrix[value] = key
+    }
+    return newMatrix
+}
 
 /**
  * Очень сложная (32 балла)
