@@ -62,7 +62,7 @@ operator fun Matrix<Int>.plus(other: Matrix<Int>): Matrix<Int> {
 }
 
 fun main() {
-    println(generateSpiral(10, 3))
+    println(generateSpiral(7, 4))
 }
 
 /**
@@ -84,7 +84,7 @@ fun generateSpiral(height: Int, width: Int): Matrix<Int> {
     var columnStart = 0
     var columnFinish = width - 1
     var inc = 1
-    while (inc < height * width) {
+    while (inc <= height * width) {
         for (c in columnStart..columnFinish) matrix[Cell(rowStart, c)] = inc++
         rowStart++
         if (inc <= height * width) for (r in rowStart..rowFinish) matrix[Cell(r, columnFinish)] = inc++
