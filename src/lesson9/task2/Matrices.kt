@@ -203,7 +203,7 @@ fun isLatinSquare(matrix: Matrix<Int>): Boolean =
                 mutableSet.add(matrix[Cell(i, j)])
                 mutableSet2.add(matrix[Cell(j, i)])
             }
-            if(mutableSet != set || mutableSet2 != set) return@let false
+            if (mutableSet != set || mutableSet2 != set) return@let false
         }
         true
     }
@@ -225,7 +225,18 @@ fun isLatinSquare(matrix: Matrix<Int>): Boolean =
  *
  * 42 ===> 0
  */
-fun sumNeighbours(matrix: Matrix<Int>): Matrix<Int> = TODO()
+fun sumNeighbours(matrix: Matrix<Int>): Matrix<Int> = createMatrix(matrix.height, matrix.width, 0).let { newMatrix ->
+    fun getSafe(i: Int, j: Int): Int = if (i in 0 until matrix.height && j in 0 until matrix.width) matrix[i, j] else 0
+    fun getSum(iIndex: Int, jIndex: Int): Int = (jIndex - 1..jIndex + 1).let { jList ->
+        (iIndex - 1..iIndex + 1).sumOf { i -> jList.sumOf { j -> getSafe(i, j) } } - matrix[iIndex, jIndex]
+    }
+    for (i in 0 until newMatrix.height) {
+        for (j in 0 until newMatrix.width) {
+            newMatrix[i, j] = getSum(i, j)
+        }
+    }
+    newMatrix
+}
 
 /**
  * Средняя (4 балла)
@@ -242,7 +253,22 @@ fun sumNeighbours(matrix: Matrix<Int>): Matrix<Int> = TODO()
  * 0 0 1 0
  * 0 0 0 0
  */
-fun findHoles(matrix: Matrix<Int>): Holes = TODO()
+fun findHoles(matrix: Matrix<Int>): Holes {
+    val rowsMass = MutableList(matrix.height) { 0 }
+    val columnMass = MutableList(matrix.width) { 0 }
+    for (i in 0 until matrix.height) {
+        for (j in 0 until matrix.width) {
+            if (matrix[i, j] == 0) {
+                rowsMass[i] = rowsMass[i] + 1
+                columnMass[j] = columnMass[j] + 1
+            }
+        }
+    }
+    return Holes(
+        (0 until matrix.height).filter { rowsMass[it] == matrix.width },
+        (0 until matrix.width).filter { columnMass[it] == matrix.height }
+    )
+}
 
 /**
  * Класс для описания местонахождения "дырок" в матрице
@@ -263,7 +289,17 @@ data class Holes(val rows: List<Int>, val columns: List<Int>)
  *
  * К примеру, центральный элемент 12 = 1 + 2 + 4 + 5, элемент в левом нижнем углу 12 = 1 + 4 + 7 и так далее.
  */
-fun sumSubMatrix(matrix: Matrix<Int>): Matrix<Int> = TODO()
+fun sumSubMatrix(matrix: Matrix<Int>): Matrix<Int> {
+    val newMatrix = createMatrix(matrix.height, matrix.width, 0)
+    fun getSafe(i: Int, j: Int): Int =
+        if (i in 0 until matrix.height && j in 0 until matrix.width) newMatrix[i, j] else 0
+    for (i in 0 until matrix.height) {
+        for (j in 0 until matrix.width) {
+            newMatrix[i, j] = matrix[i, j] + getSafe(i - 1, j) + getSafe(i, j - 1) - getSafe(i - 1, j - 1)
+        }
+    }
+    return newMatrix
+}
 
 /**
  * Простая (2 балла)
@@ -271,7 +307,14 @@ fun sumSubMatrix(matrix: Matrix<Int>): Matrix<Int> = TODO()
  * Инвертировать заданную матрицу.
  * При инвертировании знак каждого элемента матрицы следует заменить на обратный
  */
-operator fun Matrix<Int>.unaryMinus(): Matrix<Int> = TODO(this.toString())
+operator fun Matrix<Int>.unaryMinus(): Matrix<Int> = this.let { matrix ->
+    for (i in 0 until matrix.height) {
+        for (j in 0 until matrix.width) {
+            matrix[i, j] = -matrix[i, j]
+        }
+    }
+    matrix
+}
 
 /**
  * Средняя (4 балла)
@@ -281,7 +324,16 @@ operator fun Matrix<Int>.unaryMinus(): Matrix<Int> = TODO(this.toString())
  * В противном случае бросить IllegalArgumentException.
  * Подробно про порядок умножения см. статью Википедии "Умножение матриц".
  */
-operator fun Matrix<Int>.times(other: Matrix<Int>): Matrix<Int> = TODO(this.toString())
+operator fun Matrix<Int>.times(other: Matrix<Int>): Matrix<Int> =
+    createMatrix(this.height, other.width, 0).let { matrix ->
+        for (i in 0 until matrix.height) {
+            for (j in 0 until matrix.width) {
+                matrix[i, j] =
+                    (0 until this.width).sumOf { this[i, it] * other[it, j] }
+            }
+        }
+        matrix
+    }
 
 /**
  * Сложная (7 баллов)
@@ -303,7 +355,22 @@ operator fun Matrix<Int>.times(other: Matrix<Int>): Matrix<Int> = TODO(this.toSt
  * Вернуть тройку (Triple) -- (да/нет, требуемый сдвиг по высоте, требуемый сдвиг по ширине).
  * Если наложение невозможно, то первый элемент тройки "нет" и сдвиги могут быть любыми.
  */
-fun canOpenLock(key: Matrix<Int>, lock: Matrix<Int>): Triple<Boolean, Int, Int> = TODO()
+fun canOpenLock(key: Matrix<Int>, lock: Matrix<Int>): Triple<Boolean, Int, Int> {
+    fun check(iDelta: Int, jDelta: Int): Boolean {
+        for (i in 0 until key.height) {
+            for (j in 0 until key.width) {
+                if (key[i, j] == lock[i + iDelta, j + jDelta]) return false
+            }
+        }
+        return true
+    }
+    for (i in 0..lock.height - key.height) {
+        for (j in 0..lock.width - key.width) {
+            if (check(i, j)) return Triple(true, i, j)
+        }
+    }
+    return Triple(false, 0, 0)
+}
 
 /**
  * Сложная (8 баллов)
