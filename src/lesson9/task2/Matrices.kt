@@ -532,8 +532,16 @@ fun fifteenGameSolution(matrix: Matrix<Int>): List<Int> {
     fun rotateAntiClockWise(upperLeft: Cell){ // independent from matrixLocked
         val upperRight = upperLeft.let { Cell(it.row, it.column + 1) }
         val lowerLeft = upperLeft.let { Cell(it.row + 1, it.column + 1) }
-        switch(upperRight, upperLeft)
+        switch(upperRight, upperLeft)//что-то тут с названиями не то
         switch(lowerLeft, upperRight)
+    }
+    // 0 n ->  9 0
+    // 9 13   13 n
+    fun rotateClockWise(upperLeft: Cell){ // independent from matrixLocked
+        val lowerRight = upperLeft.let { Cell(it.row + 1, it.column + 1) }
+        val lowerLeft = upperLeft.let { Cell(it.row + 1, it.column) }
+        switch(lowerLeft, upperLeft)
+        switch(lowerRight, lowerLeft)
     }
 
     fun putSimple(next: Cell, value: Int) {
@@ -580,7 +588,35 @@ fun fifteenGameSolution(matrix: Matrix<Int>): List<Int> {
     matrixUnlocked.lock(Cell(1, 3))
     putZero(Cell(0,2))
     rotateAntiClockWise(Cell(0, 2))
+    matrixUnlocked.unlock(Cell(1, 3))
+    matrixUnlocked.lock(Cell(0, 2))
     //1, 2, 3, 4
+    putSimple(Cell(1, 0), 5)
+    matrixUnlocked.lock(Cell(1, 0))
+    //1, 2, 3, 4, 5
+    putSimple(Cell(3, 0), 9)
+    matrixUnlocked.lock(Cell(3, 0))
+    //1, 2, 3, 4, 5, 9
+    putSimple(Cell(3, 1), 13)
+    matrixUnlocked.lock(Cell(3, 1))
+    putZero(Cell(2, 0))
+    rotateClockWise(Cell(2, 0))
+    matrixUnlocked.unlock(Cell(3, 1))
+    matrixUnlocked.lock(Cell(2, 0))
+    //1, 2, 3, 4, 5, 9, 13
+    putSimple(Cell(1, 1), 6)
+    matrixUnlocked.lock(Cell(1, 1))
+    //1, 2, 3, 4, 5, 6, 9, 13
+    putSimple(Cell(1, 3), 7)
+    matrixUnlocked.lock(Cell(1, 3))
+    putSimple(Cell(2, 3), 8)
+    matrixUnlocked.lock(Cell(2, 3))
+    putZero(Cell(1, 2))
+    rotateAntiClockWise(Cell(1,2))
+    matrixUnlocked.unlock(Cell(2, 3))
+    matrixUnlocked.lock(Cell(1, 2))
+
+
     println("-------------")
     println(moves)
     println("-------------")
