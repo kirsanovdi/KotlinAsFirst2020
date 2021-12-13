@@ -479,12 +479,10 @@ fun fifteenGameSolution(matrix: Matrix<Int>): List<Int> {
     fun Matrix<Boolean>.unlock(cell: Cell) {
         this[cell] = true
     }
-
-    var upper = 0
-    var left = 0
+    
     fun find(value: Int): Cell {
-        for (i in upper until matrix.height) {
-            for (j in left until matrix.width) {
+        for (i in 0 until matrix.height) {
+            for (j in 0 until matrix.width) {
                 if (matrix[i, j] == value) return Cell(i, j)
             }
         }
@@ -529,15 +527,16 @@ fun fifteenGameSolution(matrix: Matrix<Int>): List<Int> {
 
     // 0 3 -> 3 4
     // n 4    0 n
-    fun rotateAntiClockWise(upperLeft: Cell){ // independent from matrixLocked
+    fun rotateAntiClockWise(upperLeft: Cell) { // independent from matrixLocked
         val upperRight = upperLeft.let { Cell(it.row, it.column + 1) }
-        val lowerLeft = upperLeft.let { Cell(it.row + 1, it.column + 1) }
-        switch(upperRight, upperLeft)//что-то тут с названиями не то
-        switch(lowerLeft, upperRight)
+        val lowerRight = upperLeft.let { Cell(it.row + 1, it.column + 1) }
+        switch(upperRight, upperLeft)
+        switch(lowerRight, upperRight)
     }
+
     // 0 n ->  9 0
     // 9 13   13 n
-    fun rotateClockWise(upperLeft: Cell){ // independent from matrixLocked
+    fun rotateClockWise(upperLeft: Cell) { // independent from matrixLocked
         val lowerRight = upperLeft.let { Cell(it.row + 1, it.column + 1) }
         val lowerLeft = upperLeft.let { Cell(it.row + 1, it.column) }
         switch(lowerLeft, upperLeft)
@@ -579,14 +578,15 @@ fun fifteenGameSolution(matrix: Matrix<Int>): List<Int> {
     putSimple(Cell(0, 0), 1)
     matrixUnlocked.lock(Cell(0, 0))
     //1
-    putSimple(Cell(0,1), 2)
+    putSimple(Cell(0, 1), 2)
     matrixUnlocked.lock(Cell(0, 1))
     //1, 2
-    putSimple(Cell(0,3), 3)
+    putSimple(Cell(3, 3), 4)//отгоняю 4 от дырки, где будет 3
+    putSimple(Cell(0, 3), 3)
     matrixUnlocked.lock(Cell(0, 3))
-    putSimple(Cell(1,3), 4)
+    putSimple(Cell(1, 3), 4)
     matrixUnlocked.lock(Cell(1, 3))
-    putZero(Cell(0,2))
+    putZero(Cell(0, 2))
     rotateAntiClockWise(Cell(0, 2))
     matrixUnlocked.unlock(Cell(1, 3))
     matrixUnlocked.lock(Cell(0, 2))
@@ -594,9 +594,9 @@ fun fifteenGameSolution(matrix: Matrix<Int>): List<Int> {
     putSimple(Cell(1, 0), 5)
     matrixUnlocked.lock(Cell(1, 0))
     //1, 2, 3, 4, 5
+    putSimple(Cell(3, 3), 13)//отгоняю 13 от дырки, где будет 9
     putSimple(Cell(3, 0), 9)
     matrixUnlocked.lock(Cell(3, 0))
-    //1, 2, 3, 4, 5, 9
     putSimple(Cell(3, 1), 13)
     matrixUnlocked.lock(Cell(3, 1))
     putZero(Cell(2, 0))
@@ -607,16 +607,32 @@ fun fifteenGameSolution(matrix: Matrix<Int>): List<Int> {
     putSimple(Cell(1, 1), 6)
     matrixUnlocked.lock(Cell(1, 1))
     //1, 2, 3, 4, 5, 6, 9, 13
+    putSimple(Cell(3, 3), 8)//отгоняю 8 от дырки, где будет 7
     putSimple(Cell(1, 3), 7)
     matrixUnlocked.lock(Cell(1, 3))
     putSimple(Cell(2, 3), 8)
     matrixUnlocked.lock(Cell(2, 3))
     putZero(Cell(1, 2))
-    rotateAntiClockWise(Cell(1,2))
+    rotateAntiClockWise(Cell(1, 2))
     matrixUnlocked.unlock(Cell(2, 3))
     matrixUnlocked.lock(Cell(1, 2))
-
-
+    //11 в угол, 10 на место, 11 на место, поворот 11 против, повороты оствавшегося квадрата 2x2 до совпадения 12ти (против часовой)
+    putSimple(Cell(3, 3), 11)//отгоняю 8 от дырки, где будет 7
+    putSimple(Cell(2, 1), 10)
+    putSimple(Cell(2, 2), 11)
+    putZero(Cell(3, 1))//далее поворот вручную
+    switch(Cell(2, 1), Cell(3, 1))
+    switch(Cell(2, 2), Cell(2, 1))
+    while (matrix[Cell(2, 3)] != 12) {
+        rotateAntiClockWise(Cell(2, 2))
+        switch(Cell(3,2), Cell(3,3))
+        switch(Cell(2,2), Cell(3,2))
+    }
+    switch(Cell(2,1), Cell(2,2))
+    switch(Cell(3, 1), Cell(2, 1))
+    switch(Cell(3, 2), Cell(3, 1))
+    switch(Cell(3, 3), Cell(3, 2))
+    //rotateAntiClockWise(Cell(2, 2))
     println("-------------")
     println(moves)
     println("-------------")
