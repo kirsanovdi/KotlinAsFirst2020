@@ -417,7 +417,7 @@ fun fifteenGameMoves(matrix: Matrix<Int>, moves: List<Int>): Matrix<Int> {
         map[move] = cellTemp
     }
     val newMatrix = createMatrix(matrix.height, matrix.width, 0)
-    for ((key, value) in map){
+    for ((key, value) in map) {
         newMatrix[value] = key
     }
     return newMatrix
@@ -462,4 +462,130 @@ fun fifteenGameMoves(matrix: Matrix<Int>, moves: List<Int>): Matrix<Int> {
  *
  * Перед решением этой задачи НЕОБХОДИМО решить предыдущую
  */
-fun fifteenGameSolution(matrix: Matrix<Int>): List<Int> = TODO()
+fun fifteenGameSolution(matrix: Matrix<Int>): List<Int> {
+    println(matrix)
+    val tempMatrix = createMatrix(matrix.height, matrix.width, 0)
+    for (i in 0 until tempMatrix.height) {
+        for (j in 0 until tempMatrix.width) {
+            tempMatrix[Cell(i, j)] = matrix[Cell(i, j)]
+        }
+    }
+    val moves = mutableListOf<Int>()
+    val matrixUnlocked = createMatrix(4, 4, true)
+    fun Matrix<Boolean>.lock(cell: Cell) {
+        this[cell] = false
+    }
+
+    fun Matrix<Boolean>.unlock(cell: Cell) {
+        this[cell] = true
+    }
+
+    var upper = 0
+    var left = 0
+    fun find(value: Int): Cell {
+        for (i in upper until matrix.height) {
+            for (j in left until matrix.width) {
+                if (matrix[i, j] == value) return Cell(i, j)
+            }
+        }
+        throw IllegalStateException()
+    }
+
+    fun switch(nonZero: Cell, zero: Cell) {
+        val temp = matrix[nonZero]
+        matrix[nonZero] = 0
+        matrix[zero] = temp
+        moves.add(temp)
+    }
+
+    fun putZero(next: Cell) {
+        val queue = ArrayDeque<Pair<Cell, List<Cell>>>()
+        val current = find(0)
+        val visited = mutableSetOf(current)
+        queue.add(Pair(current, listOf()))
+        fun check(cell: Cell, dr: Int, dc: Int, list: List<Cell>) {
+            if (cell.row + dr in 0..3 && cell.column + dc in 0..3) {
+                val temp = Cell(cell.row + dr, cell.column + dc)
+                if (temp !in visited && matrixUnlocked[temp]) {
+                    queue.add(Pair(temp, list + cell))
+                    visited.add(temp)
+                }
+            }
+        }
+        while (queue.isNotEmpty()) {
+            val (curr, list) = queue.removeFirst()
+            if (curr == next) {
+                for ((c1, c2) in list.zipWithNext()) {
+                    switch(c2, c1)
+                }
+                if (list.isNotEmpty()) switch(curr, list.last())
+            }
+            check(curr, -1, 0, list)
+            check(curr, 1, 0, list)
+            check(curr, 0, 1, list)
+            check(curr, 0, -1, list)
+        }
+    }
+
+    // 0 3 -> 3 4
+    // n 4    0 n
+    fun rotateAntiClockWise(upperLeft: Cell){ // independent from matrixLocked
+        val upperRight = upperLeft.let { Cell(it.row, it.column + 1) }
+        val lowerLeft = upperLeft.let { Cell(it.row + 1, it.column + 1) }
+        switch(upperRight, upperLeft)
+        switch(lowerLeft, upperRight)
+    }
+
+    fun putSimple(next: Cell, value: Int) {
+        val queue = ArrayDeque<Pair<Cell, List<Cell>>>()
+        val current = find(value)
+        val visited = mutableSetOf(current)
+        queue.add(Pair(current, listOf()))
+        fun check(cell: Cell, dr: Int, dc: Int, list: List<Cell>) {
+            if (cell.row + dr in 0..3 && cell.column + dc in 0..3) {
+                val temp = Cell(cell.row + dr, cell.column + dc)
+                if (temp !in visited && matrixUnlocked[temp]) {
+                    queue.add(Pair(temp, list + cell))
+                    visited.add(temp)
+                }
+            }
+        }
+        while (queue.isNotEmpty()) {
+            val (curr, list) = queue.removeFirst()
+            if (curr == next) {
+                for ((c1, c2) in (list + curr).zipWithNext()) {
+                    matrixUnlocked.lock(c1)
+                    putZero(c2)
+                    matrixUnlocked.unlock(c1)
+                    switch(c1, c2)
+                }
+                //switch(curr, list.last())
+            }
+            check(curr, -1, 0, list)
+            check(curr, 1, 0, list)
+            check(curr, 0, 1, list)
+            check(curr, 0, -1, list)
+        }
+    }
+    //ничего
+    putSimple(Cell(0, 0), 1)
+    matrixUnlocked.lock(Cell(0, 0))
+    //1
+    putSimple(Cell(0,1), 2)
+    matrixUnlocked.lock(Cell(0, 1))
+    //1, 2
+    putSimple(Cell(0,3), 3)
+    matrixUnlocked.lock(Cell(0, 3))
+    putSimple(Cell(1,3), 4)
+    matrixUnlocked.lock(Cell(1, 3))
+    putZero(Cell(0,2))
+    rotateAntiClockWise(Cell(0, 2))
+    //1, 2, 3, 4
+    println("-------------")
+    println(moves)
+    println("-------------")
+    println(matrix)
+    println("-------------")
+    println(fifteenGameMoves(tempMatrix, moves))
+    return moves
+}
