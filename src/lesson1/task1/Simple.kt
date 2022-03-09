@@ -2,6 +2,7 @@
 
 package lesson1.task1
 
+//import jdk.nashorn.internal.runtime.JSType.toDouble
 import kotlin.math.*
 
 // Урок 1: простые функции

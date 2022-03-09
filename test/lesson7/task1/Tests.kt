@@ -441,4 +441,20 @@ Basic, Ruby, Swift.
 
         File("temp.txt").delete()
     }
+
+    @Test
+    fun muFun() {
+        assertEquals(42, myFun("input/top20.txt", "Апрель 9..15"))
+    }
+
+    @Test
+    fun foo() {
+        assertEquals("BC ABCDEF, BC BC, BC ABDEG, BC ABCDG", foo(10, 13))
+    }
+
+
+    @Test
+    fun fo() {
+        assertEquals("Железнодорожная 3-6: комната 21, кухня 6, коридор 4", fo1("input/file.txt", "комната 21"))
+    }
 }

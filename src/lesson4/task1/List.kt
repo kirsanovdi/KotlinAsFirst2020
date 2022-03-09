@@ -4,6 +4,7 @@ package lesson4.task1
 
 //import jdk.internal.net.http.common.Pair.pair
 import lesson1.task1.discriminant
+import kotlin.math.min
 import kotlin.math.sqrt
 
 // Урок 4: списки
@@ -159,6 +160,7 @@ fun times(a: List<Int>, b: List<Int>): Int = a.zip(b).sumOf { it.first * it.seco
  * Средняя (3 балла)
  *
  * Рассчитать значение многочлена при заданном x:
+
  * p(x) = p0 + p1*x + p2*x^2 + p3*x^3 + ... + pN*x^N.
  * Коэффициенты многочлена заданы списком p: (p0, p1, p2, p3, ..., pN).
  * Значение пустого многочлена равно 0 при любом x.

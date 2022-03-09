@@ -2,6 +2,7 @@
 
 package lesson7.task1
 
+import ru.spbstu.wheels.Break
 import java.io.File
 import java.io.PrintStream
 import java.lang.Exception
@@ -868,4 +869,299 @@ fun main() {
     markdownToHtmlSimple("input/markdown_simple_custom.md", "temp.html")
     printDivisionProcess(4987, 7396, "input/test.txt")
 }
+/*
+fun main() {
+    var max = 0
+    val days = "Апрель 9..15"
+    var arr = arrayOf("Март", "Апрель", "Май")
+    val n = days.split(" ")
+    if (n[0] in arr) {
+        //if (!Regex("""\w+ \d+\.\.\d+""").matches(days)) throw IllegalArgumentException()
+    } else throw IllegalArgumentException()
+    val spl = n[1].split("..")
+    val spl1 = spl[0]
+    val spl2 = spl[1]
 
+    val month = File("top20.txt").readText()
+    month.lines().map { s ->
+        s.split(" ").map {
+            if (it == n[0]) {
+                println(":)")
+            } else if (it >= spl1 && it <= spl2) {
+                if (it.toInt() > max) {
+                    max = it.toInt()
+                }
+            }
+        }
+    }
+    println(max)
+}
+*/
+
+//максимальное количество осадков
+/**
+ * В файле с именем inputName заданы ежедневные сведения о
+ * количестве выпавших осадков (в мм) в различные месяцы года,
+ * всего не более чем 31 значение в каждой строке и
+ * не более 12 строк во всём файле, например:
+ *
+ * Март 0 1 0 3 41 2 0 0 13 16 20 8 0 4 8 1 0 0 0 7 12 0 4 9
+ * Апрель 0 0 0 17 0 0 11 48 42 0 0 1 7 15 18 0 0 0 0 0 8 2 17 0
+ * Май 10 15 48 21 0 0 17 22 30 0 0 13 0 0 2 5 7 0 0 0 1 10 3
+ *
+ * Каждая строка начинается с названия месяца, за которым
+ * следует последовательность целых чисел - уровень осадков в мм
+ * в различные дни этого месяца, начиная с 1-го. Порядок месяцев
+ * в файле должен соответствовать реальному (следующий месяц всегда
+ * ниже предыдущего).
+ *
+ * В строковом параметре days задан интервал дат
+ * либо в формате “Апрель 9..15”  (дни в одном месяце),
+ * либо в формате “Март 22..Май 8” (дни в разных месяцах).
+ *
+ * Необходимо рассчитать максимальный уровень осадков за один день
+ * в заданном интервале дат. Например, для “Апрель 9..15” это 42,
+ * для “Март 22..Май 8” это 48. Отсутствующие дни игнорировать.
+ *
+ * “Удовлетворительно” -- используется только первый формат для
+ * параметра days - все дни в одном месяце
+ *
+ * “Хорошо” -- может использоваться как первый, так и второй
+ * формат для параметра days, то есть, интервал может содержать
+ * дни в разных месяцах
+ *
+ * “Отлично” -- результат функции должен содержать не только
+ * максимальный уровень осадков, но и список дней,
+ * в которых он был достигнут
+ * (42, 9 апреля или 48, 8 апреля, 3 мая для примеров выше)
+ *
+ * При нарушении форматов входных данных следует выбрасывать
+ * исключение IllegalArgumentException. При невозможности
+ * прочитать файл выбрасывать исключение IOException.
+ *
+ * Предложить имя и тип результата функции. Кроме функции
+ * следует написать тесты, подтверждающие её работоспособность.
+ */
+fun myFun(inputName: String, days: String): Any {
+    var max = 0
+    val a = Regex("""[а-яА-я]+ \d+..\d+""")
+    val b = Regex("""[а-яА-я]+ \d+..[а-яА-я]+ \d+""")
+
+    val days = "Апрель 9..15"
+    val days2 = "Март 22..Май 8"
+    val arr = arrayOf("Март", "Апрель", "Май")
+    val n = days.split(" ")
+    val spl = n[1].split("..")
+    val spl1 = spl[0].toInt()
+    val spl2 = spl[1].toInt()
+    try {
+        val month = File(inputName).readText()
+        var counter = 1
+        if (n[0] in arr) {
+            if (a.matches(days)) {
+                month.lines().map { s ->
+                    val ng = s.split(" ")
+                    if (ng[0] == n[0]) {
+                        ng.map {
+                            if ((counter in spl1..spl2) && counter != 1) {
+                                if (it.toInt() > max) {
+                                    max = it.toInt()
+                                }
+                                counter++
+                            } else counter++
+
+                        }
+                    }
+                    counter = 0
+                }
+            } else if (b.matches(days2)) {
+                month.lines().map { s ->
+                    val ng = s.split(" ")
+                    if (ng[0] == n[0]) {
+                        ng.map {
+
+
+                        }
+                    }
+                }
+            } else throw IllegalArgumentException()
+        } else throw IllegalArgumentException()
+        return max
+    } catch (readTextException: Exception) {
+        throw IOException(":)")
+    }
+
+}
+
+
+//Билет 7 - Семисегментный индикатор
+/*
+* Семисегментный светодиодный индикатор, как говорит его название,
+* состоит из семи элементов индикации (сегментов),
+* включающихся и выключающихся по отдельности. Включая их в разных
+* комбинациях, из них можно составить упрощённые изображения арабских цифр.
+* Сегменты обозначаются буквами от A до G;
+
+* Например, цифра 0 кодируется последовательностью ABCDEF,
+* а цифра 1 -- последовательностью BC
+*
+* В качестве результата необходимо вернуть:
+*
+* "Удовлетворительно" -- кодировку всех элементов промежутка времени в минутах,
+* находящегося между tStart (00-59) и tEnd (00-59), например: tStart = 10, tEnd = 13,
+* result: "BC ABCDEF, BC BC, BC ABDEG, BC ABCDG" (10, 11, 12, 13)
+*
+* "Хорошо" -- кодировку всех элементов промежутка времени в часах и минутах,
+* находящегося между tStart и tEnd, на 4 индикаторах, например:
+* tStart = 23:59, tEnd = 00:01, result: "ABDEG ABCDG:ACDFG ABCDFG,
+* ABCDEF ABCDEF:ABCDEF ABCDEF, ABCDEF ABCDEF:ABCDEF BC" (23:59, 00:00, 00:01)
+*
+* "Отлично" -- дополнительно создать файл out.txt,
+* в котором нарисован каждый элемент из временного промежутка,
+* находящегося между tStart и tEnd, заданных параметрами,
+* например: tStart = 16:59, tEnd = 17:00. Файл out.txt:
+*    _     _   _
+* | |_  . |_  |_|
+* | |_| .  _|  _|
+*    _     _   _
+* | | | . | | | |
+* |   | . |_| |_|
+* Предложить имя, тип параметров, тип результата функции. Кроме функции
+* следует написать тесты, подтверждающие её работоспособность.*/
+fun foo(tStart: Any, tEnd: Any): Any {
+    val mapa = mapOf(
+        0 to "ABCDEF",
+        1 to "BC",
+        2 to "ABDEG",
+        3 to "ABCDG",
+        4 to "BCFG",
+        5 to "ACDF",
+        6 to "ACDFG",
+        7 to "ABCF",
+        8 to "ABCDEFG",
+        9 to "ABCDFG"
+    )
+    val striing = StringBuilder()
+    var counter = 0
+    val result = mutableListOf<String>()
+    val lst = mutableListOf<Int>(0, 0)
+    for (i in tStart.toString().toInt()..tEnd.toString().toInt()) {
+        var t = i.toInt()
+        while (t > 0) {
+            lst[counter] = t % 10
+
+            t /= 10
+            counter++
+        }
+
+        result.add("${mapa[lst[1]]} ${mapa[lst[0]]}")
+        striing.append("${mapa[lst[1]]} ${mapa[lst[0]]}, ")
+        lst[0] = 0
+        lst[1] = 0
+        counter = 0
+    }
+    println(striing.dropLast(2))
+    return striing.dropLast(2)
+}
+
+
+//Билет 9 -- квартиры
+/**
+ * В файле с именем inputName заданы описания квартир,
+ * предлагающихся для продажи, в следующем формате:
+ *
+ * Пионерская 9-17: комната 18, комната 14, кухня 7, коридор 4
+ * Школьная 12-14: комната 19, кухня 8, коридор 3
+ * Садовая 19-1-55: комната 12, комната 19, кухня 9, коридор 5
+ * Железнодорожная 3-6: комната 21, кухня 6, коридор 4
+ *
+ * Строчка начинается с адреса квартиры, после двоеточия
+ * перечисляются помещения квартиры через запятую, с указанием
+ * их площади.
+ *
+ * Параметр query содержит запрос, начинающийся с названия
+ * помещения, за которым следует его минимальная площадь,
+ * например, “кухня 8”. Через точку с запятой могут следовать
+ * другие ограничения, например “кухня 8; коридор 4”
+ * Функция должна найти все квартиры в списке,
+ * удовлетворяющие запросу (площадь кухни больше или равна 8,
+ * площадь коридора больше или равна 4)
+ *
+ * “Удовлетворительно” -- в запросе может присутствовать только
+ * одно помещение, например, “кухня 8”
+ *
+ * “Хорошо” -- в запросе может присутствовать несколько помещений,
+ * например, “кухня 8; комната 15”
+ *
+ * “Отлично” -- в запросе может присутствовать два и более
+ * однотипных помещения, например, “комната 19; комната 12” --
+ * двухкомнатная квартира,
+ * одна комната не менее 19, другая не менее 12
+ *
+ * При нарушении форматов входных данных следует выбрасывать
+ * исключение IllegalArgumentException, при невозможности
+ * прочитать файл выбрасывать исключение IOException.
+ *
+ * Предложить имя и тип результата функции. Кроме функции
+ * следует написать тесты, подтверждающие её работоспособность.
+ */
+fun fo(inputName: String, query: String): Any {
+    val result = StringBuilder()
+    var stoper = false
+    val query1 = query.split(" ")
+    val enter = File(inputName).readText()
+    enter.lines().map { line ->
+        val kvart = line.split(":")
+        kvart.map { kv ->
+            val komnata = kv.split(",")
+
+            for (i in komnata) {
+                try {
+                    i.toInt()
+                } catch (NumberFormatExceptions: Exception) {
+                    if (query1[0] == i) {
+                        if ((i + 1).toInt() >= query1[1].toInt()) {
+                            result.appendLine(line)
+                            stoper = true
+                        }
+                    }
+                }
+
+            }
+            if (stoper) {
+                Break
+                stoper = false
+            }
+            println("$stoper      $kv")
+        }
+
+    }
+    return 0
+}
+
+fun fo1(inputName: String, query: String): Any {
+    val result = StringBuilder()
+    var stoper = false
+    val query1 = query.split(" ")
+    val enter = File(inputName).readText()
+    enter.lines().map { line ->
+        val ln = line.split(":")
+        ln[1].split(",").map { it ->
+            var counter = 0
+            val rume = it.drop(1).split(" ")
+            if (rume[0] == query1[0] && rume[1] >= query1[1]) stoper = true
+        }
+        if (stoper) result.appendLine(line)
+        stoper = false
+    }
+    return result.dropLast(1)
+}
+
+fun main() {
+    val i = "123"
+    try {
+        i.toInt()
+    } catch (NumberFormatExceptions: Exception) {
+        println(123)
+    }
+}
